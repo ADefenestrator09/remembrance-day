@@ -16,7 +16,7 @@ PUTTING IT ON GITHUB PAGES
      index.html, config.js and the audio folder (plus a video folder if
      you use one). Commit the changes.
   3. Settings > Pages > Deploy from a branch > main > /(root) > Save.
-  4. Open https://YOUR-USERNAME.github.io/YOUR-REPO/ after a minute or two.
+  4. Open https://adefenestrator09.github.io/remembrance-day/ after a minute or two.
 
   Open the website address, not the index.html file on your computer.
   YouTube refuses to play inside a page that was opened as a local file
