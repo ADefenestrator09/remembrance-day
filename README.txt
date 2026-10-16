@@ -16,7 +16,7 @@ PUTTING IT ON GITHUB PAGES
      index.html, config.js and the audio folder (plus a video folder if
      you use one). Commit the changes.
   3. Settings > Pages > Deploy from a branch > main > /(root) > Save.
-  4. Open https://YOUR-USERNAME.github.io/YOUR-REPO/ after a minute or two.
+  4. Open https://adefenestrator09.github.io/remembrance-day/ after a minute or two.
 
   Open the website address, not the index.html file on your computer.
   YouTube refuses to play inside a page that was opened as a local file
@@ -47,7 +47,7 @@ CUSTOMIZATION SETTINGS (all in config.js)
                    "maple"    deep red with a faint maple leaf
                  To try one without changing anything, add ?theme=NAME to
                  the end of the web address, for example:
-                   https://YOUR-USERNAME.github.io/YOUR-REPO/?theme=paper
+                   https://adefenestrator09.github.io/remembrance-day/?theme=paper
 
   tracks         The audio, in playing order. Each line is:
                    { title: "Name shown on screen", src: "audio/file.mp3" },
