@@ -122,6 +122,8 @@ body.tab-video .corner, body.tab-slides .corner { display: none; }
 .mediabar { display: flex; gap: 8px; justify-content: center; flex: none; }
 .mediabar button { padding: 6px 14px; font-size: .9rem; }
 .mediabar .note { align-self: center; color: var(--muted); font-size: .85rem; }
+.tabs { position: relative; }
+.fsbtn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); padding: 6px 9px !important; line-height: 0; min-width: 0 !important; }
 </style>
 </head>
 <body class="tab-audio">
@@ -136,6 +138,7 @@ body.tab-video .corner, body.tab-slides .corner { display: none; }
     <button id="tab-audio" class="active" role="tab" aria-selected="true">&#9834; Audio</button>
     <button id="tab-slides" role="tab" aria-selected="false">&#9636; Slideshow</button>
     <button id="tab-video" role="tab" aria-selected="false">&#9654; Video</button>
+    <button id="fsBtn" class="fsbtn" title="Fullscreen" aria-label="Fullscreen" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   </nav>
   <div id="panel-audio" class="panel">
   <section class="card" id="setup">
@@ -206,7 +209,6 @@ body.tab-video .corner, body.tab-slides .corner { display: none; }
         <div class="status" id="videoStatus"></div>
       </div>
     </div>
-    <div class="mediabar" id="videoBar" hidden><button id="videoChange">Change video</button><button id="videoFs">Fullscreen</button><button id="videoOpen" hidden>Open in new tab</button><span class="note">Audio pauses automatically when a video file plays.</span></div>
   </div>
 
   <div id="panel-slides" class="panel media" hidden>
@@ -218,7 +220,6 @@ body.tab-video .corner, body.tab-slides .corner { display: none; }
         <div class="status" id="slidesStatus"></div>
       </div>
     </div>
-    <div class="mediabar" id="slidesBar" hidden><button id="slidesChange">Change slideshow</button><button id="slidesFs">Fullscreen</button><button id="slidesOpen">Open in new tab</button><span class="note">Click the slides, then use the arrow keys or the on-slide arrows.</span></div>
   </div>
 </main>
 
@@ -430,6 +431,7 @@ const VIDEO_SRC = CFG.videoSrc || "";
 
 /* ---------- tab switching ---------- */
 function showTab(name) {
+  $("fsBtn").hidden = name === "audio";
   ["audio", "slides", "video"].forEach(n => {
     $("panel-" + n).hidden = n !== name;
     $("tab-" + n).classList.toggle("active", n === name);
@@ -441,6 +443,7 @@ function showTab(name) {
 
 function remember(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
 function goFullscreen(el) { const f = el.requestFullscreen || el.webkitRequestFullscreen; if (f) f.call(el); }
+$("fsBtn").addEventListener("click", () => goFullscreen($(document.body.className === "tab-video" ? "videoFrame" : "slidesFrame")));
 
 const slidesEmptyEl = $("slidesEmpty"), videoEmptyEl = $("videoEmpty");
 
@@ -462,15 +465,11 @@ function loadSlides(raw, save) {
   const f = document.createElement("iframe");
   f.id = "slidesIframe"; f.src = url; f.allowFullscreen = true; f.setAttribute("allow", "fullscreen"); f.title = "Slideshow";
   $("slidesFrame").replaceChildren(f);
-  $("slidesBar").hidden = false;
   if (save) remember("remembrance.slides", raw);
   return true;
 }
 $("slidesLoad").addEventListener("click", () => loadSlides($("slidesUrl").value, true));
 $("slidesUrl").addEventListener("keydown", e => { if (e.key === "Enter") $("slidesLoad").click(); });
-$("slidesChange").addEventListener("click", () => { $("slidesFrame").replaceChildren(slidesEmptyEl); $("slidesBar").hidden = true; setStatus($("slidesStatus"), ""); });
-$("slidesFs").addEventListener("click", () => goFullscreen($("slidesFrame")));
-$("slidesOpen").addEventListener("click", () => { const f = $("slidesIframe"); if (f) window.open(f.src, "_blank", "noopener"); });
 
 /* ---------- video ---------- */
 function ytStart(raw) {
@@ -492,7 +491,6 @@ function videoSource(raw) {
   if (/^https?:\/\//i.test(raw) || /\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i.test(raw)) return { type: "video", src: raw };
   return null;
 }
-let videoOpenUrl = "";
 function showVideo(s) {
   let el;
   if (s.type === "iframe") {
@@ -506,9 +504,6 @@ function showVideo(s) {
     el.addEventListener("error", () => alert("Couldn't play that video. Check the file or link and try again."));
   }
   $("videoFrame").replaceChildren(el);
-  $("videoBar").hidden = false;
-  videoOpenUrl = s.open || "";
-  $("videoOpen").hidden = !videoOpenUrl;
 }
 function loadVideoUrl(raw, save) {
   const s = videoSource(raw);
@@ -523,17 +518,11 @@ $("videoFile").addEventListener("change", e => {
   const f = e.target.files[0];
   if (f) showVideo({ type: "video", src: URL.createObjectURL(f) });
 });
-$("videoChange").addEventListener("click", () => {
-  const v = $("videoEl"); if (v) v.pause();
-  $("videoFrame").replaceChildren(videoEmptyEl); $("videoBar").hidden = true; setStatus($("videoStatus"), "");
-});
-$("videoOpen").addEventListener("click", () => { if (videoOpenUrl) window.open(videoOpenUrl, "_blank", "noopener"); });
-$("videoFs").addEventListener("click", () => goFullscreen($("videoFrame")));
 
 /* starting an audio track pauses any playing video file */
 audio.addEventListener("play", () => { const v = $("videoEl"); if (v && !v.paused) v.pause(); });
 
-if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube links often show Error 153 when this page is opened as a file. Choose a video file above instead, or use Open in new tab after loading a link.", "warn");
+if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube links show Error 153 when this page is opened as a file. Open it from its website address, or choose a video file above.", "warn");
 
 /* use hardcoded values, or whatever was entered last time */
 (function () {
