@@ -31,7 +31,7 @@ window.REMEMBRANCE_CONFIG = {
 
   /* true  = each track starts the next one by itself.
      false = wait for someone to press Next. */
-  autoContinue: true,
+  autoContinue: false,
 
   /* Starting volume, from 0 (silent) to 1 (full). */
   volume: 0.8,
@@ -44,5 +44,5 @@ window.REMEMBRANCE_CONFIG = {
   /* Video: a YouTube link (add &t=10s to start at 10 seconds), a Google
      Drive link, or a video file kept in the video folder, for example
      "video/ceremony.mp4". Leave "" to choose one on the page. */
-  videoSrc: "https://www.youtube.com/watch?v=dzNBkLRPVdw&t=10s"
+  videoSrc: ""
 };
