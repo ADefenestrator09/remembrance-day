@@ -41,8 +41,15 @@ window.REMEMBRANCE_CONFIG = {
      link" or published to the web. Leave "" to paste one on the page. */
   slidesUrl: "https://docs.google.com/presentation/d/14cuLkEGzFLnWPOxOr7ncvXK_RBAiV2kzn7F86Dw5Ig8/edit?slide=id.p#slide=id.p",
 
-  /* Video: a YouTube link (add &t=10s to start at 10 seconds), a Google
-     Drive link, or a video file kept in the video folder, for example
-     "video/ceremony.mp4". Leave "" to choose one on the page. */
-  videoSrc: "https://www.youtube.com/watch?v=dzNBkLRPVdw&t=10s"
+  /* Videos for the Video tab. One line per video. "src" can be:
+       - a YouTube link (add &t=10s to start at 10 seconds)
+       - a Google Drive video link
+       - a video file in the video folder, e.g. "video/talk.mp4"
+     With two or more videos, a row of buttons appears above the video so
+     you can switch between them. With one video there are no buttons.
+     Leave the list empty ( videos: [] ) to choose a video on the page.
+     To add a video, copy a line (every line except the last ends in a comma). */
+  videos: [
+    { title: "Remembrance video", src: "https://www.youtube.com/watch?v=dzNBkLRPVdw&t=10s" }
+  ]
 };

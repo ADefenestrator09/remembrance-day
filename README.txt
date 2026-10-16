@@ -71,13 +71,24 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  link" or published to the web (File > Share > Publish to
                  web). Use "" to leave the slideshow tab empty.
 
-  videoSrc       One of:
+  videos         The list of videos on the Video tab. Each line is:
+                   { title: "Name on the button", src: "link or file" },
+                 "src" can be:
                  - a YouTube link (add &t=10s to start at 10 seconds)
                  - a Google Drive video link
                  - a video file in the video folder, e.g. "video/talk.mp4"
-                 Use "" to leave the video tab empty.
+                 Add more lines to add more videos. With two or more, a row
+                 of buttons appears above the video so you can switch
+                 between them (the first one loads automatically). With one
+                 video there are no buttons. Use  videos: [],  to leave the
+                 tab empty so a video can be chosen on the page.
+                 Example with three videos:
+                   videos: [
+                     { title: "Introduction", src: "https://youtu.be/XXXXXXXXXXX" },
+                     { title: "Ceremony",     src: "video/ceremony.mp4" },
+                     { title: "Tribute",      src: "https://youtu.be/YYYYYYYYYYY" }
+                   ]
                  mp4 files (H.264) play in every common browser.
-
 
 BEFORE THE EVENT
   - Open the live site once on the exact computer and speakers or projector

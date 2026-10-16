@@ -208,6 +208,9 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
 
 /* corner poppies: scaled with the screen height so they sit in the space under the cards */
 .corner { height: clamp(84px, 17vh, 170px); width: auto; aspect-ratio: 230 / 190; opacity: .6; }
+.vlist { display: flex; gap: 8px; justify-content: center; flex: none; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
+.vlist button { white-space: nowrap; padding: clamp(5px, .9vh, 8px) 16px; font-size: .95rem; }
+.vlist button.active { background: var(--poppy); border-color: var(--poppy); color: #fff; }
 </style>
 </head>
 <body class="tab-audio">
@@ -283,6 +286,7 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
   </div>
 
   <div id="panel-video" class="panel media" hidden>
+    <div class="vlist" id="videoList" hidden></div>
     <div class="stage"><div class="frame" id="videoFrame">
       <div class="empty" id="videoEmpty">
         <h3>Add your video</h3>
@@ -514,7 +518,9 @@ document.addEventListener("keydown", e => {
 });
 
 const SLIDES_URL = CFG.slidesUrl || "";
-const VIDEO_SRC = CFG.videoSrc || "";
+const VIDEOS = (Array.isArray(CFG.videos) && CFG.videos.length ? CFG.videos : (CFG.videoSrc ? [{ title: "Video", src: CFG.videoSrc }] : []))
+  .map((v, i) => ({ title: v.title || ("Video " + (i + 1)), src: v.src }));
+const VIDEO_SRC = "";
 
 /* ---------- tab switching ---------- */
 function showTab(name) {
@@ -579,6 +585,7 @@ function videoSource(raw) {
   return null;
 }
 function showVideo(s) {
+  const old = $("videoEl"); if (old) old.pause();
   let el;
   if (s.type === "iframe") {
     el = document.createElement("iframe");
@@ -594,7 +601,12 @@ function showVideo(s) {
 }
 function loadVideoUrl(raw, save) {
   const s = videoSource(raw);
-  if (!s) { setStatus($("videoStatus"), "That doesn't look like a YouTube, Google Drive or video link.", "bad"); return false; }
+  if (!s) {
+    const old = $("videoEl"); if (old) old.pause();
+    $("videoFrame").replaceChildren(videoEmptyEl);
+    setStatus(videoEmptyEl.querySelector("#videoStatus"), "That doesn't look like a YouTube, Google Drive or video link.", "bad");
+    return false;
+  }
   showVideo(s);
   if (save) remember("remembrance.video", raw);
   return true;
@@ -615,8 +627,24 @@ if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube lin
 (function () {
   const s = SLIDES_URL || remember("remembrance.slides");
   if (s) { $("slidesUrl").value = s; loadSlides(s, false); }
-  const v = VIDEO_SRC || remember("remembrance.video");
-  if (v) { $("videoUrl").value = v; loadVideoUrl(v, false); }
+  if (VIDEOS.length) {
+    const list = $("videoList");
+    const pick = i => {
+      loadVideoUrl(VIDEOS[i].src, false);
+      [...list.children].forEach((b, j) => b.classList.toggle("active", j === i));
+    };
+    VIDEOS.forEach((v, i) => {
+      const b = document.createElement("button");
+      b.textContent = VIDEOS.length > 1 ? (i + 1) + ". " + v.title : v.title;
+      b.addEventListener("click", () => pick(i));
+      list.appendChild(b);
+    });
+    list.hidden = VIDEOS.length < 2;
+    pick(0);
+  } else {
+    const v = remember("remembrance.video");
+    if (v) { $("videoUrl").value = v; loadVideoUrl(v, false); }
+  }
 })();
 if (!navigator.onLine) setStatus($("slidesStatus"), "You appear to be offline. Google Slides needs an internet connection.", "warn");
 
