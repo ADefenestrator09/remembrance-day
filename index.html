@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remembrance Day Audio</title>
+<style>
+  :root {
+    --bg: #14110f;
+    --panel: #1e1a17;
+    --text: #efe9e1;
+    --muted: #a39a90;
+    --poppy: #c8102e;
+    --ok: #5fa86a;
+    --line: #3a332d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: var(--bg); color: var(--text);
+    font-family: Georgia, "Times New Roman", serif; padding: 24px;
+  }
+  main { width: 100%; max-width: 560px; }
+  h1 { text-align: center; font-weight: normal; letter-spacing: .05em; margin: 0 0 4px; font-size: 1.9rem; }
+  .sub { text-align: center; color: var(--muted); font-style: italic; margin-bottom: 28px; }
+  .poppy { display: block; width: 14px; height: 14px; background: var(--poppy); border-radius: 50%; margin: 0 auto 14px; box-shadow: 0 0 18px var(--poppy); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px; margin-bottom: 18px; }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; font-weight: normal; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+  button {
+    font: inherit; color: var(--text); background: transparent; border: 1px solid var(--muted);
+    border-radius: 8px; padding: 10px 18px; cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: var(--text); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button.primary { background: var(--poppy); border-color: var(--poppy); }
+  button.primary:hover:not(:disabled) { filter: brightness(1.15); }
+  .status { margin-top: 12px; min-height: 1.4em; font-size: .95rem; }
+  .ok { color: var(--ok); } .warn { color: #e0a64a; } .bad { color: #e5604f; }
+  .check-list { list-style: none; padding: 0; margin: 0 0 14px; font-size: .95rem; }
+  .check-list li { padding: 3px 0; color: var(--muted); }
+  .check-list li.pass { color: var(--ok); } .check-list li.pass::before { content: "✓ "; }
+  .check-list li.fail { color: #e5604f; } .check-list li.fail::before { content: "✗ "; }
+  .check-list li.wait::before { content: "• "; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  #player { display: none; }
+  #nowTitle { font-size: 1.3rem; margin: 0 0 4px; }
+  #nowCount { color: var(--muted); font-size: .9rem; margin-bottom: 14px; }
+  input[type=range] { width: 100%; accent-color: var(--poppy); }
+  .times { display: flex; justify-content: space-between; color: var(--muted); font-size: .85rem; margin-bottom: 14px; }
+  .controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 14px; }
+  .controls button { min-width: 92px; }
+  .vol { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; }
+  .vol input { flex: 1; }
+  ol.tracks { list-style: none; margin: 0; padding: 0; }
+  ol.tracks li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+  ol.tracks li:hover { background: rgba(255,255,255,.04); }
+  ol.tracks li.active { border-color: var(--poppy); }
+  ol.tracks .tag { font-size: .8rem; color: var(--muted); }
+  ol.tracks .tag.bad { color: #e5604f; }
+  details summary { cursor: pointer; color: var(--muted); }
+  .fine { color: var(--muted); font-size: .85rem; line-height: 1.5; }
+  code { background: #000; padding: 1px 6px; border-radius: 4px; }
+
+/* ---- single-screen layout: no page scrolling ---- */
+html, body { height: 100%; overflow: hidden; }
+body { padding: clamp(8px, 2vh, 20px); align-items: center; }
+main { max-height: 100%; overflow: auto; display: flex; flex-direction: column; justify-content: center; scrollbar-width: none; }
+main::-webkit-scrollbar { display: none; }
+.poppy { margin-bottom: clamp(4px, 1vh, 10px); }
+h1 { font-size: clamp(1.3rem, 4.2vh, 1.9rem); }
+.sub { margin-bottom: clamp(8px, 2vh, 20px); font-size: clamp(.85rem, 2vh, 1rem); }
+.card { padding: clamp(10px, 2vh, 18px) clamp(14px, 2.5vh, 22px); margin-bottom: clamp(8px, 1.6vh, 14px); }
+h2 { margin-bottom: clamp(6px, 1.2vh, 10px); font-size: .9rem; }
+#nowTitle { font-size: clamp(1.1rem, 3vh, 1.3rem); margin: 0 0 2px; }
+#nowCount { margin-bottom: clamp(6px, 1.2vh, 12px); }
+.times { margin-bottom: clamp(6px, 1.2vh, 12px); }
+.controls { margin-bottom: clamp(6px, 1.2vh, 12px); }
+button { padding: clamp(7px, 1.2vh, 10px) 16px; }
+.check-list { margin-bottom: 10px; }
+.check-list li { padding: 1px 0; }
+.status { margin-top: 8px; min-height: 1.2em; }
+ol.tracks li { padding: clamp(4px, .9vh, 8px) 12px; }
+#listCard .fine { margin-top: 6px !important; }
+/* once checks pass, the setup card shrinks to one line */
+#setup.done .check-list, #setup.done .row, #setup.done details, #setup.done h2 { display: none; }
+#setup.done { padding: 8px 14px; text-align: center; }
+#setup.done .status { margin: 0; }
+
+/* ---- decoration ---- */
+body { background: radial-gradient(ellipse at 50% 35%, #231d19 0%, var(--bg) 70%) fixed; position: relative; }
+.poppy-icon { display: block; width: clamp(30px, 7vh, 52px); height: auto; margin: 0 auto clamp(2px, .8vh, 8px); filter: drop-shadow(0 0 10px rgba(200,16,46,.45)); }
+.sub { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.sub::before, .sub::after { content: ""; height: 1px; width: clamp(30px, 8vw, 80px); background: linear-gradient(90deg, transparent, #6b5d52); }
+.sub::after { transform: scaleX(-1); }
+.card { box-shadow: 0 6px 24px rgba(0,0,0,.35); border-top: 2px solid rgba(200,16,46,.55); }
+#setup.done { border-top-width: 1px; }
+.corner { position: fixed; bottom: 0; width: clamp(110px, 20vw, 230px); height: auto; opacity: .55; pointer-events: none; }
+.corner.l { left: 0; } .corner.r { right: 0; transform: scaleX(-1); }
+@media (max-width: 800px), (max-height: 520px) { .corner { display: none; } }
+
+/* ---- tabs + media panels ---- */
+[hidden] { display: none !important; }
+main { position: relative; z-index: 1; }
+.corner { z-index: 0; }
+.tabs { display: flex; justify-content: center; gap: 6px; margin-bottom: clamp(8px, 1.6vh, 14px); flex: none; }
+.tabs button { min-width: 110px; padding: clamp(6px, 1vh, 9px) 16px; letter-spacing: .03em; }
+.tabs button.active { background: var(--poppy); border-color: var(--poppy); }
+.panel.media { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+body.tab-video main, body.tab-slides main { max-width: min(1200px, 100%); height: 100%; justify-content: flex-start; }
+body.tab-video .sub, body.tab-slides .sub { display: none; }
+body.tab-video h1, body.tab-slides h1 { font-size: clamp(1.05rem, 3vh, 1.5rem); }
+body.tab-video .poppy-icon, body.tab-slides .poppy-icon { width: clamp(20px, 4vh, 30px); }
+body.tab-video .corner, body.tab-slides .corner { display: none; }
+.frame { flex: 1; min-height: 0; background: #000; border: 1px solid var(--line); border-top: 2px solid rgba(200,16,46,.55); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+.frame iframe, .frame video { width: 100%; height: 100%; border: 0; background: #000; }
+.frame:fullscreen { border-radius: 0; border: 0; }
+.empty { background: var(--panel); width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 16px; text-align: center; overflow: auto; }
+.empty h3 { margin: 0; font-weight: normal; font-size: 1.15rem; }
+.empty .fine { max-width: 520px; margin: 0; }
+.empty .linerow { display: flex; gap: 8px; width: min(520px, 100%); }
+.txt { flex: 1; min-width: 0; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: #120f0d; color: var(--text); font: inherit; font-size: .95rem; }
+.mediabar { display: flex; gap: 8px; justify-content: center; flex: none; }
+.mediabar button { padding: 6px 14px; font-size: .9rem; }
+.mediabar .note { align-self: center; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body class="tab-audio">
+<svg class="corner l" viewBox="0 0 230 190" aria-hidden="true"><g fill="none" stroke="#3d5a3a" stroke-width="2.2" stroke-linecap="round"><path d="M30 190C34 150 40 120 58 88"/><path d="M80 190C80 160 96 130 118 112"/><path d="M130 190C128 170 138 150 156 140"/></g><g fill="#3d5a3a"><path d="M36 160C20 156 12 146 10 136C26 138 36 146 36 160Z"/><path d="M84 168C98 160 104 150 104 140C90 144 84 154 84 168Z"/></g><g transform="translate(58 82) scale(0.5)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(120 104) scale(0.42)"><g fill="#a80d26"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(158 134) scale(0.3)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g></svg><svg class="corner r" viewBox="0 0 230 190" aria-hidden="true"><g fill="none" stroke="#3d5a3a" stroke-width="2.2" stroke-linecap="round"><path d="M30 190C34 150 40 120 58 88"/><path d="M80 190C80 160 96 130 118 112"/><path d="M130 190C128 170 138 150 156 140"/></g><g fill="#3d5a3a"><path d="M36 160C20 156 12 146 10 136C26 138 36 146 36 160Z"/><path d="M84 168C98 160 104 150 104 140C90 144 84 154 84 168Z"/></g><g transform="translate(58 82) scale(0.5)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(120 104) scale(0.42)"><g fill="#a80d26"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(158 134) scale(0.3)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g></svg>
+<main>
+  <svg class="poppy-icon" viewBox="-50 -50 100 100" aria-hidden="true"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><g fill="#e0334d" opacity=".55"><ellipse cx="-4" cy="-26" rx="8" ry="12"/><ellipse cx="-4" cy="-26" rx="8" ry="12" transform="rotate(144)"/><ellipse cx="-4" cy="-26" rx="8" ry="12" transform="rotate(288)"/></g><circle r="10" fill="#14110f"/><path d="M0 -10V-17M7 -7L12 -12M10 3L16 5M0 10V17M-10 3L-16 5M-7 -7L-12 -12" fill="none" stroke="#14110f" stroke-width="2"/></svg>
+  <h1>Remembrance Day</h1>
+  <div class="sub">Lest we forget</div>
+
+  <!-- STEP 1: AUDIO CHECK -->
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button id="tab-audio" class="active" role="tab" aria-selected="true">&#9834; Audio</button>
+    <button id="tab-slides" role="tab" aria-selected="false">&#9636; Slideshow</button>
+    <button id="tab-video" role="tab" aria-selected="false">&#9654; Video</button>
+  </nav>
+  <div id="panel-audio" class="panel">
+  <section class="card" id="setup">
+    <h2>Step 1 · Audio check</h2>
+    <ul class="check-list" id="checks">
+      <li id="c-support" class="wait">Browser supports audio</li>
+      <li id="c-context" class="wait">Audio output ready</li>
+      <li id="c-tone" class="wait">You heard the test tone</li>
+      <li id="c-files" class="wait">Audio tracks loaded</li>
+    </ul>
+    <div class="row">
+      <button class="primary" id="toneBtn">▶ Play test tone</button>
+      <button id="heardBtn" disabled>I heard it</button>
+      <button id="noHearBtn" disabled>I didn't hear it</button>
+    </div>
+    <div class="status" id="setupStatus">Turn your volume up to a comfortable level, then press “Play test tone”.</div>
+
+    <details style="margin-top:14px" id="troubleshoot" hidden>
+      <summary>Troubleshooting</summary>
+      <p class="fine">
+        • Check the device volume and that the tab isn't muted (look for a speaker icon on the tab).<br>
+        • Make sure the correct speakers or projector audio is selected in your system sound settings.<br>
+        • Bluetooth speakers sometimes need a few seconds to wake up. Try the tone again.<br>
+        • On a laptop connected by HDMI, set the output device to the display/projector.
+      </p>
+    </details>
+
+  </section>
+
+  <!-- STEP 2: PLAYER -->
+  <section class="card" id="player">
+    <h2>Now playing</h2>
+    <p id="nowTitle">—</p>
+    <div id="nowCount"></div>
+
+    <input type="range" id="seek" min="0" max="100" value="0" step="0.1" aria-label="Seek">
+    <div class="times"><span id="cur">0:00</span><span id="dur">0:00</span></div>
+
+    <div class="controls">
+      <button id="prevBtn">⏮ Previous</button>
+      <button class="primary" id="playBtn">▶ Play</button>
+      <button id="nextBtn">Next ⏭</button>
+    </div>
+
+    <div class="vol">
+      🔈 <input type="range" id="vol" min="0" max="1" step="0.01" value="0.8" aria-label="Volume"> 🔊
+    </div>
+    <div class="status" id="playStatus"></div>
+  </section>
+
+  <section class="card" id="listCard" style="display:none">
+    <h2>Tracks</h2>
+    <ol class="tracks" id="trackList"></ol>
+    <p class="fine" style="margin-bottom:0; margin-top:12px">
+      <label><input type="checkbox" id="autoNext" checked> Automatically continue to the next track</label>
+    </p>
+  </section>
+  </div>
+
+  <div id="panel-video" class="panel media" hidden>
+    <div class="frame" id="videoFrame">
+      <div class="empty" id="videoEmpty">
+        <h3>Add your video</h3>
+        <p class="fine">Pick a video file from this computer (works with no internet):</p>
+        <input type="file" id="videoFile" accept="video/*">
+        <p class="fine">or paste a YouTube, Google Drive or direct video link:</p>
+        <div class="linerow"><input class="txt" id="videoUrl" type="text" placeholder="https://www.youtube.com/watch?v=..."><button class="primary" id="videoLoad">Load</button></div>
+        <div class="status" id="videoStatus"></div>
+      </div>
+    </div>
+    <div class="mediabar" id="videoBar" hidden><button id="videoChange">Change video</button><button id="videoFs">Fullscreen</button><button id="videoOpen" hidden>Open in new tab</button><span class="note">Audio pauses automatically when a video file plays.</span></div>
+  </div>
+
+  <div id="panel-slides" class="panel media" hidden>
+    <div class="frame" id="slidesFrame">
+      <div class="empty" id="slidesEmpty">
+        <h3>Add your Google Slides</h3>
+        <p class="fine">In Google Slides choose <b>File &rarr; Share &rarr; Publish to web</b> (or set sharing to &ldquo;Anyone with the link&rdquo;), then paste the link or the embed code here. The slideshow needs an internet connection.</p>
+        <div class="linerow"><input class="txt" id="slidesUrl" type="text" placeholder="https://docs.google.com/presentation/d/..."><button class="primary" id="slidesLoad">Load</button></div>
+        <div class="status" id="slidesStatus"></div>
+      </div>
+    </div>
+    <div class="mediabar" id="slidesBar" hidden><button id="slidesChange">Change slideshow</button><button id="slidesFs">Fullscreen</button><button id="slidesOpen">Open in new tab</button><span class="note">Click the slides, then use the arrow keys or the on-slide arrows.</span></div>
+  </div>
+</main>
+
+<audio id="audio" preload="auto"></audio>
+
+<script src="config.js"></script>
+<script>
+/* Settings (tracks, slideshow, video) are read from config.js */
+const CFG = window.REMEMBRANCE_CONFIG || { tracks: [], slidesUrl: "", videoSrc: "" };
+const TRACKS = CFG.tracks.map(t => ({ title: t.title, src: t.src }));
+
+const $ = id => document.getElementById(id);
+const audio = $("audio");
+let current = 0;
+let audioCtx = null;
+let toneHeard = false;
+let filesOk = false;
+
+function mark(id, state) { $(id).className = state; }
+function fmt(t) {
+  if (!isFinite(t)) return "0:00";
+  const m = Math.floor(t / 60), s = Math.floor(t % 60);
+  return m + ":" + String(s).padStart(2, "0");
+}
+function setStatus(el, msg, cls) { el.textContent = msg; el.className = "status " + (cls || ""); }
+
+/* ---------- Check 1: browser support ---------- */
+(function () {
+  const ok = !!(window.Audio && audio.canPlayType && audio.canPlayType("audio/mpeg"));
+  mark("c-support", ok ? "pass" : "fail");
+  if (!ok) setStatus($("setupStatus"), "This browser can't play MP3 audio. Try Chrome, Edge, Firefox or Safari.", "bad");
+})();
+
+/* ---------- Check 2 + 3: test tone through Web Audio ---------- */
+$("toneBtn").addEventListener("click", async () => {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    audioCtx = audioCtx || new AC();
+    if (audioCtx.state === "suspended") await audioCtx.resume();
+    mark("c-context", audioCtx.state === "running" ? "pass" : "fail");
+    if (audioCtx.state !== "running") throw new Error("Audio context is " + audioCtx.state);
+
+    // Gentle two-note chime (A4 then E5), about 1.6 seconds
+    const now = audioCtx.currentTime;
+    const gain = audioCtx.createGain();
+    gain.connect(audioCtx.destination);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.25, now + 0.05);
+    gain.gain.setValueAtTime(0.25, now + 1.3);
+    gain.gain.linearRampToValueAtTime(0, now + 1.6);
+    [[440, 0], [659.25, 0.7]].forEach(([f, t]) => {
+      const o = audioCtx.createOscillator();
+      o.type = "sine"; o.frequency.value = f;
+      o.connect(gain); o.start(now + t); o.stop(now + t + 0.9);
+    });
+
+    setStatus($("setupStatus"), "Playing test tone…", "");
+    $("toneBtn").disabled = true;
+    setTimeout(() => {
+      $("toneBtn").disabled = false;
+      $("toneBtn").textContent = "↻ Play tone again";
+      $("heardBtn").disabled = false;
+      $("noHearBtn").disabled = false;
+      setStatus($("setupStatus"), "Did you hear the two-note chime?", "");
+    }, 1700);
+  } catch (e) {
+    mark("c-context", "fail");
+    $("troubleshoot").hidden = false;
+    setStatus($("setupStatus"), "Couldn't start audio: " + e.message, "bad");
+  }
+});
+
+$("heardBtn").addEventListener("click", () => {
+  toneHeard = true;
+  mark("c-tone", "pass");
+  $("troubleshoot").hidden = true;
+  setStatus($("setupStatus"), "Sound is working.", "ok");
+  $("heardBtn").disabled = true; $("noHearBtn").disabled = true;
+  tryFinishSetup();
+});
+
+$("noHearBtn").addEventListener("click", () => {
+  toneHeard = false;
+  mark("c-tone", "fail");
+  $("troubleshoot").hidden = false;
+  setStatus($("setupStatus"), "No sound. Check the tips below, then try the tone again.", "warn");
+});
+
+/* ---------- Check 4: do the audio files load? ---------- */
+function probe(src) {
+  return new Promise(resolve => {
+    const a = new Audio();
+    const done = ok => { a.removeAttribute("src"); resolve(ok); };
+    a.preload = "metadata";
+    a.addEventListener("loadedmetadata", () => done(true), { once: true });
+    a.addEventListener("error", () => done(false), { once: true });
+    setTimeout(() => done(false), 6000);
+    a.src = src;
+  });
+}
+
+async function checkFiles() {
+  if (!TRACKS.length) {
+    mark("c-files", "fail");
+    setStatus($("setupStatus"), "No audio tracks found. Check that config.js is in the same folder as index.html.", "bad");
+    return;
+  }
+  const results = await Promise.all(TRACKS.map(t => probe(t.src)));
+  results.forEach((ok, i) => TRACKS[i].ok = ok);
+  filesOk = results.every(Boolean);
+  mark("c-files", filesOk ? "pass" : "fail");
+  if (!filesOk) {
+    const missing = TRACKS.filter(t => !t.ok).map(t => t.title).join(", ");
+    const msg = location.protocol === "file:" ? "" : "";
+    setStatus($("setupStatus"), "Couldn't load: " + missing + ". Try reloading the page." + msg, "warn");
+  }
+  tryFinishSetup();
+}
+checkFiles();
+
+
+/* ---------- Reveal the player once everything passes ---------- */
+let playerShown = false;
+function tryFinishSetup() {
+  if (playerShown || !toneHeard || !filesOk) return;
+  playerShown = true;
+  $("setup").classList.add("done");
+  setStatus($("setupStatus"), "✓ Audio check passed", "ok");
+  $("player").style.display = "block";
+  $("listCard").style.display = "block";
+  buildList();
+  loadTrack(0, false);
+}
+
+/* ---------- Player ---------- */
+function buildList() {
+  const ol = $("trackList");
+  ol.innerHTML = "";
+  TRACKS.forEach((t, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span>${i + 1}. ${t.title}</span><span class="tag" id="tag${i}"></span>`;
+    li.addEventListener("click", () => { loadTrack(i, true); });
+    ol.appendChild(li);
+  });
+}
+
+function loadTrack(i, autoplay) {
+  current = (i + TRACKS.length) % TRACKS.length;
+  audio.src = TRACKS[current].src;
+  audio.load();
+  $("nowTitle").textContent = TRACKS[current].title;
+  $("nowCount").textContent = "Track " + (current + 1) + " of " + TRACKS.length;
+  $("seek").value = 0; $("cur").textContent = "0:00"; $("dur").textContent = "0:00";
+  setStatus($("playStatus"), "");
+  document.querySelectorAll("#trackList li").forEach((li, idx) => li.classList.toggle("active", idx === current));
+  $("prevBtn").disabled = false;
+  $("nextBtn").textContent = current === TRACKS.length - 1 ? "Restart ↺" : "Next ⏭";
+  if (autoplay) play();
+}
+
+function play() {
+  const p = audio.play();
+  if (p && p.catch) p.catch(err => {
+    setStatus($("playStatus"), "Playback was blocked or failed (" + err.name + "). Press Play to try again.", "warn");
+  });
+}
+
+$("playBtn").addEventListener("click", () => { audio.paused ? play() : audio.pause(); });
+$("nextBtn").addEventListener("click", () => loadTrack(current + 1, true));
+$("prevBtn").addEventListener("click", () => {
+  // Restart the track if it's more than 3 seconds in; otherwise go back one
+  if (audio.currentTime > 3) { audio.currentTime = 0; }
+  else loadTrack(current - 1, true);
+});
+
+audio.addEventListener("play",  () => { $("playBtn").textContent = "⏸ Pause"; });
+audio.addEventListener("pause", () => { $("playBtn").textContent = "▶ Play"; });
+audio.addEventListener("loadedmetadata", () => { $("dur").textContent = fmt(audio.duration); });
+audio.addEventListener("timeupdate", () => {
+  $("cur").textContent = fmt(audio.currentTime);
+  if (audio.duration) $("seek").value = (audio.currentTime / audio.duration) * 100;
+});
+audio.addEventListener("ended", () => {
+  if ($("autoNext").checked && current < TRACKS.length - 1) loadTrack(current + 1, true);
+  else $("playBtn").textContent = "▶ Play";
+});
+audio.addEventListener("error", () => {
+  setStatus($("playStatus"), "Couldn't play “" + TRACKS[current].title + "”. Check that the file is present and is a valid MP3.", "bad");
+  const tag = $("tag" + current);
+  if (tag) { tag.textContent = "error"; tag.className = "tag bad"; }
+});
+
+$("seek").addEventListener("input", e => {
+  if (audio.duration) audio.currentTime = (e.target.value / 100) * audio.duration;
+});
+$("vol").addEventListener("input", e => { audio.volume = parseFloat(e.target.value); });
+audio.volume = 0.8;
+
+/* Keyboard: space = play/pause, → = next, ← = previous */
+document.addEventListener("keydown", e => {
+  if (!playerShown || document.body.className !== "tab-audio" || e.target.tagName === "INPUT" && e.target.type !== "range" && e.target.type !== "checkbox") return;
+  if (e.code === "Space") { e.preventDefault(); $("playBtn").click(); }
+  else if (e.code === "ArrowRight") $("nextBtn").click();
+  else if (e.code === "ArrowLeft") $("prevBtn").click();
+});
+
+const SLIDES_URL = CFG.slidesUrl || "";
+const VIDEO_SRC = CFG.videoSrc || "";
+
+/* ---------- tab switching ---------- */
+function showTab(name) {
+  ["audio", "slides", "video"].forEach(n => {
+    $("panel-" + n).hidden = n !== name;
+    $("tab-" + n).classList.toggle("active", n === name);
+    $("tab-" + n).setAttribute("aria-selected", n === name ? "true" : "false");
+  });
+  document.body.className = "tab-" + name;
+}
+["audio", "slides", "video"].forEach(n => $("tab-" + n).addEventListener("click", () => showTab(n)));
+
+function remember(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
+function goFullscreen(el) { const f = el.requestFullscreen || el.webkitRequestFullscreen; if (f) f.call(el); }
+
+const slidesEmptyEl = $("slidesEmpty"), videoEmptyEl = $("videoEmpty");
+
+/* ---------- slideshow ---------- */
+function slidesEmbed(raw) {
+  raw = (raw || "").trim();
+  const sm = raw.match(/src=["']([^"']+)["']/);
+  if (sm) raw = sm[1].replace(/&amp;/g, "&");
+  const q = "?start=false&loop=false&delayms=3000";
+  let m = raw.match(/\/presentation\/d\/e\/([\w-]+)/);
+  if (m) return "https://docs.google.com/presentation/d/e/" + m[1] + "/embed" + q;
+  m = raw.match(/\/presentation\/d\/([\w-]+)/);
+  if (m) return "https://docs.google.com/presentation/d/" + m[1] + "/embed" + q;
+  return null;
+}
+function loadSlides(raw, save) {
+  const url = slidesEmbed(raw);
+  if (!url) { setStatus($("slidesStatus"), "That doesn't look like a Google Slides link. Copy it from the Share or Publish to web window.", "bad"); return false; }
+  const f = document.createElement("iframe");
+  f.id = "slidesIframe"; f.src = url; f.allowFullscreen = true; f.setAttribute("allow", "fullscreen"); f.title = "Slideshow";
+  $("slidesFrame").replaceChildren(f);
+  $("slidesBar").hidden = false;
+  if (save) remember("remembrance.slides", raw);
+  return true;
+}
+$("slidesLoad").addEventListener("click", () => loadSlides($("slidesUrl").value, true));
+$("slidesUrl").addEventListener("keydown", e => { if (e.key === "Enter") $("slidesLoad").click(); });
+$("slidesChange").addEventListener("click", () => { $("slidesFrame").replaceChildren(slidesEmptyEl); $("slidesBar").hidden = true; setStatus($("slidesStatus"), ""); });
+$("slidesFs").addEventListener("click", () => goFullscreen($("slidesFrame")));
+$("slidesOpen").addEventListener("click", () => { const f = $("slidesIframe"); if (f) window.open(f.src, "_blank", "noopener"); });
+
+/* ---------- video ---------- */
+function ytStart(raw) {
+  const m = raw.match(/[?&#](?:t|start)=(?:(\d+)h)?(?:(\d+)m)?(\d+)?s?(?:&|#|$)/);
+  if (!m) return 0;
+  return (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0);
+}
+function videoSource(raw) {
+  raw = (raw || "").trim();
+  let m = raw.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/);
+  if (m) {
+    let start = 0;
+    const tm = raw.match(/[?&#](?:t|start)=(?:(\d+)h)?(?:(\d+)m)?(\d+)?s?/);
+    if (tm) start = (+tm[1] || 0) * 3600 + (+tm[2] || 0) * 60 + (+tm[3] || 0);
+    return { type: "iframe", src: "https://www.youtube-nocookie.com/embed/" + m[1] + "?rel=0" + (start ? "&start=" + start : ""), open: "https://www.youtube.com/watch?v=" + m[1] + (start ? "&t=" + start + "s" : "") };
+  }
+  m = raw.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
+  if (m) return { type: "iframe", src: "https://drive.google.com/file/d/" + m[1] + "/preview", open: "https://drive.google.com/file/d/" + m[1] + "/view" };
+  if (/^https?:\/\//i.test(raw) || /\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i.test(raw)) return { type: "video", src: raw };
+  return null;
+}
+let videoOpenUrl = "";
+function showVideo(s) {
+  let el;
+  if (s.type === "iframe") {
+    el = document.createElement("iframe");
+    el.referrerPolicy = "strict-origin-when-cross-origin"; el.src = s.src; el.allowFullscreen = true;
+    el.setAttribute("allow", "fullscreen; autoplay; encrypted-media; picture-in-picture"); el.title = "Video";
+  } else {
+    el = document.createElement("video");
+    el.id = "videoEl"; el.src = s.src; el.controls = true; el.playsInline = true;
+    el.addEventListener("play", () => { if (!audio.paused) audio.pause(); });
+    el.addEventListener("error", () => alert("Couldn't play that video. Check the file or link and try again."));
+  }
+  $("videoFrame").replaceChildren(el);
+  $("videoBar").hidden = false;
+  videoOpenUrl = s.open || "";
+  $("videoOpen").hidden = !videoOpenUrl;
+}
+function loadVideoUrl(raw, save) {
+  const s = videoSource(raw);
+  if (!s) { setStatus($("videoStatus"), "That doesn't look like a YouTube, Google Drive or video link.", "bad"); return false; }
+  showVideo(s);
+  if (save) remember("remembrance.video", raw);
+  return true;
+}
+$("videoLoad").addEventListener("click", () => loadVideoUrl($("videoUrl").value, true));
+$("videoUrl").addEventListener("keydown", e => { if (e.key === "Enter") $("videoLoad").click(); });
+$("videoFile").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if (f) showVideo({ type: "video", src: URL.createObjectURL(f) });
+});
+$("videoChange").addEventListener("click", () => {
+  const v = $("videoEl"); if (v) v.pause();
+  $("videoFrame").replaceChildren(videoEmptyEl); $("videoBar").hidden = true; setStatus($("videoStatus"), "");
+});
+$("videoOpen").addEventListener("click", () => { if (videoOpenUrl) window.open(videoOpenUrl, "_blank", "noopener"); });
+$("videoFs").addEventListener("click", () => goFullscreen($("videoFrame")));
+
+/* starting an audio track pauses any playing video file */
+audio.addEventListener("play", () => { const v = $("videoEl"); if (v && !v.paused) v.pause(); });
+
+if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube links often show Error 153 when this page is opened as a file. Choose a video file above instead, or use Open in new tab after loading a link.", "warn");
+
+/* use hardcoded values, or whatever was entered last time */
+(function () {
+  const s = SLIDES_URL || remember("remembrance.slides");
+  if (s) { $("slidesUrl").value = s; loadSlides(s, false); }
+  const v = VIDEO_SRC || remember("remembrance.video");
+  if (v) { $("videoUrl").value = v; loadVideoUrl(v, false); }
+})();
+if (!navigator.onLine) setStatus($("slidesStatus"), "You appear to be offline. Google Slides needs an internet connection.", "warn");
+</script>
+</body>
+</html>
