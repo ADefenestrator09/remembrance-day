@@ -636,7 +636,6 @@ if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube lin
     };
     VIDEOS.forEach((v, i) => {
       const b = document.createElement("button");
-      b.textContent = VIDEOS.length > 1 ? (i + 1) + ". " + v.title : v.title;
       b.addEventListener("click", () => pick(i));
       list.appendChild(b);
     });
