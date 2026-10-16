@@ -47,7 +47,7 @@ CUSTOMIZATION SETTINGS (all in config.js)
                    "maple"    deep red with a faint maple leaf
                  To try one without changing anything, add ?theme=NAME to
                  the end of the web address, for example:
-                   https://YOUR-USERNAME.github.io/YOUR-REPO/?theme=paper
+                   https://adefenestrator09.github.io/remembrance-day/?theme=paper
 
   tracks         The audio, in playing order. Each line is:
                    { title: "Name shown on screen", src: "audio/file.mp3" },
