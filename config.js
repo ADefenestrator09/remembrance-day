@@ -31,7 +31,7 @@ window.REMEMBRANCE_CONFIG = {
 
   /* true  = each track starts the next one by itself.
      false = wait for someone to press Next. */
-  autoContinue: true,
+  autoContinue: false,
 
   /* Starting volume, from 0 (silent) to 1 (full). */
   volume: 0.8,
