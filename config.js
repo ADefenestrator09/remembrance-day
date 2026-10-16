@@ -1,7 +1,22 @@
 /* ============================================================
    REMEMBRANCE DAY PAGE SETTINGS  (edit this file, not index.html)
+   After editing, save/commit it. See README.txt for a full guide.
    ============================================================ */
 window.REMEMBRANCE_CONFIG = {
+
+  /* Text at the top of the page. */
+  title: "Remembrance Day",
+  subtitle: "Lest we forget",
+
+  /* Look of the page. Choose one:
+       "classic"  dark, poppies in the bottom corners
+       "field"    dark, a quiet grassy field with a few poppies
+       "paper"    warm parchment with an inked border
+       "vigil"    night sky with stars and candlelight
+       "maple"    deep red with a faint maple leaf
+     To preview one without changing anything, add ?theme=NAME to the
+     web address, for example  .../remembrance-day/?theme=paper  */
+  theme: "classic",
 
   /* Audio tracks, in playing order.
      "src" is the file's location inside the audio folder.
@@ -13,6 +28,13 @@ window.REMEMBRANCE_CONFIG = {
     { title: "Two Minutes of Silence", src: "audio/silence-2-minutes.mp3" },
     { title: "Rouse",                  src: "audio/rouse.mp3" }
   ],
+
+  /* true  = each track starts the next one by itself.
+     false = wait for someone to press Next. */
+  autoContinue: true,
+
+  /* Starting volume, from 0 (silent) to 1 (full). */
+  volume: 0.8,
 
   /* Google Slides link (the normal address-bar link works, as does a
      Publish to web link). Slides must be shared as "Anyone with the
