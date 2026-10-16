@@ -1,9 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <g fill="#d62828">
-    <circle cx="22" cy="22" r="17"/>
-    <circle cx="42" cy="22" r="17"/>
-    <circle cx="22" cy="42" r="17"/>
-    <circle cx="42" cy="42" r="17"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100">
+  <g fill="#c8102e">
+    <ellipse cx="0" cy="-22" rx="19" ry="23"/>
+    <ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/>
+    <ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/>
+    <ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/>
+    <ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/>
   </g>
-  <circle cx="32" cy="32" r="8" fill="#1a1a1a"/>
+  <circle r="11" fill="#14110f"/>
 </svg>
