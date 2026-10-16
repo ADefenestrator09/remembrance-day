@@ -50,6 +50,6 @@ window.REMEMBRANCE_CONFIG = {
      Leave the list empty ( videos: [] ) to choose a video on the page.
      To add a video, copy a line (every line except the last ends in a comma). */
   videos: [
-    { title: "Remembrance video", src: "https://www.youtube.com/watch?v=dzNBkLRPVdw&t=10s" }
+    { title: "" }
   ]
 };
