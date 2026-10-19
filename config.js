@@ -50,7 +50,8 @@ window.REMEMBRANCE_CONFIG = {
      Leave the list empty ( videos: [] ) to choose a video on the page.
      To add a video, copy a line (every line except the last ends in a comma). */
   videos: [
-    { title: "Remembrance Day", src: "https://www.youtube.com/watch?v=dT4EytUeVjI" },
-    { title: "What is Remembrance Day?", src:"https://www.youtube.com/watch?v=wBjPIXcZBF8" }
+    { title: "Remembrance Day", src: "https://www.youtube.com/watch?v=lDBvV2HbpgE" },
+    { title: "Battle of the Somme", src:"https://www.youtube.com/watch?v=A8QL9TxrtY8" },
+    { title: "Newfoundland Regiment", src: "https://www.cbc.ca/player/play/video/9.6436682" }
   ]
 };
