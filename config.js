@@ -8,15 +8,31 @@ window.REMEMBRANCE_CONFIG = {
   title: "Remembrance Day",
   subtitle: "Lest we forget",
 
-  /* Look of the page. Choose one:
-       "classic"  dark, poppies in the bottom corners
-       "field"    dark, a quiet grassy field with a few poppies
-       "paper"    warm parchment with an inked border
-       "vigil"    night sky with stars and candlelight
-       "maple"    deep red with a faint maple leaf
-     To preview one without changing anything, add ?theme=NAME to the
-     web address, for example  .../remembrance-day/?theme=paper  */
-  theme: "classic",
+  /* The page uses the deep-red maple look. (Nothing to set here.) */
+  theme: "maple",
+
+  /* Soft effects: a few maple leaves drift slowly down the screen.
+     true = on, false = off. (Also off automatically for anyone whose
+     device is set to "reduce motion".) */
+  effects: true,
+
+  /* PICTURES for the audience screen. While the Audio tab is showing,
+     the audience screen plays these as a slow slideshow instead of
+     showing the audio controls. Upload the pictures into the images
+     folder and list them here, in order. Leave [] for a simple
+     title screen instead. */
+  images: [
+    // "images/photo1.jpg",
+    // "images/photo2.jpg",
+    // "images/photo3.jpg"
+  ],
+
+  /* Seconds each picture stays on screen (3 or more). */
+  imageSeconds: 10,
+
+  /* Show the name of the current track (e.g. "The Last Post") at the
+     bottom of the audience screen while it plays. true / false. */
+  audienceCaption: true,
 
   /* Audio tracks, in playing order.
      "src" is the file's location inside the audio folder.

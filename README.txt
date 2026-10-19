@@ -2,7 +2,9 @@ REMEMBRANCE DAY PAGE
 ====================
 
 WHAT'S IN THE FOLDER
-  index.html   The page itself. You normally never need to edit this.
+  index.html   The presenter page (the one you run). Normally no edits.
+  audience.html The audience screen (opens from a button on index.html).
+  images/      The pictures shown on the audience screen. Add your own.
   config.js    ALL the settings (look, text, tracks, slideshow, video).
   audio/       The mp3 files.
   video/       Optional. Create this folder yourself if you want to play a
@@ -13,8 +15,7 @@ WHAT'S IN THE FOLDER
 PUTTING IT ON GITHUB PAGES
   1. Unzip this folder on your computer.
   2. In your GitHub repository choose Add file > Upload files and drag in
-     index.html, config.js and the audio folder (plus a video folder if
-     you use one). Commit the changes.
+     index.html, audience.html, config.js, and the audio and images folders (plus a video folder if you use one). Commit the changes.
   3. Settings > Pages > Deploy from a branch > main > /(root) > Save.
   4. Open https://adefenestrator09.github.io/remembrance-day/ after a minute or two.
 
@@ -39,6 +40,7 @@ CUSTOMIZATION SETTINGS (all in config.js)
   subtitle       The small line under the heading. Use "" for none.
                  Example:  subtitle: "We will remember them",
 
+<<<<<<< HEAD
   theme          The look of the page. One of:
                    "classic"  dark, poppies in the bottom corners
                    "field"    dark, a quiet grassy field with a few poppies
@@ -48,6 +50,29 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  To try one without changing anything, add ?theme=NAME to
                  the end of the web address, for example:
                    https://adefenestrator09.github.io/remembrance-day/?theme=paper
+=======
+  theme          Always "maple" now (deep red with a faint maple leaf).
+
+  effects        true  = a few maple leaves drift slowly down both screens.
+                 false = no moving leaves. (Also off automatically on devices
+                 set to "reduce motion".)
+
+  images         The pictures for the audience screen, in order:
+                   images: [
+                     "images/poppies.jpg",
+                     "images/cenotaph.jpg"
+                   ],
+                 Upload the pictures into the images folder first. Any size
+                 works (portrait or landscape; the space around a picture is
+                 filled with a soft blurred copy of it). jpg, png and webp are
+                 fine; 1920 pixels wide or smaller keeps it quick.
+                 Leave  images: [],  for a plain poppy and title screen.
+
+  imageSeconds   How long each picture stays up, in seconds (3 or more).
+
+  audienceCaption  true = the audience screen shows the name of the track
+                 that is playing, small, at the bottom. false = nothing.
+>>>>>>> 9ff7d9f (Adding audience screen)
 
   tracks         The audio, in playing order. Each line is:
                    { title: "Name shown on screen", src: "audio/file.mp3" },
@@ -90,13 +115,38 @@ CUSTOMIZATION SETTINGS (all in config.js)
                    ]
                  mp4 files (H.264) play in every common browser.
 
+PRESENTER AND AUDIENCE SCREEN
+  1. On the computer that is connected to the projector, open the page
+     (index.html) and press "Audience screen" at the top left. A second
+     window opens.
+  2. Drag that window onto the projector, click in it, and press F (or
+     double-click) for full screen.
+  3. Run the event from the first window as usual. The audience screen
+     shows your pictures during the audio (it never shows the audio
+     controls), with the track name at the bottom while something plays.
+  4. Press the Slideshow or Video tab in the first window and the audience
+     screen switches to it. Click inside the audience window to move
+     through the slides or press play on the video. The first window shows
+     "Showing on the audience screen" so nothing plays twice.
+     ("Show it here instead" brings it back to the first window.)
+  5. The button shows a green dot and "Audience connected" while linked.
+
+  Notes:
+  - The sound plays from the first window (the presenter window), so choose
+    the projector or speakers as that computer's sound output.
+  - Both windows must be in the same browser on the same computer. They
+    cannot link across two different computers.
+  - If the window doesn't open, allow pop-ups for the site.
+  - Closing the audience window and pressing the button again reconnects it.
+
 BEFORE THE EVENT
   - Open the live site once on the exact computer and speakers or projector
     you will use, press Play test tone, and check all three tabs.
   - The slideshow and YouTube video need an internet connection. The Audio
     tab works fully offline once the page has loaded.
   - Use the fullscreen icon (top right of the tab row) on the Slideshow or
-    Video tab to fill the screen.
+    Video tab to fill the screen when not using the audience screen.
+  - Try the audience screen with your pictures once beforehand.
 
 
 IF SOMETHING GOES WRONG
@@ -110,4 +160,9 @@ IF SOMETHING GOES WRONG
   Slides or video blocked   Some school networks or preview windows block
                             embedded content. Open the site in a normal
                             Chrome or Edge tab.
+  Pictures don't show       The file names in config.js must match the files
+                            in the images folder exactly (capitals count). A
+                            picture that can't load is skipped.
+  Audience screen blank     Press the Audience screen button again. Both
+                            windows must be in the same browser.
   Changes don't appear      Wait a couple of minutes, then press Ctrl+F5.

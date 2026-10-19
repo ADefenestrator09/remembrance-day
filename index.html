@@ -212,10 +212,36 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
 .vlist { display: flex; gap: 8px; justify-content: center; flex: none; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
 .vlist button { white-space: nowrap; padding: clamp(5px, .9vh, 8px) 16px; font-size: .95rem; }
 .vlist button.active { background: var(--poppy); border-color: var(--poppy); color: #fff; }
+
+/* ---- presenter / audience screen ---- */
+.audbtn { position: absolute; left: 0; top: 50%; transform: translateY(-50%); padding: 6px 12px !important; min-width: 0 !important; display: inline-flex; align-items: center; gap: 7px; font-size: .9rem; }
+.audbtn svg { flex: none; }
+.audbtn.on { border-color: #4caf6a; }
+.audbtn.on::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #4caf6a; box-shadow: 0 0 8px #4caf6a; }
+@media (max-width: 1000px) { .audbtn .lbl { display: none; } }
+.stage { position: relative; }
+.audhint { position: absolute; inset: 0; z-index: 2; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 20px;
+  background: rgba(18,7,8,.94); border: 1px solid var(--line); border-radius: 12px; }
+.audhint.on { display: flex; }
+.audhint p { margin: 0; max-width: 34em; color: var(--muted); }
+.audhint h3 { margin: 0; font-weight: 400; }
+
+/* ---- soft drifting leaves ---- */
+#drift { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+#drift svg { position: absolute; top: -12vh; fill: var(--poppy); opacity: 0; animation: fall linear infinite; }
+@keyframes fall {
+  0%   { transform: translate(0,0) rotate(0deg); opacity: 0; }
+  8%   { opacity: var(--o, .2); }
+  50%  { transform: translate(calc(var(--dx) * .5), 62vh) rotate(calc(var(--rot) * .5)); }
+  92%  { opacity: var(--o, .2); }
+  100% { transform: translate(var(--dx), 128vh) rotate(var(--rot)); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { #drift { display: none; } }
 </style>
 </head>
 <body class="tab-audio">
 <svg class="corner l" viewBox="0 0 230 190" aria-hidden="true"><g fill="none" stroke="#3d5a3a" stroke-width="2.2" stroke-linecap="round"><path d="M30 190C34 150 40 120 58 88"/><path d="M80 190C80 160 96 130 118 112"/><path d="M130 190C128 170 138 150 156 140"/></g><g fill="#3d5a3a"><path d="M36 160C20 156 12 146 10 136C26 138 36 146 36 160Z"/><path d="M84 168C98 160 104 150 104 140C90 144 84 154 84 168Z"/></g><g transform="translate(58 82) scale(0.5)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(120 104) scale(0.42)"><g fill="#a80d26"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(158 134) scale(0.3)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g></svg><svg class="corner r" viewBox="0 0 230 190" aria-hidden="true"><g fill="none" stroke="#3d5a3a" stroke-width="2.2" stroke-linecap="round"><path d="M30 190C34 150 40 120 58 88"/><path d="M80 190C80 160 96 130 118 112"/><path d="M130 190C128 170 138 150 156 140"/></g><g fill="#3d5a3a"><path d="M36 160C20 156 12 146 10 136C26 138 36 146 36 160Z"/><path d="M84 168C98 160 104 150 104 140C90 144 84 154 84 168Z"/></g><g transform="translate(58 82) scale(0.5)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(120 104) scale(0.42)"><g fill="#a80d26"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(158 134) scale(0.3)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g></svg>
+<div id="drift" aria-hidden="true"></div>
 <main>
   <svg class="poppy-icon" viewBox="-50 -50 100 100" aria-hidden="true"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><g fill="#e0334d" opacity=".55"><ellipse cx="-4" cy="-26" rx="8" ry="12"/><ellipse cx="-4" cy="-26" rx="8" ry="12" transform="rotate(144)"/><ellipse cx="-4" cy="-26" rx="8" ry="12" transform="rotate(288)"/></g><circle r="10" fill="#14110f"/><path d="M0 -10V-17M7 -7L12 -12M10 3L16 5M0 10V17M-10 3L-16 5M-7 -7L-12 -12" fill="none" stroke="#14110f" stroke-width="2"/></svg>
   <h1>Remembrance Day</h1>
@@ -226,6 +252,7 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
     <button id="tab-audio" class="active" role="tab" aria-selected="true">&#9834; Audio</button>
     <button id="tab-slides" role="tab" aria-selected="false">&#9636; Slideshow</button>
     <button id="tab-video" role="tab" aria-selected="false">&#9654; Video</button>
+    <button id="audBtn" class="audbtn" title="Open the audience screen (drag it onto the projector)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span class="lbl">Audience screen</span></button>
     <button id="fsBtn" class="fsbtn" title="Fullscreen" aria-label="Fullscreen" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   </nav>
   <div id="panel-audio" class="panel">
@@ -289,7 +316,7 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
 
   <div id="panel-video" class="panel media" hidden>
     <div class="vlist" id="videoList" hidden></div>
-    <div class="stage"><div class="frame" id="videoFrame">
+    <div class="stage"><div class="audhint" id="hint-video"></div><div class="frame" id="videoFrame">
       <div class="empty" id="videoEmpty">
         <h3>Add your video</h3>
         <p class="fine">Pick a video file from this computer (works with no internet):</p>
@@ -302,7 +329,7 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
   </div>
 
   <div id="panel-slides" class="panel media" hidden>
-    <div class="stage"><div class="frame" id="slidesFrame">
+    <div class="stage"><div class="audhint" id="hint-slides"></div><div class="frame" id="slidesFrame">
       <div class="empty" id="slidesEmpty">
         <h3>Add your Google Slides</h3>
         <p class="fine">In Google Slides choose <b>File &rarr; Share &rarr; Publish to web</b> (or set sharing to &ldquo;Anyone with the link&rdquo;), then paste the link or the embed code here. The slideshow needs an internet connection.</p>
@@ -320,7 +347,7 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
 <script>
 /* Settings (tracks, slideshow, video) are read from config.js */
 const CFG = window.REMEMBRANCE_CONFIG || { tracks: [], slidesUrl: "", videoSrc: "" };
-const THEME = (new URLSearchParams(location.search).get("theme") || CFG.theme || "classic").toLowerCase();
+const THEME = "maple";   /* this page uses the maple look only */
 document.documentElement.setAttribute("data-theme", THEME);
 const TRACKS = CFG.tracks.map(t => ({ title: t.title, src: t.src }));
 
@@ -533,6 +560,7 @@ function showTab(name) {
     $("tab-" + n).setAttribute("aria-selected", n === name ? "true" : "false");
   });
   document.body.className = "tab-" + name;
+  if (window.sendState) { sendState(); updateHints(); }
 }
 ["audio", "slides", "video"].forEach(n => $("tab-" + n).addEventListener("click", () => showTab(n)));
 
@@ -633,6 +661,7 @@ if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube lin
     const list = $("videoList");
     const pick = i => {
       loadVideoUrl(VIDEOS[i].src, false);
+      window.videoIdx = i; if (window.sendState) sendState();
       [...list.children].forEach((b, j) => b.classList.toggle("active", j === i));
     };
     VIDEOS.forEach((v, i) => {
@@ -667,6 +696,66 @@ $("skipBtn").addEventListener("click", () => {
   mark("c-tone", "pass");
   tryFinishSetup();
 });
+<<<<<<< HEAD
+=======
+
+/* ---------- presenter + audience screen ---------- */
+var videoIdx = 0, audienceOn = false, showHere = false, chan = null;
+const LEAF = "M100.0 0.0 L112.0 30.0 L124.0 24.0 L121.0 54.0 L148.0 38.0 L142.0 68.0 L172.0 70.0 L154.0 92.0 L166.0 110.0 L130.0 102.0 L134.0 128.0 L111.0 118.0 L104.0 156.0 L103.0 198.0 L97.0 198.0 L96.0 156.0 L89.0 118.0 L66.0 128.0 L70.0 102.0 L34.0 110.0 L46.0 92.0 L28.0 70.0 L58.0 68.0 L52.0 38.0 L79.0 54.0 L76.0 24.0 L88.0 30.0 L100.0 0.0 Z";
+function sendState() {
+  if (!chan) return;
+  chan.postMessage({ type: "state", state: {
+    tab: document.body.className.replace("tab-", "") || "audio",
+    playing: !audio.paused,
+    track: TRACKS[current] ? TRACKS[current].title : "",
+    video: videoIdx
+  }});
+}
+function updateHints() {
+  const tab = document.body.className.replace("tab-", "");
+  [["slides", "the slideshow"], ["video", "the video"]].forEach(([n, what]) => {
+    const h = $("hint-" + n);
+    const on = audienceOn && !showHere && tab === n;
+    h.classList.toggle("on", on);
+    if (on && !h.firstChild) {
+      h.innerHTML = '<h3>Showing on the audience screen</h3><p>Click inside the audience window to ' + (n === "slides" ? "move through the slides" : "play the video") + '. Switching tabs here changes what the audience sees.</p><button id="showHere-' + n + '">Show it here instead</button>';
+      $("showHere-" + n).addEventListener("click", () => { showHere = true; updateHints(); });
+    }
+  });
+  const b = $("audBtn");
+  b.classList.toggle("on", audienceOn);
+  b.querySelector(".lbl").textContent = audienceOn ? "Audience connected" : "Audience screen";
+}
+try {
+  chan = new BroadcastChannel("remembrance-day");
+  chan.onmessage = e => {
+    const t = e.data && e.data.type;
+    if (t === "hello") { audienceOn = true; showHere = false; sendState(); updateHints(); }
+    if (t === "bye")   { audienceOn = false; updateHints(); }
+  };
+} catch (e) { $("audBtn").hidden = true; }
+["play", "pause", "loadstart", "ended"].forEach(ev => audio.addEventListener(ev, sendState));
+let audWin = null;
+$("audBtn").addEventListener("click", () => {
+  if (audWin && !audWin.closed) { audWin.focus(); return; }
+  audWin = window.open("audience.html", "remembranceAudience", "popup,width=1280,height=720");
+  if (!audWin) alert("The audience window was blocked. Allow pop-ups for this site, then try again.");
+});
+addEventListener("pagehide", () => { try { chan.postMessage({ type: "gone" }); } catch (e) {} });
+
+/* soft drifting leaves (turn off with effects: false in config.js) */
+if (CFG.effects === false) $("drift").remove();
+else for (let i = 0; i < 8; i++) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 200 200");
+  s.innerHTML = '<path d="' + LEAF + '"/>';
+  const size = 14 + Math.random() * 22;
+  s.style.cssText = "left:" + (Math.random() * 100) + "%;width:" + size + "px;height:" + size + "px;" +
+    "--dx:" + ((Math.random() - .5) * 22) + "vw;--rot:" + ((Math.random() - .5) * 700) + "deg;--o:" + (.08 + Math.random() * .14) + ";" +
+    "animation-duration:" + (26 + Math.random() * 22) + "s;animation-delay:-" + (Math.random() * 44) + "s";
+  $("drift").appendChild(s);
+}
+>>>>>>> 9ff7d9f (Adding audience screen)
 </script>
 </body>
 </html>
