@@ -226,6 +226,8 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
 .audhint p { margin: 0; max-width: 34em; color: var(--muted); }
 .audhint h3 { margin: 0; font-weight: 400; }
 
+@media (max-width: 600px) { .audbtn, .fsbtn { display: none !important; } }
+
 /* ---- soft drifting leaves ---- */
 #drift { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
 #drift svg { position: absolute; top: -12vh; fill: var(--poppy); opacity: 0; animation: fall linear infinite; }
@@ -430,31 +432,44 @@ $("noHearBtn").addEventListener("click", () => {
 
 /* ---------- Check 4: do the audio files load? ---------- */
 function probe(src) {
+  /* resolves "ok", "fail" (real load error, e.g. 404) or "unknown" (no answer in time;
+     some browsers, notably iPhones/iPads, don't report anything until you press play) */
   return new Promise(resolve => {
     const a = new Audio();
-    const done = ok => { a.removeAttribute("src"); resolve(ok); };
+    const done = r => { a.removeAttribute("src"); resolve(r); };
     a.preload = "metadata";
-    a.addEventListener("loadedmetadata", () => done(true), { once: true });
-    a.addEventListener("error", () => done(false), { once: true });
-    setTimeout(() => done(false), 6000);
+    a.addEventListener("loadedmetadata", () => done("ok"), { once: true });
+    a.addEventListener("error", () => done("fail"), { once: true });
+    setTimeout(() => done("unknown"), 8000);
     a.src = src;
   });
 }
 
+/* If "audio/name.mp3" is missing, also try "name.mp3" next to index.html. */
+async function resolveTrack(t) {
+  let r = await probe(t.src);
+  const alt = t.src.split("/").pop();
+  if (r === "fail" && alt !== t.src) {
+    const r2 = await probe(alt);
+    if (r2 !== "fail") { t.src = alt; r = r2; }
+  }
+  t.ok = r !== "fail";
+}
+
+let filesDone = false;
 async function checkFiles() {
   if (!TRACKS.length) {
     mark("c-files", "fail");
     setStatus($("setupStatus"), "No audio tracks found. Check that config.js is in the same folder as index.html.", "bad");
     return;
   }
-  const results = await Promise.all(TRACKS.map(t => probe(t.src)));
-  results.forEach((ok, i) => TRACKS[i].ok = ok);
-  filesOk = results.every(Boolean);
+  await Promise.all(TRACKS.map(resolveTrack));
+  filesOk = TRACKS.every(t => t.ok);
+  filesDone = true;
   mark("c-files", filesOk ? "pass" : "fail");
   if (!filesOk) {
-    const missing = TRACKS.filter(t => !t.ok).map(t => t.title).join(", ");
-    const msg = location.protocol === "file:" ? "" : "";
-    setStatus($("setupStatus"), "Couldn't load: " + missing + ". Try reloading the page." + msg, "warn");
+    const missing = TRACKS.filter(t => !t.ok).map(t => t.src).join(", ");
+    setStatus($("setupStatus"), "Couldn't find: " + missing + ". Check the file names and the audio folder (see README).", "warn");
   }
   tryFinishSetup();
 }
@@ -464,7 +479,7 @@ checkFiles();
 /* ---------- Reveal the player once everything passes ---------- */
 let playerShown = false;
 function tryFinishSetup() {
-  if (playerShown || !toneHeard || !filesOk) return;
+  if (playerShown || !toneHeard || !filesDone) return;
   playerShown = true;
   $("setup").classList.add("done");
   setStatus($("setupStatus"), "✓ Audio check passed", "ok");
@@ -472,6 +487,8 @@ function tryFinishSetup() {
   $("listCard").style.display = "block";
   buildList();
   loadTrack(0, false);
+  if (!filesOk) setStatus($("playStatus"), "Some audio files weren't found: " + TRACKS.filter(t => !t.ok).map(t => t.src).join(", "), "warn");
+  TRACKS.forEach((t, i) => { if (!t.ok) { const g = $("tag" + i); if (g) { g.textContent = "missing"; g.className = "tag bad"; } } });
 }
 
 /* ---------- Player ---------- */
@@ -696,8 +713,6 @@ $("skipBtn").addEventListener("click", () => {
   mark("c-tone", "pass");
   tryFinishSetup();
 });
-<<<<<<< HEAD
-=======
 
 /* ---------- presenter + audience screen ---------- */
 var videoIdx = 0, audienceOn = false, showHere = false, chan = null;
@@ -755,7 +770,6 @@ else for (let i = 0; i < 8; i++) {
     "animation-duration:" + (26 + Math.random() * 22) + "s;animation-delay:-" + (Math.random() * 44) + "s";
   $("drift").appendChild(s);
 }
->>>>>>> 9ff7d9f (Adding audience screen)
 </script>
 </body>
 </html>
