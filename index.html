@@ -288,10 +288,8 @@ html[data-stage="on"] body.tab-audio #petals { display: block; z-index: 6; }
 .g-slide.on .g-emb .emb { animation: beat 6s ease-in-out infinite; }
 @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 
-@media (prefers-reduced-motion: reduce) {
-  .g-slide { transition-duration: .01s !important; }
-  .g-slide.on img, .g-slide.on .g-text > *, .g-slide.on .g-emb .emb, #petals::before { animation: none !important; }
-}
+html[data-rm="on"] .g-slide { transition-duration: .01s !important; }
+html[data-rm="on"] .g-slide.on img, html[data-rm="on"] .g-slide.on .g-text > *, html[data-rm="on"] .g-slide.on .g-emb .emb, html[data-rm="on"] #petals::before { animation: none !important; }
 
 /* ---- Present mode: floating control bar ---- */
 #barZone { position: fixed; top: 0; left: 0; right: 0; height: 44px; z-index: 11; }
@@ -914,7 +912,8 @@ $("skipBtn").addEventListener("click", () => {
    PICTURE SLIDESHOW, PRESENT MODE, AUDIENCE SCREEN, SOFT EFFECTS
    ================================================================ */
 const FX = Object.assign({ petals: true, embers: true, glow: true, slowZoom: true, crossfade: 1.6 }, CFG.effects || {});
-if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { FX.petals = false; FX.embers = false; FX.slowZoom = false; }
+/* Many school and work computers have "animation effects" switched off, which would hide every soft effect. So by default the effects ignore that setting; set respectReducedMotion: true in config.js to honour it. */
+if (CFG.respectReducedMotion === true && window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { FX.petals = false; FX.embers = false; FX.slowZoom = false; document.documentElement.setAttribute("data-rm", "on"); }
 const SHOW_TITLE = CFG.showTrackTitle !== false;
 const G_INTERVAL = Math.max(3, Number(CFG.galleryInterval) || 10);
 const GALLERY = (Array.isArray(CFG.gallery) && CFG.gallery.length) ? CFG.gallery : [{ text: "Lest we forget" }, { text: "Remembering all who served" }];

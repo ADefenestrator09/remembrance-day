@@ -136,8 +136,12 @@ CUSTOMIZATION SETTINGS (all in config.js)
                    glow       a soft vignette and a slowly breathing red light
                    slowZoom   pictures drift and zoom very slightly
                    crossfade  seconds a fade between pictures takes
-                 Computers set to "reduce motion" get no petals, embers or
-                 zoom.
+
+  respectReducedMotion   false (default) = the effects always run, even on a
+                 computer with "animation effects" turned off in its
+                 settings (common on school computers, and the usual reason
+                 effects seem to be missing).
+                 true = those computers get a still picture show instead.
 
   slidesUrl      Your Google Slides link. The normal link from the address
                  bar works. The slides must be shared as "Anyone with the
