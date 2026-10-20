@@ -199,6 +199,27 @@ html[data-remote] #panel-slides .stage, html[data-remote] #panel-video .stage { 
 html[data-remote] .remote { display: flex; }
 html[data-stage="on"] .remote { display: none !important; }
 
+/* ---- slides shown as pictures (slideImages in config.js) ---- */
+.deck { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; }
+.deck-layers, .deck-slide { position: absolute; inset: 0; }
+.deck-slide { opacity: 0; transition: opacity .45s ease; display: flex; align-items: center; justify-content: center; }
+.deck-slide.on { opacity: 1; }
+.deck-slide img { width: 100%; height: 100%; object-fit: contain; }
+.deck-miss { color: var(--muted); padding: 24px; text-align: center; font-size: 1.1rem; }
+.deck-count { position: absolute; right: 12px; bottom: 10px; font-size: .85rem; color: #fff; background: rgba(0,0,0,.55); padding: 3px 10px; border-radius: 999px; opacity: .85; pointer-events: none; }
+.deck .deck-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 64px; min-width: 0 !important; padding: 0 !important; font-size: 2rem; line-height: 1; background: rgba(0,0,0,.5); color: #fff; border: 1px solid rgba(255,255,255,.18); border-radius: 10px; opacity: 0; transition: opacity .2s; }
+.deck .deck-nav.prev { left: 10px; } .deck .deck-nav.next { right: 10px; }
+.deck:hover .deck-nav, .deck .deck-nav:focus-visible { opacity: .9; }
+.deck .deck-nav:disabled { display: none; }
+@media (hover: none) { .deck .deck-nav { opacity: .6; } }
+html[data-stage="on"] .deck-nav, html[data-stage="on"] .deck-count { display: none; }
+.deckctl { display: none; flex-direction: column; align-items: center; gap: 10px; min-height: 0; flex: 1 1 auto; width: 100%; }
+html[data-deck] #slidesRemote .deckctl { display: flex; }
+html[data-deck] #slidesRemote .nodeck { display: none; }
+#srThumb { flex: 1 1 0; min-height: 0; max-width: min(100%, 640px); aspect-ratio: 16 / 9; object-fit: contain; background: #000; border: 1px solid var(--line); border-radius: 8px; }
+#srCount { min-width: 6ch; text-align: center; color: var(--muted); }
+#slidesRemote.remote { gap: 10px; }
+
 /* ---- stage: Present mode and the audience screen ---- */
 html[data-stage="on"], html[data-stage="on"] body { overflow: hidden; }
 html[data-stage="on"] body { padding: 0; }
@@ -224,8 +245,8 @@ html[data-stage="on"] body.tab-audio #gallery { display: block; }
 .g-slide.on img { animation: kenA var(--hold, 14s) ease-out forwards; }
 .g-slide.alt.on img { animation-name: kenB; }
 .g-slide.nokb img, .g-slide.nokb.on img { animation: none; }
-@keyframes kenA { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.06) translate(-.8%, -.6%); } }
-@keyframes kenB { from { transform: scale(1.06) translate(.8%, .6%); } to { transform: scale(1) translate(0, 0); } }
+@keyframes kenA { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.1) translate(-1.2%, -.9%); } }
+@keyframes kenB { from { transform: scale(1.1) translate(1.2%, .9%); } to { transform: scale(1) translate(0, 0); } }
 .g-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 7vh 6vw 4.5vh; text-align: center; font-size: clamp(1.1rem, 3.4vh, 2.2rem); letter-spacing: .03em; color: var(--text); text-shadow: 0 2px 14px rgba(0,0,0,.9); background: linear-gradient(to top, rgba(0,0,0,.62), transparent); }
 .g-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3.2vh; padding: 8vh 10vw; text-align: center; }
 .g-text .emb { width: clamp(46px, 9vh, 92px); height: auto; margin: 0; filter: drop-shadow(0 0 16px rgba(209,17,47,.55)); }
@@ -241,18 +262,35 @@ html[data-stage="on"] body.tab-audio #banner { display: block; }
 
 /* ---- soft effect: drifting poppy petals ---- */
 #petals { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-body.tab-audio #petals { display: block; }
-html[data-stage="on"] #petals { z-index: 6; }
-.petal { position: absolute; top: 0; left: var(--l); width: var(--s); height: calc(var(--s) * 1.35); border-radius: 80% 8% 80% 8%; background: radial-gradient(circle at 30% 25%, #ea5a73, #b30f28 72%); opacity: var(--o); animation: fall var(--d) linear var(--delay) infinite; will-change: transform; }
-html[data-stage="on"] .petal { opacity: calc(var(--o) * .85); }
+html[data-stage="on"] body.tab-audio #petals { display: block; z-index: 6; }
+.petal { position: absolute; top: 0; left: var(--l); width: var(--s); height: calc(var(--s) * 1.35); opacity: var(--o); animation: fall var(--d) linear var(--delay) infinite; will-change: transform; filter: drop-shadow(0 0 6px rgba(209,17,47,.45)); }
+.petal b { display: block; width: 100%; height: 100%; border-radius: 80% 8% 80% 8%; background: radial-gradient(circle at 30% 25%, #ff7a92, #c4122e 60%, #7d0b1d 100%); animation: flutter var(--f) ease-in-out var(--delay) infinite; }
 @keyframes fall {
   0%   { transform: translate3d(0, -12vh, 0) rotate(0deg); }
-  50%  { transform: translate3d(var(--x1), 52vh, 0) rotate(170deg); }
-  100% { transform: translate3d(var(--x2), 114vh, 0) rotate(350deg); }
+  50%  { transform: translate3d(var(--x1), 52vh, 0) rotate(120deg); }
+  100% { transform: translate3d(var(--x2), 114vh, 0) rotate(260deg); }
 }
+@keyframes flutter { 0%, 100% { transform: perspective(240px) rotateY(0deg) rotateZ(-14deg); } 50% { transform: perspective(240px) rotateY(75deg) rotateZ(16deg); } }
+
+/* soft effect: warm drifting lights, like candle sparks, rising slowly */
+.mote { position: absolute; bottom: 0; left: var(--l); width: var(--s); height: var(--s); border-radius: 50%; background: radial-gradient(circle, rgba(255,232,190,.95) 0%, rgba(255,168,96,.55) 38%, rgba(255,120,70,0) 72%); opacity: 0; animation: ember var(--d) ease-in var(--delay) infinite; will-change: transform, opacity; }
+@keyframes ember {
+  0%   { transform: translate3d(0, 6vh, 0) scale(.6); opacity: 0; }
+  15%  { opacity: var(--o); }
+  60%  { opacity: calc(var(--o) * .8); }
+  100% { transform: translate3d(var(--x1), -108vh, 0) scale(1.15); opacity: 0; }
+}
+
+/* soft effect: gentle vignette and a slow warm "breathing" light */
+#petals.fx-glow::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 55%, rgba(224,40,70,.20), rgba(224,40,70,0) 70%); mix-blend-mode: screen; animation: breathe 11s ease-in-out infinite; }
+#petals.fx-glow::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0,0,0,0) 52%, rgba(0,0,0,.5) 100%); }
+@keyframes breathe { 0%, 100% { opacity: .25; transform: scale(.94); } 50% { opacity: 1; transform: scale(1.06); } }
+.g-slide.on .g-emb .emb { animation: beat 6s ease-in-out infinite; }
+@keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
 @media (prefers-reduced-motion: reduce) {
   .g-slide { transition-duration: .01s !important; }
-  .g-slide.on img, .g-slide.on .g-text > * { animation: none !important; }
+  .g-slide.on img, .g-slide.on .g-text > *, .g-slide.on .g-emb .emb, #petals::before { animation: none !important; }
 }
 
 /* ---- Present mode: floating control bar ---- */
@@ -264,6 +302,7 @@ html.bar-on #presentBar { transform: translate(-50%, 0); opacity: 1; pointer-eve
 #presentBar button { padding: 7px 12px; font-size: 1rem; line-height: 1; }
 #presentBar .pb-group { display: none; gap: 6px; align-items: center; }
 #presentBar[data-tab="audio"] .pb-audio { display: flex; }
+#presentBar[data-tab="slides"][data-deck] .pb-slides { display: flex; }
 #presentBar[data-tab="video"][data-multi] .pb-video { display: flex; }
 #presentBar .pb-info { display: flex; flex-direction: column; align-items: center; min-width: 8ch; max-width: 30ch; line-height: 1.25; }
 #presentBar #pbTitle { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
@@ -391,7 +430,12 @@ html[data-view="audience"] #audStart:not(.gone) { display: flex; }
     </div></div>
     <div class="remote" id="slidesRemote">
       <h3>The slideshow is on the audience screen</h3>
-      <p class="fine">Click the slides on that screen, then use the arrow keys (or the arrows on the slide) to move through them.</p>
+      <p class="fine nodeck">Click the slides on that screen, then use the arrow keys (or the arrows on the slide) to move through them.</p>
+      <div class="deckctl">
+        <img id="srThumb" alt="The slide on the audience screen">
+        <div class="row"><button id="srPrev">◀ Previous</button><span id="srCount"></span><button class="primary" id="srNext">Next ▶</button></div>
+        <p class="fine">You can also press the left and right arrow keys or the space bar.</p>
+      </div>
     </div>
   </div>
 </main>
@@ -410,6 +454,10 @@ html[data-view="audience"] #audStart:not(.gone) { display: flex; }
   <div class="pb-group pb-video">
     <button id="pbVPrev" title="Previous video" aria-label="Previous video">◀</button>
     <button id="pbVNext" title="Next video" aria-label="Next video">▶</button>
+  </div>
+  <div class="pb-group pb-slides">
+    <button id="pbSPrev" title="Previous slide (left arrow)" aria-label="Previous slide">⏮</button>
+    <button id="pbSNext" class="primary" title="Next slide (right arrow or space)" aria-label="Next slide">⏭</button>
   </div>
   <div class="pb-info"><span id="pbTitle">—</span><small id="pbTime"></small></div>
   <div class="pb-tabs">
@@ -569,7 +617,7 @@ function buildList() {
   TRACKS.forEach((t, i) => {
     const li = document.createElement("li");
     li.innerHTML = `<span>${i + 1}. ${t.title}</span><span class="tag" id="tag${i}"></span>`;
-    li.addEventListener("click", () => { loadTrack(i, true); });
+    li.addEventListener("click", () => { loadTrack(i, false); });
     ol.appendChild(li);
   });
 }
@@ -633,6 +681,10 @@ function handleKey(code) {
   if (code === "Digit1") { showTab("audio"); return true; }
   if (code === "Digit2") { showTab("slides"); return true; }
   if (code === "Digit3") { showTab("video"); return true; }
+  if (currentTab() === "slides" && Deck) {
+    if (code === "ArrowRight" || code === "Space") { Deck.next(); return true; }
+    if (code === "ArrowLeft") { Deck.prev(); return true; }
+  }
   if (currentTab() === "audio" && playerShown) {
     if (code === "Space") { $("playBtn").click(); return true; }
     if (code === "ArrowRight") { $("nextBtn").click(); return true; }
@@ -756,8 +808,57 @@ audio.addEventListener("play", () => { const v = $("videoEl"); if (v && !v.pause
 
 if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube links show Error 153 when this page is opened as a file. Open it from its website address, or choose a video file above.", "warn");
 
+/* ---------- slides as pictures (optional): slideImages in config.js ---------- */
+const DECK = (function () {
+  let a = CFG.slideImages;
+  if (a && !Array.isArray(a) && a.pattern && Number(a.count) > 0) a = Array.from({ length: Math.min(300, Number(a.count)) }, (_, i) => String(a.pattern).replace("{n}", i + 1));
+  return (Array.isArray(a) ? a : []).map(x => typeof x === "string" ? { src: x } : x).filter(x => x && x.src);
+})();
+let slideIndex = 0;
+const Deck = !DECK.length ? null : (function () {
+  document.documentElement.setAttribute("data-deck", "");
+  const el = document.createElement("div"); el.className = "deck";
+  el.innerHTML = '<div class="deck-layers"></div><div class="deck-count"></div>' +
+    '<button type="button" class="deck-nav prev" aria-label="Previous slide">&#8249;</button><button type="button" class="deck-nav next" aria-label="Next slide">&#8250;</button>';
+  const layers = el.querySelector(".deck-layers"), count = el.querySelector(".deck-count"), prevB = el.querySelector(".prev"), nextB = el.querySelector(".next");
+  let cur = null, token = 0;
+  function render() {
+    const my = ++token, it = DECK[slideIndex], n = slideIndex + 1, label = n + " / " + DECK.length;
+    count.textContent = label; $("srCount").textContent = label;
+    prevB.disabled = $("srPrev").disabled = slideIndex === 0;
+    nextB.disabled = $("srNext").disabled = slideIndex === DECK.length - 1;
+    $("srThumb").src = it.src;
+    const d = document.createElement("div"); d.className = "deck-slide";
+    const im = new Image(); im.alt = it.alt || ("Slide " + n); im.decoding = "async";
+    const show = ok => {
+      if (my !== token) return;
+      if (!ok) { d.replaceChildren(); const m = document.createElement("div"); m.className = "deck-miss"; m.textContent = "Slide " + n + " could not be loaded. Check its file name in config.js."; d.append(m); }
+      else d.append(im);
+      const old = cur; cur = d; layers.append(d); void d.offsetWidth; d.classList.add("on");
+      if (old) setTimeout(() => old.remove(), 600);
+    };
+    im.onload = () => show(true); im.onerror = () => show(false);
+    im.src = it.src;
+    [slideIndex - 1, slideIndex + 1].forEach(k => { if (DECK[k]) new Image().src = DECK[k].src; });
+    updateBar();
+  }
+  function go(i, quiet) {
+    i = Math.max(0, Math.min(DECK.length - 1, i));
+    if (i === slideIndex && cur) return;
+    slideIndex = i; render();
+    if (!quiet && !IS_AUD) syncSoon();
+  }
+  const next = () => go(slideIndex + 1), prev = () => go(slideIndex - 1);
+  prevB.addEventListener("click", prev); nextB.addEventListener("click", next);
+  $("srPrev").addEventListener("click", prev); $("srNext").addEventListener("click", next);
+  if (SLIDES_AUTO > 0 && !IS_AUD) setInterval(() => { if (currentTab() === "slides" && slideIndex < DECK.length - 1) next(); }, SLIDES_AUTO * 1000);
+  render();
+  return { el, go, next, prev };
+})();
+
 /* use hardcoded values, or whatever was entered last time */
 function initSlides() {
+  if (Deck) { $("slidesFrame").replaceChildren(Deck.el); return; }
   const sl = SLIDES_URL || remember("remembrance.slides");
   if (sl) { slidesEmptyEl.querySelector("#slidesUrl").value = sl; loadSlides(sl, false); }
   else $("slidesFrame").replaceChildren(slidesEmptyEl);
@@ -812,8 +913,8 @@ $("skipBtn").addEventListener("click", () => {
 /* ================================================================
    PICTURE SLIDESHOW, PRESENT MODE, AUDIENCE SCREEN, SOFT EFFECTS
    ================================================================ */
-const FX = Object.assign({ petals: true, slowZoom: true, crossfade: 1.6 }, CFG.effects || {});
-if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { FX.petals = false; FX.slowZoom = false; }
+const FX = Object.assign({ petals: true, embers: true, glow: true, slowZoom: true, crossfade: 1.6 }, CFG.effects || {});
+if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { FX.petals = false; FX.embers = false; FX.slowZoom = false; }
 const SHOW_TITLE = CFG.showTrackTitle !== false;
 const G_INTERVAL = Math.max(3, Number(CFG.galleryInterval) || 10);
 const GALLERY = (Array.isArray(CFG.gallery) && CFG.gallery.length) ? CFG.gallery : [{ text: "Lest we forget" }, { text: "Remembering all who served" }];
@@ -927,15 +1028,19 @@ function showBanner(text) {
   clearTimeout(bannerT); bannerT = setTimeout(() => b.classList.remove("on"), 8000);
 }
 
-/* ---------- soft effect: drifting petals ---------- */
+/* ---------- soft effects (shown only on the audience screen and in Present mode, on the Audio tab) ---------- */
 (function () {
-  if (!FX.petals) return;
-  const host = $("petals"), n = IS_AUD ? 14 : 9, r = (a, b) => a + Math.random() * (b - a);
-  for (let i = 0; i < n; i++) {
+  const host = $("petals"), r = (a, b) => a + Math.random() * (b - a), f = (x, d) => x.toFixed(d);
+  if (FX.glow) host.classList.add("fx-glow");
+  if (FX.petals) for (let i = 0; i < 22; i++) {
     const p = document.createElement("i"); p.className = "petal";
-    const s = r(11, 21);
-    p.style.cssText = "--l:" + r(0, 100).toFixed(1) + "%;--s:" + s.toFixed(1) + "px;--d:" + r(17, 31).toFixed(1) + "s;--delay:-" + r(0, 30).toFixed(1) + "s;--x1:" + r(-14, 14).toFixed(1) + "vw;--x2:" + r(-22, 22).toFixed(1) + "vw;--o:" + r(.28, .55).toFixed(2);
-    host.appendChild(p);
+    p.style.cssText = "--l:" + f(r(0, 100), 1) + "%;--s:" + f(r(15, 32), 1) + "px;--d:" + f(r(15, 27), 1) + "s;--f:" + f(r(2.6, 5), 1) + "s;--delay:-" + f(r(0, 27), 1) + "s;--x1:" + f(r(-14, 14), 1) + "vw;--x2:" + f(r(-24, 24), 1) + "vw;--o:" + f(r(.6, .95), 2);
+    p.appendChild(document.createElement("b")); host.appendChild(p);
+  }
+  if (FX.embers) for (let i = 0; i < 20; i++) {
+    const m = document.createElement("i"); m.className = "mote";
+    m.style.cssText = "--l:" + f(r(2, 98), 1) + "%;--s:" + f(r(7, 17), 1) + "px;--d:" + f(r(11, 21), 1) + "s;--delay:-" + f(r(0, 21), 1) + "s;--x1:" + f(r(-7, 7), 1) + "vw;--o:" + f(r(.45, .9), 2);
+    host.appendChild(m);
   }
 })();
 
@@ -950,7 +1055,8 @@ function updateBar() {
   const tab = currentTab(), bar = $("presentBar");
   bar.dataset.tab = tab;
   if (VIDEOS.length > 1) bar.setAttribute("data-multi", ""); else bar.removeAttribute("data-multi");
-  $("pbTitle").textContent = tab === "audio" ? ((TRACKS[current] || {}).title || "") : tab === "video" ? ((VIDEOS[videoIndex] || {}).title || "Video") : "Slideshow";
+  if (Deck) bar.setAttribute("data-deck", ""); else bar.removeAttribute("data-deck");
+  $("pbTitle").textContent = tab === "audio" ? ((TRACKS[current] || {}).title || "") : tab === "video" ? ((VIDEOS[videoIndex] || {}).title || "Video") : Deck ? "Slide " + (slideIndex + 1) + " / " + DECK.length : "Slideshow";
   $("pbPlay").textContent = audio.paused ? "▶" : "⏸";
   bar.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
   updateBarTime();
@@ -985,6 +1091,8 @@ if (!IS_AUD) {
   $("pbPrev").addEventListener("click", () => $("prevBtn").click());
   $("pbNext").addEventListener("click", () => $("nextBtn").click());
   $("pbPlay").addEventListener("click", () => $("playBtn").click());
+  $("pbSPrev").addEventListener("click", () => Deck && Deck.prev());
+  $("pbSNext").addEventListener("click", () => Deck && Deck.next());
   $("pbVPrev").addEventListener("click", () => pickVideo(videoIndex - 1));
   $("pbVNext").addEventListener("click", () => pickVideo(videoIndex + 1));
   $("presentBar").querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => { showTab(b.dataset.tab); showBar(); }));
@@ -1000,7 +1108,7 @@ if (!IS_AUD) {
 /* ---------- Audience screen (second window) ---------- */
 function getState() {
   const t = TRACKS[current] || {};
-  return { tab: currentTab(), track: current, trackTitle: t.title || "", playing: !audio.paused && !audio.ended, video: videoIndex };
+  return { tab: currentTab(), slide: slideIndex, track: current, trackTitle: t.title || "", playing: !audio.paused && !audio.ended, video: videoIndex };
 }
 function syncSoon() {
   if (IS_AUD || !chan || syncT) return;
@@ -1066,6 +1174,7 @@ if (IS_AUD) {
     if (stageTrack !== lastTrack) { lastTrack = stageTrack; if (currentTab() === "audio") applyGalleryForTrack(); }
     if (s.playing && bannerFor !== s.track) { bannerFor = s.track; showBanner(s.trackTitle); }
     if (typeof s.video === "number" && s.video !== videoIndex) pickVideo(s.video);
+    if (Deck && typeof s.slide === "number") Deck.go(s.slide, true);
   }
   if (chan) chan.onmessage = ev => {
     const m = ev.data || {};

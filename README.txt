@@ -6,6 +6,7 @@ WHAT'S IN THE FOLDER
   config.js    ALL the settings (text, tracks, pictures, slideshow, video).
   audio/       The mp3 files.
   images/      Your pictures for the audience slideshow (see below).
+  slides/      Optional. Your slides exported as pictures (see slideImages).
   video/       Optional. Create this folder yourself if you want to play a
                video file instead of a YouTube link.
   favicon.svg  The poppy icon on the browser tab.
@@ -38,10 +39,13 @@ PRESENTING: THE PRESENTER AND THE AUDIENCE
         (Allow pop-ups for the site if the browser blocks the window.)
      3. Keep working in the presenter window. The audience window follows
         you: the Audio tab shows the picture slideshow, the Slideshow tab
-        shows your Google Slides, the Video tab shows the video.
-     4. On the Slideshow tab, click the slides on the audience screen and
-        use the arrow keys to move through them. On the Video tab, use the
-        Play and Pause buttons in the presenter window.
+        shows your slides, the Video tab shows the video.
+     4. On the Slideshow tab: if you use slide pictures (slideImages), use
+        the Next / Previous buttons, the arrow keys or Space in the
+        presenter window and the audience screen follows. With only a
+        Google Slides link, click the slides on the audience screen and use
+        the arrow keys there. On the Video tab, use the Play and Pause
+        buttons in the presenter window.
      5. The Audience button shows a green dot while the two windows are
         linked. Closing the audience window puts everything back on the
         presenter screen.
@@ -53,8 +57,9 @@ PRESENTING: THE PRESENTER AND THE AUDIENCE
      (previous, play, next, switch tab, exit). Esc or the X leaves it.
 
   Keyboard shortcuts (on either screen)
-     Space       play / pause the audio
-     Right/Left  next / previous track
+     Space       play / pause the audio (next slide on the Slideshow tab
+                 when slide pictures are used)
+     Right/Left  next / previous track (slides on the Slideshow tab)
      1, 2, 3     Audio / Slideshow / Video tab
      F           full screen (on the audience screen)
      Esc         leave Present mode
@@ -123,16 +128,36 @@ CUSTOMIZATION SETTINGS (all in config.js)
                            for a few seconds when it starts.
                    false = never show it.
 
-  effects        Soft effects. Set any to false to turn it off:
-                   petals     poppy petals drifting slowly down the screen
+  effects        Soft effects, shown only on the audience screen (and in
+                 Present mode) on the Audio tab. Set any to false to turn
+                 it off:
+                   petals     poppy petals drifting and fluttering down
+                   embers     small warm lights rising like candle sparks
+                   glow       a soft vignette and a slowly breathing red light
                    slowZoom   pictures drift and zoom very slightly
                    crossfade  seconds a fade between pictures takes
-                 Computers set to "reduce motion" never get petals or zoom.
+                 Computers set to "reduce motion" get no petals, embers or
+                 zoom.
 
   slidesUrl      Your Google Slides link. The normal link from the address
                  bar works. The slides must be shared as "Anyone with the
                  link" or published to the web (File > Share > Publish to
                  web). Use "" to leave the slideshow tab empty.
+
+  slideImages    OPTIONAL. Show your slides as pictures so you can move
+                 them from the presenter window.
+                 1. In Google Slides choose File > Download > PNG or JPEG
+                    image (current slide), or use File > Download > PDF and
+                    convert the pages to pictures, so each slide is one
+                    picture.
+                 2. Upload them into the slides folder.
+                 3. List them in order:
+                      slideImages: ["slides/slide1.jpg", "slides/slide2.jpg"],
+                    or, if they are named slide1, slide2, ... :
+                      slideImages: { pattern: "slides/slide{n}.jpg", count: 12 },
+                 Leave it as [] to use the Google Slides link instead.
+                 Pictures don't keep animations or embedded video, and you
+                 need to export again if you change the deck.
 
   slidesAutoplaySeconds   0 = you move through the slides yourself.
                  A number such as 15 = the slides move on by themselves
@@ -166,6 +191,8 @@ BEFORE THE EVENT
   - The slideshow and YouTube video need an internet connection. The Audio
     tab, including the picture slideshow, works offline once the page has
     loaded.
+  - Clicking a track in the list only selects it; press Play (or Space) to
+    start it.
   - Keep the computer awake while the page is open (check the power and
     sleep settings), especially for the two minutes of silence.
   - Use the fullscreen icon (top right of the tab row) on the Slideshow or

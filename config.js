@@ -55,18 +55,32 @@ window.REMEMBRANCE_CONFIG = {
      of the audience screen for a few seconds when it starts. */
   showTrackTitle: true,
 
-  /* Soft effects. Set any to false to turn it off.
-       petals     poppy petals drifting slowly down the screen (Audio tab)
-       slowZoom   pictures drift and zoom very slightly
+  /* Soft effects. They appear only on the AUDIENCE screen (and in Present
+     mode), and only on the Audio tab. Set any to false to turn it off.
+       petals     poppy petals drifting and fluttering down the screen
+       embers     small warm lights, like candle sparks, rising slowly
+       glow       a soft vignette and a slowly "breathing" red light
+       slowZoom   pictures drift and zoom gently
        crossfade  seconds a fade between pictures takes
-     (Computers set to "reduce motion" always get no petals or zoom.) */
-  effects: { petals: true, slowZoom: true, crossfade: 1.6 },
+     (Computers set to "reduce motion" get no petals, embers or zoom.) */
+  effects: { petals: true, embers: true, glow: true, slowZoom: true, crossfade: 1.6 },
 
   /* ---------- GOOGLE SLIDES ---------- */
   /* Google Slides link (the normal address-bar link works, as does a
      Publish to web link). Slides must be shared as "Anyone with the
      link" or published to the web. Leave "" to paste one on the page. */
   slidesUrl: "https://docs.google.com/presentation/d/14cuLkEGzFLnWPOxOr7ncvXK_RBAiV2kzn7F86Dw5Ig8/edit?slide=id.p#slide=id.p",
+
+  /* OPTIONAL: show your slides as pictures instead of the Google embed.
+     Then the presenter window gets Next / Previous buttons (and the arrow
+     keys and space bar) that move the audience screen too.
+     Export your slides as pictures, upload them to the slides folder, and
+     list them here in order. Either list each one:
+       slideImages: ["slides/slide1.jpg", "slides/slide2.jpg", "slides/slide3.jpg"],
+     or, if they are numbered slide1, slide2, ... give a pattern and a count:
+       slideImages: { pattern: "slides/slide{n}.jpg", count: 12 },
+     Leave it as [] to use the Google Slides link above. */
+  slideImages: [],
 
   /* 0 = move through the slides yourself.
      A number, e.g. 15 = the slides move on by themselves every 15 seconds. */
