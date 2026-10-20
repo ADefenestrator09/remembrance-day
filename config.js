@@ -62,9 +62,10 @@ window.REMEMBRANCE_CONFIG = {
        glow       a soft vignette and a slowly "breathing" red light
        slowZoom   pictures drift and zoom gently
        crossfade  seconds a fade between pictures takes
+       intensity  how strong the effects are, 0.1 (barely there) to 1 (full)
      (Set respectReducedMotion: true below if you want computers that have
      animations turned off in their settings to get a still picture show.) */
-  effects: { petals: true, embers: true, glow: true, slowZoom: true, crossfade: 1.6 },
+  effects: { petals: true, embers: true, glow: true, slowZoom: true, crossfade: 1.6, intensity: 0.4 },
   respectReducedMotion: false,
 
   /* ---------- GOOGLE SLIDES ---------- */

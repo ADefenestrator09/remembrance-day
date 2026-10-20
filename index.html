@@ -282,8 +282,8 @@ html[data-stage="on"] body.tab-audio #petals { display: block; z-index: 6; }
 }
 
 /* soft effect: gentle vignette and a slow warm "breathing" light */
-#petals.fx-glow::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 55%, rgba(224,40,70,.20), rgba(224,40,70,0) 70%); mix-blend-mode: screen; animation: breathe 11s ease-in-out infinite; }
-#petals.fx-glow::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0,0,0,0) 52%, rgba(0,0,0,.5) 100%); }
+#petals.fx-glow::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 55%, rgba(224,40,70,calc(.2 * var(--fx, 1))), rgba(224,40,70,0) 70%); mix-blend-mode: screen; animation: breathe 11s ease-in-out infinite; }
+#petals.fx-glow::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0,0,0,0) 52%, rgba(0,0,0,calc(.15 + .35 * var(--fx, 1))) 100%); }
 @keyframes breathe { 0%, 100% { opacity: .25; transform: scale(.94); } 50% { opacity: 1; transform: scale(1.06); } }
 .g-slide.on .g-emb .emb { animation: beat 6s ease-in-out infinite; }
 @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
@@ -911,7 +911,7 @@ $("skipBtn").addEventListener("click", () => {
 /* ================================================================
    PICTURE SLIDESHOW, PRESENT MODE, AUDIENCE SCREEN, SOFT EFFECTS
    ================================================================ */
-const FX = Object.assign({ petals: true, embers: true, glow: true, slowZoom: true, crossfade: 1.6 }, CFG.effects || {});
+const FX = Object.assign({ petals: true, embers: true, glow: true, slowZoom: true, crossfade: 1.6, intensity: .4 }, CFG.effects || {});
 /* Many school and work computers have "animation effects" switched off, which would hide every soft effect. So by default the effects ignore that setting; set respectReducedMotion: true in config.js to honour it. */
 if (CFG.respectReducedMotion === true && window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { FX.petals = false; FX.embers = false; FX.slowZoom = false; document.documentElement.setAttribute("data-rm", "on"); }
 const SHOW_TITLE = CFG.showTrackTitle !== false;
@@ -1030,15 +1030,17 @@ function showBanner(text) {
 /* ---------- soft effects (shown only on the audience screen and in Present mode, on the Audio tab) ---------- */
 (function () {
   const host = $("petals"), r = (a, b) => a + Math.random() * (b - a), f = (x, d) => x.toFixed(d);
+  const K = Math.min(1, Math.max(.1, Number(FX.intensity) || .4)), M = .35 + .65 * K;   /* K: how strong the effects are */
+  host.style.setProperty("--fx", K);
   if (FX.glow) host.classList.add("fx-glow");
-  if (FX.petals) for (let i = 0; i < 22; i++) {
+  if (FX.petals) for (let i = 0; i < Math.max(4, Math.round(22 * K)); i++) {
     const p = document.createElement("i"); p.className = "petal";
-    p.style.cssText = "--l:" + f(r(0, 100), 1) + "%;--s:" + f(r(15, 32), 1) + "px;--d:" + f(r(15, 27), 1) + "s;--f:" + f(r(2.6, 5), 1) + "s;--delay:-" + f(r(0, 27), 1) + "s;--x1:" + f(r(-14, 14), 1) + "vw;--x2:" + f(r(-24, 24), 1) + "vw;--o:" + f(r(.6, .95), 2);
+    p.style.cssText = "--l:" + f(r(0, 100), 1) + "%;--s:" + f(r(15, 32), 1) + "px;--d:" + f(r(15, 27), 1) + "s;--f:" + f(r(2.6, 5), 1) + "s;--delay:-" + f(r(0, 27), 1) + "s;--x1:" + f(r(-14, 14), 1) + "vw;--x2:" + f(r(-24, 24), 1) + "vw;--o:" + f(r(.6, .95) * M, 2);
     p.appendChild(document.createElement("b")); host.appendChild(p);
   }
-  if (FX.embers) for (let i = 0; i < 20; i++) {
+  if (FX.embers) for (let i = 0; i < Math.max(3, Math.round(20 * K)); i++) {
     const m = document.createElement("i"); m.className = "mote";
-    m.style.cssText = "--l:" + f(r(2, 98), 1) + "%;--s:" + f(r(7, 17), 1) + "px;--d:" + f(r(11, 21), 1) + "s;--delay:-" + f(r(0, 21), 1) + "s;--x1:" + f(r(-7, 7), 1) + "vw;--o:" + f(r(.45, .9), 2);
+    m.style.cssText = "--l:" + f(r(2, 98), 1) + "%;--s:" + f(r(7, 17), 1) + "px;--d:" + f(r(11, 21), 1) + "s;--delay:-" + f(r(0, 21), 1) + "s;--x1:" + f(r(-7, 7), 1) + "vw;--o:" + f(r(.45, .9) * M, 2);
     host.appendChild(m);
   }
 })();

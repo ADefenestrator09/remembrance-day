@@ -136,6 +136,8 @@ CUSTOMIZATION SETTINGS (all in config.js)
                    glow       a soft vignette and a slowly breathing red light
                    slowZoom   pictures drift and zoom very slightly
                    crossfade  seconds a fade between pictures takes
+                   intensity  how strong the effects are: 0.1 (barely there)
+                              to 1 (full). The default is 0.4.
 
   respectReducedMotion   false (default) = the effects always run, even on a
                  computer with "animation effects" turned off in its
