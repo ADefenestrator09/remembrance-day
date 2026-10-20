@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-view="presenter" data-stage="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Remembrance Day</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>(function () { var a = new URLSearchParams(location.search).get("view") === "audience"; var h = document.documentElement; h.setAttribute("data-view", a ? "audience" : "presenter"); h.setAttribute("data-stage", a ? "on" : "off"); })();</script>
 <style>
   :root {
     --bg: #14110f;
@@ -97,14 +98,10 @@ body { background: radial-gradient(ellipse at 50% 35%, var(--glow) 0%, var(--bg)
 .sub::after { transform: scaleX(-1); }
 .card { box-shadow: 0 6px 24px rgba(0,0,0,.35); border-top: 2px solid rgba(200,16,46,.55); }
 #setup.done { border-top-width: 1px; }
-.corner { position: fixed; bottom: 0; width: clamp(110px, 20vw, 230px); height: auto; opacity: .55; pointer-events: none; }
-.corner.l { left: 0; } .corner.r { right: 0; transform: scaleX(-1); }
-@media (max-width: 800px), (max-height: 520px) { .corner { display: none; } }
 
 /* ---- tabs + media panels ---- */
 [hidden] { display: none !important; }
 main { position: relative; z-index: 1; }
-.corner { z-index: 0; }
 .tabs { display: flex; justify-content: center; gap: 6px; margin-bottom: clamp(8px, 1.6vh, 14px); flex: none; }
 .tabs button { min-width: 110px; padding: clamp(6px, 1vh, 9px) 16px; letter-spacing: .03em; }
 .tabs button.active { background: var(--poppy); border-color: var(--poppy); }
@@ -113,7 +110,6 @@ body.tab-video main, body.tab-slides main { max-width: min(1200px, 100%); height
 body.tab-video .sub, body.tab-slides .sub { display: none; }
 body.tab-video h1, body.tab-slides h1 { font-size: clamp(1.05rem, 3vh, 1.5rem); }
 body.tab-video .poppy-icon, body.tab-slides .poppy-icon { width: clamp(20px, 4vh, 30px); }
-body.tab-video .corner, body.tab-slides .corner { display: none; }
 .frame { flex: 1; min-height: 0; background: #000; border: 1px solid var(--line); border-top: 2px solid rgba(200,16,46,.55); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
 .frame iframe, .frame video { width: 100%; height: 100%; border: 0; background: #000; }
 .frame:fullscreen { border-radius: 0; border: 0; }
@@ -126,7 +122,7 @@ body.tab-video .corner, body.tab-slides .corner { display: none; }
 .mediabar button { padding: 6px 14px; font-size: .9rem; }
 .mediabar .note { align-self: center; color: var(--muted); font-size: .85rem; }
 .tabs { position: relative; }
-.fsbtn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); padding: 6px 9px !important; line-height: 0; min-width: 0 !important; }
+.fsbtn { padding: 6px 9px !important; line-height: 0; min-width: 0 !important; }
 
 /* ---- layout v2: larger audio panel, 16:9 video/slides ---- */
 #setup.done { display: none; }
@@ -174,76 +170,122 @@ main { padding: clamp(18px, 3.4vh, 32px) 0 clamp(8px, 1.6vh, 16px); box-sizing: 
 h1 { color: var(--title); }
 button.primary, .tabs button.active { color: #fff; }
 
-/* ---- themes (choose one in config.js, or try with ?theme=NAME on the address) ---- */
+/* ---- Maple look: deep red with a faint maple leaf and flag-style side bands ---- */
 body::before, body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+:root { --bg: #120708; --glow: #2c0e14; --panel: #1d1012; --text: #f5ece6; --muted: #b9a09b; --line: #4a2a2e; --track: #4a2a2e; --thumb: #f5ece6; --input: #0f0607; --poppy: #d1112f; }
+body::before { background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Cpath d=%22M100.0 0.0 L112.0 30.0 L124.0 24.0 L121.0 54.0 L148.0 38.0 L142.0 68.0 L172.0 70.0 L154.0 92.0 L166.0 110.0 L130.0 102.0 L134.0 128.0 L111.0 118.0 L104.0 156.0 L103.0 198.0 L97.0 198.0 L96.0 156.0 L89.0 118.0 L66.0 128.0 L70.0 102.0 L34.0 110.0 L46.0 92.0 L28.0 70.0 L58.0 68.0 L52.0 38.0 L79.0 54.0 L76.0 24.0 L88.0 30.0 L100.0 0.0 Z%22 fill=%22%23c8102e%22/%3E%3C/svg%3E") no-repeat center 54% / auto 84vh; opacity: .17; }
+body::after { background: linear-gradient(90deg, rgba(200,16,46,.26) 0, rgba(200,16,46,.26) 6vw, transparent 6vw, transparent calc(100% - 6vw), rgba(200,16,46,.26) calc(100% - 6vw)); }
+.card { background: rgba(26,13,15,.74); backdrop-filter: blur(1.5px); }
 
-/* field: poppies growing along the bottom edge */
-html[data-theme="field"] .corner { display: none; }
-html[data-theme="field"] body { background: radial-gradient(ellipse 80% 30% at 50% 106%, rgba(110,24,36,.45) 0%, transparent 72%), radial-gradient(ellipse at 50% 30%, var(--glow) 0%, var(--bg) 70%) fixed; }
-html[data-theme="field"] body::after { background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22640%22 height=%22130%22 viewBox=%220 0 640 130%22%3E%3Cpath d=%22M0 130 L0 108.6 L16 105.9 L32 105.7 L48 107.2 L64 108.7 L80 108.9 L96 107.5 L112 105.5 L128 104.5 L144 105.9 L160 109.8 L176 115.0 L192 119.5 L208 121.6 L224 120.8 L240 118.1 L256 115.3 L272 113.8 L288 114.0 L304 115.0 L320 115.4 L336 113.7 L352 110.0 L368 105.5 L384 102.0 L400 101.1 L416 103.2 L432 107.2 L448 111.3 L464 113.7 L480 114.2 L496 113.3 L512 112.7 L528 113.8 L544 116.5 L560 119.9 L576 122.0 L592 121.6 L608 118.3 L624 113.3 L640 108.6 L640 130 Z%22 fill=%22%23141c15%22/%3E%3Cpath d=%22M105.6 110.3 Q106.1 97.8 107.2 89.5%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.72%22/%3E%3Cpath d=%22M138.2 109.1 Q139.4 95.6 141.9 86.6%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.73%22/%3E%3Cpath d=%22M323.3 119.2 Q321.5 111.4 317.3 106.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.67%22/%3E%3Cpath d=%22M374.6 107.8 Q375.7 101.7 378.2 97.6%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.60%22/%3E%3Cpath d=%22M148.9 110.9 Q150.7 105.1 154.9 101.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.83%22/%3E%3Cpath d=%22M560.0 123.9 Q558.3 112.2 554.4 104.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.65%22/%3E%3Cpath d=%22M318.4 119.4 Q320.1 112.8 323.9 108.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.67%22/%3E%3Cpath d=%22M99.1 111.1 Q97.7 97.4 94.6 88.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.92%22/%3E%3Cpath d=%22M290.0 118.1 Q289.4 107.0 288.1 99.7%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.72%22/%3E%3Cpath d=%22M119.6 108.8 Q120.9 103.0 124.0 99.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.61%22/%3E%3Cpath d=%22M499.4 117.1 Q501.1 109.6 505.0 104.6%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.90%22/%3E%3Cpath d=%22M483.1 118.1 Q483.4 104.9 484.0 96.1%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.83%22/%3E%3Cpath d=%22M78.4 113.0 Q79.6 102.7 82.3 95.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.59%22/%3E%3Cpath d=%22M590.8 125.7 Q590.5 111.3 589.7 101.6%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.66%22/%3E%3Cpath d=%22M288.8 118.0 Q290.6 108.7 294.8 102.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.67%22/%3E%3Cpath d=%22M17.2 109.8 Q18.0 103.5 19.8 99.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.95%22/%3E%3Cpath d=%22M317.4 119.4 Q317.6 109.0 318.1 102.1%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.84%22/%3E%3Cpath d=%22M142.1 109.6 Q142.3 98.0 142.8 90.3%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.78%22/%3E%3Cpath d=%22M115.6 109.1 Q115.1 102.0 113.8 97.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.92%22/%3E%3Cpath d=%22M221.8 125.1 Q221.1 113.6 219.5 105.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.55%22/%3E%3Cpath d=%22M42.0 110.5 Q43.0 96.8 45.3 87.7%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.67%22/%3E%3Cpath d=%22M437.3 112.6 Q438.8 100.3 442.1 92.1%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.93%22/%3E%3Cpath d=%22M260.5 118.7 Q262.2 103.2 266.0 92.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.77%22/%3E%3Cpath d=%22M565.2 124.8 Q564.8 114.4 563.7 107.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.61%22/%3E%3Cpath d=%22M560.7 124.0 Q559.2 116.9 555.6 112.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.86%22/%3E%3Cpath d=%22M495.3 117.4 Q496.5 107.0 499.4 100.1%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.52%22/%3E%3Cpath d=%22M165.1 115.4 Q164.8 107.1 164.1 101.5%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.58%22/%3E%3Cpath d=%22M44.4 110.8 Q45.9 101.9 49.2 96.1%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.94%22/%3E%3Cpath d=%22M477.3 118.2 Q476.5 107.9 474.4 101.1%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.93%22/%3E%3Cpath d=%22M336.4 117.7 Q334.7 104.8 330.7 96.3%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.60%22/%3E%3Cpath d=%22M536.5 119.0 Q537.9 105.5 541.1 96.5%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.77%22/%3E%3Cpath d=%22M272.7 117.7 Q274.0 106.4 276.9 98.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.64%22/%3E%3Cpath d=%22M342.0 116.6 Q342.9 108.4 345.2 102.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.50%22/%3E%3Cpath d=%22M438.6 113.0 Q436.9 97.8 432.9 87.7%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.77%22/%3E%3Cpath d=%22M412.1 106.4 Q412.4 92.3 413.1 83.0%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.62%22/%3E%3Cpath d=%22M259.6 118.8 Q261.0 103.6 264.5 93.5%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.56%22/%3E%3Cpath d=%22M60.7 112.5 Q59.0 106.1 55.0 101.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.70%22/%3E%3Cpath d=%22M90.1 112.2 Q90.7 97.9 92.0 88.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.56%22/%3E%3Cpath d=%22M344.7 115.9 Q344.7 107.2 344.7 101.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.60%22/%3E%3Cpath d=%22M106.3 110.2 Q105.9 102.9 104.8 98.0%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.82%22/%3E%3Cpath d=%22M352.0 114.0 Q352.8 108.2 354.6 104.3%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.89%22/%3E%3Cpath d=%22M495.5 117.3 Q493.7 103.9 489.6 94.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.71%22/%3E%3Cpath d=%22M40.6 110.4 Q39.5 97.2 36.7 88.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.82%22/%3E%3Cpath d=%22M161.9 114.4 Q161.2 101.9 159.6 93.6%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.52%22/%3E%3Cpath d=%22M248.9 120.5 Q250.3 111.9 253.7 106.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.63%22/%3E%3Cpath d=%22M322.0 119.3 Q323.6 108.3 327.4 100.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.54%22/%3E%3Cpath d=%22M384.8 105.9 Q385.6 95.3 387.6 88.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.94%22/%3E%3Cpath d=%22M198.5 124.7 Q198.6 112.1 198.8 103.8%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.75%22/%3E%3Cpath d=%22M40.8 110.4 Q42.5 96.7 46.5 87.6%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.66%22/%3E%3Cpath d=%22M203.6 125.3 Q202.2 109.8 198.9 99.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.53%22/%3E%3Cpath d=%22M46.9 111.1 Q47.9 97.4 50.1 88.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.70%22/%3E%3Cpath d=%22M397.7 105.0 Q398.2 99.4 399.4 95.7%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.70%22/%3E%3Cpath d=%22M331.2 118.5 Q330.8 109.1 330.0 102.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.60%22/%3E%3Cpath d=%22M31.2 109.7 Q30.3 99.9 28.2 93.3%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.82%22/%3E%3Cpath d=%22M523.1 117.2 Q522.9 104.5 522.5 95.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.61%22/%3E%3Cpath d=%22M246.7 120.9 Q247.1 110.5 248.2 103.6%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.93%22/%3E%3Cpath d=%22M54.7 111.9 Q54.6 101.6 54.6 94.8%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.82%22/%3E%3Cpath d=%22M569.9 125.4 Q570.4 112.1 571.4 103.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.84%22/%3E%3Cpath d=%22M427.5 110.0 Q428.3 95.8 429.9 86.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.81%22/%3E%3Cpath d=%22M157.0 113.0 Q156.6 98.2 155.6 88.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.78%22/%3E%3Cpath d=%22M527.9 117.7 Q529.7 102.5 533.8 92.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.50%22/%3E%3Cpath d=%22M200.1 124.9 Q199.7 116.3 198.8 110.6%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.57%22/%3E%3Cpath d=%22M354.1 113.5 Q353.4 107.3 351.7 103.1%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.92%22/%3E%3Cpath d=%22M475.1 118.2 Q473.7 108.1 470.4 101.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.93%22/%3E%3Cpath d=%22M450.5 115.8 Q449.9 108.3 448.6 103.3%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.79%22/%3E%3Cpath d=%22M436.2 112.3 Q437.9 104.3 441.7 98.9%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.64%22/%3E%3Cpath d=%22M162.7 114.7 Q161.5 100.7 158.6 91.3%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.81%22/%3E%3Cpath d=%22M127.9 108.5 Q127.1 97.0 125.3 89.4%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.67%22/%3E%3Cpath d=%22M602.1 123.8 Q601.8 113.6 601.3 106.8%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.78%22/%3E%3Cpath d=%22M179.6 120.2 Q179.2 113.0 178.2 108.2%22 fill=%22none%22 stroke=%22%232b4128%22 stroke-width=%221.3%22 stroke-linecap=%22round%22 opacity=%220.62%22/%3E%3Cpath d=%22M21.3 108.6 C21.3 90.6 26.2 59.9 26.2 43.9%22 fill=%22none%22 stroke=%22%232f4a2d%22 stroke-width=%221.8%22 stroke-linecap=%22round%22/%3E%3Cg transform=%22translate(26.2 43.9) scale(0.20)%22%3E%3Cg fill=%22%23d0213a%22%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(72)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(144)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(216)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(288)%22/%3E%3C/g%3E%3Ccircle r=%229%22 fill=%22%2314110f%22/%3E%3C/g%3E%3Cpath d=%22M109.2 108.8 C109.2 90.8 107.5 88.4 107.5 72.4%22 fill=%22none%22 stroke=%22%232f4a2d%22 stroke-width=%221.8%22 stroke-linecap=%22round%22/%3E%3Cg transform=%22translate(107.5 72.4) scale(0.26)%22%3E%3Cg fill=%22%23b30f28%22%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(72)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(144)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(216)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(288)%22/%3E%3C/g%3E%3Ccircle r=%229%22 fill=%22%2314110f%22/%3E%3C/g%3E%3Cpath d=%22M201.3 124.1 C201.3 106.1 202.0 98.4 202.0 82.4%22 fill=%22none%22 stroke=%22%232f4a2d%22 stroke-width=%221.8%22 stroke-linecap=%22round%22/%3E%3Cg transform=%22translate(202.0 82.4) scale(0.20)%22%3E%3Cg fill=%22%23c8102e%22%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(72)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(144)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(216)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(288)%22/%3E%3C/g%3E%3Ccircle r=%229%22 fill=%22%2314110f%22/%3E%3C/g%3E%3Cpath d=%22M291.8 117.2 C291.8 99.2 283.9 93.1 283.9 77.1%22 fill=%22none%22 stroke=%22%232f4a2d%22 stroke-width=%221.8%22 stroke-linecap=%22round%22/%3E%3Cg transform=%22translate(283.9 77.1) scale(0.24)%22%3E%3Cg fill=%22%23c8102e%22%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(72)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(144)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(216)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(288)%22/%3E%3C/g%3E%3Ccircle r=%229%22 fill=%22%2314110f%22/%3E%3C/g%3E%3Cpath d=%22M351.2 113.3 C351.2 95.3 351.7 69.9 351.7 53.9%22 fill=%22none%22 stroke=%22%232f4a2d%22 stroke-width=%221.8%22 stroke-linecap=%22round%22/%3E%3Cg transform=%22translate(351.7 53.9) scale(0.28)%22%3E%3Cg fill=%22%23c8102e%22%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(72)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(144)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(216)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(288)%22/%3E%3C/g%3E%3Ccircle r=%229%22 fill=%22%2314110f%22/%3E%3C/g%3E%3Cpath d=%22M438.9 112.1 C438.9 94.1 434.8 80.7 434.8 64.7%22 fill=%22none%22 stroke=%22%232f4a2d%22 stroke-width=%221.8%22 stroke-linecap=%22round%22/%3E%3Cg transform=%22translate(434.8 64.7) scale(0.29)%22%3E%3Cg fill=%22%23d0213a%22%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(72)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(144)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(216)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(288)%22/%3E%3C/g%3E%3Ccircle r=%229%22 fill=%22%2314110f%22/%3E%3C/g%3E%3Cpath d=%22M535.6 117.9 C535.6 99.9 541.7 72.9 541.7 56.9%22 fill=%22none%22 stroke=%22%232f4a2d%22 stroke-width=%221.8%22 stroke-linecap=%22round%22/%3E%3Cg transform=%22translate(541.7 56.9) scale(0.29)%22%3E%3Cg fill=%22%23c8102e%22%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(72)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(144)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(216)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(288)%22/%3E%3C/g%3E%3Ccircle r=%229%22 fill=%22%2314110f%22/%3E%3C/g%3E%3Cpath d=%22M614.4 119.4 C614.4 101.4 619.8 99.0 619.8 83.0%22 fill=%22none%22 stroke=%22%232f4a2d%22 stroke-width=%221.8%22 stroke-linecap=%22round%22/%3E%3Cg transform=%22translate(619.8 83.0) scale(0.24)%22%3E%3Cg fill=%22%23d0213a%22%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(72)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(144)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(216)%22/%3E%3Cellipse cx=%220%22 cy=%22-22%22 rx=%2219%22 ry=%2223%22 transform=%22rotate(288)%22/%3E%3C/g%3E%3Ccircle r=%229%22 fill=%22%2314110f%22/%3E%3C/g%3E%3C/svg%3E") repeat-x left bottom / auto clamp(70px, 15vh, 150px); }
-
-/* paper: warm parchment with an inked border */
-html[data-theme="paper"] { --bg: #e7dcc3; --glow: #f7f0df; --panel: #fbf6ea; --text: #2b2118; --muted: #6a5a46; --line: #cbb98f; --poppy: #b30f28; --ok: #2e6b3a; --warn: #8a5a00; --bad: #a3281b; --track: #d6c8a5; --thumb: #fffaf0; --input: #fffaf0; --hover: rgba(80,60,30,.07); }
-html[data-theme="paper"] .corner { display: none; }
-html[data-theme="paper"] body::before { inset: clamp(8px, 1.6vh, 16px); border: 2px solid rgba(90,70,40,.6); outline: 1px solid rgba(90,70,40,.45); outline-offset: -8px; }
-html[data-theme="paper"] body::after { background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22220%22 height=%22220%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%22.85%22 numOctaves=%222%22 stitchTiles=%22stitch%22/%3E%3CfeColorMatrix values=%220 0 0 0 .35  0 0 0 0 .27  0 0 0 0 .15  0 0 0 .55 0%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E"); mix-blend-mode: multiply; opacity: .5; }
-html[data-theme="paper"] .card { box-shadow: 0 4px 14px rgba(70,50,20,.18); }
-html[data-theme="paper"] .poppy-icon { filter: drop-shadow(0 2px 3px rgba(90,60,20,.35)); }
-html[data-theme="paper"] .frame { box-shadow: 0 6px 18px rgba(70,50,20,.3); }
-
-/* vigil: night sky, stars and candlelight */
-html[data-theme="vigil"] { --bg: #070b17; --glow: #17213f; --panel: rgba(15,21,41,.9); --text: #f2ead6; --muted: #9aa3bd; --line: #2b3558; --track: #2b3558; --thumb: #f2ead6; --input: #0b1020; --title: #ecd299; --hover: rgba(255,255,255,.05); }
-html[data-theme="vigil"] .corner { display: none; }
-html[data-theme="vigil"] body::before { background: radial-gradient(ellipse 45% 32% at 50% 0%, rgba(255,196,110,.22), transparent 70%), url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Ccircle cx=%22249%22 cy=%22297%22 r=%220.6%22 fill=%22%23fff%22 opacity=%220.61%22/%3E%3Ccircle cx=%22310%22 cy=%22100%22 r=%220.6%22 fill=%22%23fff%22 opacity=%220.65%22/%3E%3Ccircle cx=%2245%22 cy=%22188%22 r=%220.8%22 fill=%22%23fff%22 opacity=%220.36%22/%3E%3Ccircle cx=%2241%22 cy=%22100%22 r=%220.8%22 fill=%22%23fff%22 opacity=%220.37%22/%3E%3Ccircle cx=%2273%22 cy=%22347%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.24%22/%3E%3Ccircle cx=%22319%22 cy=%2256%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.22%22/%3E%3Ccircle cx=%221%22 cy=%22349%22 r=%220.8%22 fill=%22%23fff%22 opacity=%220.58%22/%3E%3Ccircle cx=%22384%22 cy=%2266%22 r=%220.8%22 fill=%22%23fff%22 opacity=%220.31%22/%3E%3Ccircle cx=%22385%22 cy=%22216%22 r=%220.8%22 fill=%22%23fff%22 opacity=%220.25%22/%3E%3Ccircle cx=%22387%22 cy=%2279%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.31%22/%3E%3Ccircle cx=%22144%22 cy=%2266%22 r=%220.8%22 fill=%22%23fff%22 opacity=%220.30%22/%3E%3Ccircle cx=%22133%22 cy=%22327%22 r=%220.6%22 fill=%22%23fff%22 opacity=%220.48%22/%3E%3Ccircle cx=%22283%22 cy=%2226%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.60%22/%3E%3Ccircle cx=%22192%22 cy=%22126%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.41%22/%3E%3Ccircle cx=%2270%22 cy=%22102%22 r=%220.6%22 fill=%22%23fff%22 opacity=%220.67%22/%3E%3Ccircle cx=%22143%22 cy=%22162%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.35%22/%3E%3Ccircle cx=%22231%22 cy=%224%22 r=%220.6%22 fill=%22%23fff%22 opacity=%220.54%22/%3E%3Ccircle cx=%22249%22 cy=%22382%22 r=%220.6%22 fill=%22%23fff%22 opacity=%220.57%22/%3E%3Ccircle cx=%22372%22 cy=%22377%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.43%22/%3E%3Ccircle cx=%22357%22 cy=%22100%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.21%22/%3E%3Ccircle cx=%22299%22 cy=%22319%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.17%22/%3E%3Ccircle cx=%22378%22 cy=%2236%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.43%22/%3E%3Ccircle cx=%22145%22 cy=%2259%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.66%22/%3E%3Ccircle cx=%22218%22 cy=%22125%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.32%22/%3E%3Ccircle cx=%22320%22 cy=%22251%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.70%22/%3E%3Ccircle cx=%2265%22 cy=%2219%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.17%22/%3E%3Ccircle cx=%22296%22 cy=%22138%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.40%22/%3E%3Ccircle cx=%22169%22 cy=%2222%22 r=%220.6%22 fill=%22%23fff%22 opacity=%220.59%22/%3E%3Ccircle cx=%22134%22 cy=%2283%22 r=%220.8%22 fill=%22%23fff%22 opacity=%220.50%22/%3E%3Ccircle cx=%22315%22 cy=%2243%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.36%22/%3E%3Ccircle cx=%2224%22 cy=%22168%22 r=%220.8%22 fill=%22%23fff%22 opacity=%220.40%22/%3E%3Ccircle cx=%22400%22 cy=%22341%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.68%22/%3E%3Ccircle cx=%22276%22 cy=%22127%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.31%22/%3E%3Ccircle cx=%22162%22 cy=%2259%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.60%22/%3E%3Ccircle cx=%22213%22 cy=%2272%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.63%22/%3E%3Ccircle cx=%2272%22 cy=%22197%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.18%22/%3E%3Ccircle cx=%22318%22 cy=%22142%22 r=%220.6%22 fill=%22%23fff%22 opacity=%220.57%22/%3E%3Ccircle cx=%22145%22 cy=%22282%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.61%22/%3E%3Ccircle cx=%22106%22 cy=%22392%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.68%22/%3E%3Ccircle cx=%22136%22 cy=%2271%22 r=%220.6%22 fill=%22%23fff%22 opacity=%220.41%22/%3E%3Ccircle cx=%22309%22 cy=%22130%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.40%22/%3E%3Ccircle cx=%22327%22 cy=%22259%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.34%22/%3E%3Ccircle cx=%22258%22 cy=%22295%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.34%22/%3E%3Ccircle cx=%22337%22 cy=%22348%22 r=%221.3%22 fill=%22%23fff%22 opacity=%220.69%22/%3E%3Ccircle cx=%22383%22 cy=%22207%22 r=%220.8%22 fill=%22%23fff%22 opacity=%220.26%22/%3E%3Ccircle cx=%22145%22 cy=%22342%22 r=%221.0%22 fill=%22%23fff%22 opacity=%220.53%22/%3E%3C/svg%3E"); }
-html[data-theme="vigil"] body::after { background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22170%22 viewBox=%220 0 180 170%22%3E%3Cdefs%3E%3CradialGradient id=%22g%22%3E%3Cstop offset=%220%22 stop-color=%22%23ffc46b%22 stop-opacity=%22.6%22/%3E%3Cstop offset=%221%22 stop-color=%22%23ffc46b%22 stop-opacity=%220%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx=%2225.0%22 cy=%2290%22 r=%2248%22 fill=%22url(%23g)%22/%3E%3Crect x=%2214%22 y=%22108%22 width=%2222%22 height=%2262%22 rx=%223%22 fill=%22%23e8dcc0%22/%3E%3Crect x=%2229.0%22 y=%22108%22 width=%227.0%22 height=%2262%22 fill=%22%23cdbf9c%22 opacity=%22.55%22/%3E%3Crect x=%2224.0%22 y=%22101%22 width=%222%22 height=%227%22 fill=%22%232a2018%22/%3E%3Cpath d=%22M25.0 78 C33.0 90 31.0 99 25.0 100 C19.0 99 17.0 90 25.0 78 Z%22 fill=%22%23ffb347%22/%3E%3Cpath d=%22M25.0 85 C28.5 92 27.5 98 25.0 99 C22.5 98 21.5 92 25.0 85 Z%22 fill=%22%23fff0b8%22/%3E%3Ccircle cx=%2265.0%22 cy=%2252%22 r=%2248%22 fill=%22url(%23g)%22/%3E%3Crect x=%2254%22 y=%2270%22 width=%2222%22 height=%22100%22 rx=%223%22 fill=%22%23e8dcc0%22/%3E%3Crect x=%2269.0%22 y=%2270%22 width=%227.0%22 height=%22100%22 fill=%22%23cdbf9c%22 opacity=%22.55%22/%3E%3Crect x=%2264.0%22 y=%2263%22 width=%222%22 height=%227%22 fill=%22%232a2018%22/%3E%3Cpath d=%22M65.0 40 C73.0 52 71.0 61 65.0 62 C59.0 61 57.0 52 65.0 40 Z%22 fill=%22%23ffb347%22/%3E%3Cpath d=%22M65.0 47 C68.5 54 67.5 60 65.0 61 C62.5 60 61.5 54 65.0 47 Z%22 fill=%22%23fff0b8%22/%3E%3Ccircle cx=%22107.0%22 cy=%22102%22 r=%2248%22 fill=%22url(%23g)%22/%3E%3Crect x=%2296%22 y=%22120%22 width=%2222%22 height=%2250%22 rx=%223%22 fill=%22%23e8dcc0%22/%3E%3Crect x=%22111.0%22 y=%22120%22 width=%227.0%22 height=%2250%22 fill=%22%23cdbf9c%22 opacity=%22.55%22/%3E%3Crect x=%22106.0%22 y=%22113%22 width=%222%22 height=%227%22 fill=%22%232a2018%22/%3E%3Cpath d=%22M107.0 90 C115.0 102 113.0 111 107.0 112 C101.0 111 99.0 102 107.0 90 Z%22 fill=%22%23ffb347%22/%3E%3Cpath d=%22M107.0 97 C110.5 104 109.5 110 107.0 111 C104.5 110 103.5 104 107.0 97 Z%22 fill=%22%23fff0b8%22/%3E%3C/svg%3E") no-repeat left bottom / auto clamp(90px, 17vh, 190px), url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22180%22 height=%22170%22 viewBox=%220 0 180 170%22%3E%3Cdefs%3E%3CradialGradient id=%22g%22%3E%3Cstop offset=%220%22 stop-color=%22%23ffc46b%22 stop-opacity=%22.6%22/%3E%3Cstop offset=%221%22 stop-color=%22%23ffc46b%22 stop-opacity=%220%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx=%2281.0%22 cy=%22100%22 r=%2248%22 fill=%22url(%23g)%22/%3E%3Crect x=%2270%22 y=%22118%22 width=%2222%22 height=%2252%22 rx=%223%22 fill=%22%23e8dcc0%22/%3E%3Crect x=%2285.0%22 y=%22118%22 width=%227.0%22 height=%2252%22 fill=%22%23cdbf9c%22 opacity=%22.55%22/%3E%3Crect x=%2280.0%22 y=%22111%22 width=%222%22 height=%227%22 fill=%22%232a2018%22/%3E%3Cpath d=%22M81.0 88 C89.0 100 87.0 109 81.0 110 C75.0 109 73.0 100 81.0 88 Z%22 fill=%22%23ffb347%22/%3E%3Cpath d=%22M81.0 95 C84.5 102 83.5 108 81.0 109 C78.5 108 77.5 102 81.0 95 Z%22 fill=%22%23fff0b8%22/%3E%3Ccircle cx=%22121.0%22 cy=%2254%22 r=%2248%22 fill=%22url(%23g)%22/%3E%3Crect x=%22110%22 y=%2272%22 width=%2222%22 height=%2298%22 rx=%223%22 fill=%22%23e8dcc0%22/%3E%3Crect x=%22125.0%22 y=%2272%22 width=%227.0%22 height=%2298%22 fill=%22%23cdbf9c%22 opacity=%22.55%22/%3E%3Crect x=%22120.0%22 y=%2265%22 width=%222%22 height=%227%22 fill=%22%232a2018%22/%3E%3Cpath d=%22M121.0 42 C129.0 54 127.0 63 121.0 64 C115.0 63 113.0 54 121.0 42 Z%22 fill=%22%23ffb347%22/%3E%3Cpath d=%22M121.0 49 C124.5 56 123.5 62 121.0 63 C118.5 62 117.5 56 121.0 49 Z%22 fill=%22%23fff0b8%22/%3E%3Ccircle cx=%22161.0%22 cy=%2288%22 r=%2248%22 fill=%22url(%23g)%22/%3E%3Crect x=%22150%22 y=%22106%22 width=%2222%22 height=%2264%22 rx=%223%22 fill=%22%23e8dcc0%22/%3E%3Crect x=%22165.0%22 y=%22106%22 width=%227.0%22 height=%2264%22 fill=%22%23cdbf9c%22 opacity=%22.55%22/%3E%3Crect x=%22160.0%22 y=%2299%22 width=%222%22 height=%227%22 fill=%22%232a2018%22/%3E%3Cpath d=%22M161.0 76 C169.0 88 167.0 97 161.0 98 C155.0 97 153.0 88 161.0 76 Z%22 fill=%22%23ffb347%22/%3E%3Cpath d=%22M161.0 83 C164.5 90 163.5 96 161.0 97 C158.5 96 157.5 90 161.0 83 Z%22 fill=%22%23fff0b8%22/%3E%3C/svg%3E") no-repeat right bottom / auto clamp(90px, 17vh, 190px); }
-html[data-theme="vigil"] .card { border-top-color: rgba(216,178,106,.65); }
-html[data-theme="vigil"] h2 { color: #c9ab6b; }
-html[data-theme="vigil"] .sub::before, html[data-theme="vigil"] .sub::after { background: linear-gradient(90deg, transparent, #c9ab6b); }
-
-/* maple: deep red with a faint maple leaf and flag-style side bands */
-html[data-theme="maple"] { --bg: #120708; --glow: #2c0e14; --panel: #1d1012; --text: #f5ece6; --muted: #b9a09b; --line: #4a2a2e; --track: #4a2a2e; --thumb: #f5ece6; --input: #0f0607; --poppy: #d1112f; }
-html[data-theme="maple"] .corner { display: none; }
-html[data-theme="maple"] body::before { background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Cpath d=%22M100.0 0.0 L112.0 30.0 L124.0 24.0 L121.0 54.0 L148.0 38.0 L142.0 68.0 L172.0 70.0 L154.0 92.0 L166.0 110.0 L130.0 102.0 L134.0 128.0 L111.0 118.0 L104.0 156.0 L103.0 198.0 L97.0 198.0 L96.0 156.0 L89.0 118.0 L66.0 128.0 L70.0 102.0 L34.0 110.0 L46.0 92.0 L28.0 70.0 L58.0 68.0 L52.0 38.0 L79.0 54.0 L76.0 24.0 L88.0 30.0 L100.0 0.0 Z%22 fill=%22%23c8102e%22/%3E%3C/svg%3E") no-repeat center 54% / auto 84vh; opacity: .17; }
-html[data-theme="maple"] body::after { background: linear-gradient(90deg, rgba(200,16,46,.26) 0, rgba(200,16,46,.26) 6vw, transparent 6vw, transparent calc(100% - 6vw), rgba(200,16,46,.26) calc(100% - 6vw)); }
-html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter: blur(1.5px); }
-
-/* corner poppies: scaled with the screen height so they sit in the space under the cards */
-.corner { height: clamp(84px, 17vh, 170px); width: auto; aspect-ratio: 230 / 190; opacity: .6; }
 .vlist { display: flex; gap: 8px; justify-content: center; flex: none; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
 .vlist button { white-space: nowrap; padding: clamp(5px, .9vh, 8px) 16px; font-size: .95rem; }
 .vlist button.active { background: var(--poppy); border-color: var(--poppy); color: #fff; }
 
-/* ---- presenter / audience screen ---- */
-.audbtn { position: absolute; left: 0; top: 50%; transform: translateY(-50%); padding: 6px 12px !important; min-width: 0 !important; display: inline-flex; align-items: center; gap: 7px; font-size: .9rem; }
-.audbtn svg { flex: none; }
-.audbtn.on { border-color: #4caf6a; }
-.audbtn.on::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #4caf6a; box-shadow: 0 0 8px #4caf6a; }
-@media (max-width: 1000px) { .audbtn .lbl { display: none; } }
-.stage { position: relative; }
-.audhint { position: absolute; inset: 0; z-index: 2; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 20px;
-  background: rgba(18,7,8,.94); border: 1px solid var(--line); border-radius: 12px; }
-.audhint.on { display: flex; }
-.audhint p { margin: 0; max-width: 34em; color: var(--muted); }
-.audhint h3 { margin: 0; font-weight: 400; }
+/* ---- toolbar (top right of the tab row) ---- */
+.toolbar { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; gap: 8px; align-items: center; }
+.tabs .toolbar button { min-width: 0 !important; padding: 6px 10px !important; font-size: .9rem; display: inline-flex; align-items: center; gap: 7px; line-height: 1; }
+.tabs .toolbar button svg { flex: none; }
+.tabs .toolbar .fsbtn { padding: 6px 9px !important; }
+#audBtn.live { border-color: var(--ok); color: var(--text); }
+#audBtn.live::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+@media (max-width: 1000px) { .toolbar .lbl { display: none; } }
+@media (max-width: 640px) { #presentBtn, #audBtn { display: none; } }
 
-@media (max-width: 600px) { .audbtn, .fsbtn { display: none !important; } }
+/* ---- remote cards (shown on the presenter screen while the audience screen is open) ---- */
+.remote { display: none; flex: 1; min-height: 0; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 20px; border: 1px solid var(--line); border-top: 2px solid rgba(200,16,46,.55); border-radius: 12px; background: rgba(26,13,15,.74); }
+.remote h3 { margin: 0; font-weight: normal; font-size: clamp(1.1rem, 3vh, 1.6rem); }
+.remote .fine { max-width: 520px; margin: 0; }
+html[data-remote] #panel-slides .stage, html[data-remote] #panel-video .stage { display: none; }
+html[data-remote] .remote { display: flex; }
+html[data-stage="on"] .remote { display: none !important; }
 
-/* ---- soft drifting leaves ---- */
-#drift { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-#drift svg { position: absolute; top: -12vh; fill: var(--poppy); opacity: 0; animation: fall linear infinite; }
+/* ---- stage: Present mode and the audience screen ---- */
+html[data-stage="on"], html[data-stage="on"] body { overflow: hidden; }
+html[data-stage="on"] body { padding: 0; }
+html[data-stage="on"] main { max-width: none; width: 100%; height: 100%; max-height: none; padding: 0; overflow: visible; }
+html[data-stage="on"] main > .poppy-icon, html[data-stage="on"] main > h1, html[data-stage="on"] main > .sub,
+html[data-stage="on"] main > .tabs, html[data-stage="on"] #panel-audio { display: none !important; }
+html[data-stage="on"] .panel.media { position: fixed; inset: 0; z-index: 5; background: #000; margin: 0; gap: 0; }
+html[data-stage="on"] .vlist { display: none; }
+html[data-stage="on"] .stage { width: 100%; height: 100%; }
+html[data-stage="on"] .stage .frame { border: 0; border-radius: 0; box-shadow: none; }
+html[data-stage="on"] body::after { display: none; }
+html[data-stage="on"] body:not(.tab-audio) { background: #000; }
+html[data-stage="on"][data-view="presenter"]:not(.bar-on) body { cursor: none; }
+
+/* ---- picture slideshow (gallery) ---- */
+#gallery, #petals, #banner, #presentBar, #barZone, #audStart, #toast { display: none; }
+html[data-stage="on"] body.tab-audio #gallery { display: block; }
+#gallery { position: fixed; inset: 0; z-index: 5; overflow: hidden; }
+.g-slide { position: absolute; inset: 0; opacity: 0; transition: opacity var(--fade, 1.6s) ease-in-out; }
+.g-slide.on { opacity: 1; }
+.g-slide .bgblur { position: absolute; inset: -6%; background-size: cover; background-position: center; filter: blur(30px) brightness(.4) saturate(1.1); }
+.g-slide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.g-slide.on img { animation: kenA var(--hold, 14s) ease-out forwards; }
+.g-slide.alt.on img { animation-name: kenB; }
+.g-slide.nokb img, .g-slide.nokb.on img { animation: none; }
+@keyframes kenA { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.06) translate(-.8%, -.6%); } }
+@keyframes kenB { from { transform: scale(1.06) translate(.8%, .6%); } to { transform: scale(1) translate(0, 0); } }
+.g-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 7vh 6vw 4.5vh; text-align: center; font-size: clamp(1.1rem, 3.4vh, 2.2rem); letter-spacing: .03em; color: var(--text); text-shadow: 0 2px 14px rgba(0,0,0,.9); background: linear-gradient(to top, rgba(0,0,0,.62), transparent); }
+.g-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3.2vh; padding: 8vh 10vw; text-align: center; }
+.g-text .emb { width: clamp(46px, 9vh, 92px); height: auto; margin: 0; filter: drop-shadow(0 0 16px rgba(209,17,47,.55)); }
+.g-text .g-line { font-size: clamp(2rem, 7.4vh, 5.2rem); letter-spacing: .03em; line-height: 1.22; color: var(--text); text-shadow: 0 2px 22px rgba(0,0,0,.55); }
+.g-text .g-note { font-size: clamp(1.1rem, 3.2vh, 2rem); color: var(--muted); font-style: italic; letter-spacing: .04em; }
+.g-slide.on .g-text > * { animation: rise 1.8s ease-out both; }
+.g-slide.on .g-text > :nth-child(2) { animation-delay: .25s; }
+.g-slide.on .g-text > :nth-child(3) { animation-delay: .5s; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+#banner { position: fixed; left: 0; right: 0; top: 0; z-index: 7; padding: 4.5vh 4vw 7vh; text-align: center; font-size: clamp(1.4rem, 4.2vh, 3rem); letter-spacing: .06em; color: var(--text); text-shadow: 0 2px 16px rgba(0,0,0,.9); background: linear-gradient(to bottom, rgba(0,0,0,.6), transparent); opacity: 0; transition: opacity 1.4s ease; pointer-events: none; }
+#banner.on { opacity: 1; }
+html[data-stage="on"] body.tab-audio #banner { display: block; }
+
+/* ---- soft effect: drifting poppy petals ---- */
+#petals { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+body.tab-audio #petals { display: block; }
+html[data-stage="on"] #petals { z-index: 6; }
+.petal { position: absolute; top: 0; left: var(--l); width: var(--s); height: calc(var(--s) * 1.35); border-radius: 80% 8% 80% 8%; background: radial-gradient(circle at 30% 25%, #ea5a73, #b30f28 72%); opacity: var(--o); animation: fall var(--d) linear var(--delay) infinite; will-change: transform; }
+html[data-stage="on"] .petal { opacity: calc(var(--o) * .85); }
 @keyframes fall {
-  0%   { transform: translate(0,0) rotate(0deg); opacity: 0; }
-  8%   { opacity: var(--o, .2); }
-  50%  { transform: translate(calc(var(--dx) * .5), 62vh) rotate(calc(var(--rot) * .5)); }
-  92%  { opacity: var(--o, .2); }
-  100% { transform: translate(var(--dx), 128vh) rotate(var(--rot)); opacity: 0; }
+  0%   { transform: translate3d(0, -12vh, 0) rotate(0deg); }
+  50%  { transform: translate3d(var(--x1), 52vh, 0) rotate(170deg); }
+  100% { transform: translate3d(var(--x2), 114vh, 0) rotate(350deg); }
 }
-@media (prefers-reduced-motion: reduce) { #drift { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .g-slide { transition-duration: .01s !important; }
+  .g-slide.on img, .g-slide.on .g-text > * { animation: none !important; }
+}
+
+/* ---- Present mode: floating control bar ---- */
+#barZone { position: fixed; top: 0; left: 0; right: 0; height: 44px; z-index: 11; }
+html[data-view="presenter"][data-stage="on"] #barZone { display: block; }
+#presentBar { position: fixed; top: 14px; left: 50%; z-index: 12; transform: translate(-50%, -150%); opacity: 0; pointer-events: none; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 14px; background: rgba(18,7,8,.94); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.55); transition: transform .35s ease, opacity .35s ease; max-width: calc(100vw - 24px); }
+html[data-view="presenter"][data-stage="on"] #presentBar { display: flex; }
+html.bar-on #presentBar { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+#presentBar button { padding: 7px 12px; font-size: 1rem; line-height: 1; }
+#presentBar .pb-group { display: none; gap: 6px; align-items: center; }
+#presentBar[data-tab="audio"] .pb-audio { display: flex; }
+#presentBar[data-tab="video"][data-multi] .pb-video { display: flex; }
+#presentBar .pb-info { display: flex; flex-direction: column; align-items: center; min-width: 8ch; max-width: 30ch; line-height: 1.25; }
+#presentBar #pbTitle { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+#presentBar #pbTime { color: var(--muted); font-size: .8rem; min-height: 1em; }
+#presentBar .pb-tabs { display: flex; gap: 4px; padding-left: 12px; border-left: 1px solid var(--line); }
+#presentBar .pb-tabs button { font-size: .85rem; padding: 6px 10px; }
+#presentBar .pb-tabs button.active { background: var(--poppy); border-color: var(--poppy); color: #fff; }
+#presentBar #pbExit { margin-left: 2px; }
+
+/* ---- audience screen start overlay ---- */
+#audStart { position: fixed; inset: 0; z-index: 30; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(10,4,5,.95); text-align: center; cursor: pointer; padding: 24px; }
+html[data-view="audience"] #audStart:not(.gone) { display: flex; }
+#audStart .emb { width: clamp(50px, 10vh, 90px); height: auto; margin: 0; filter: drop-shadow(0 0 18px rgba(209,17,47,.6)); }
+#audStart h2 { margin: 0; font-size: clamp(1.4rem, 4vh, 2.4rem); color: var(--text); text-transform: none; letter-spacing: .04em; }
+#audStart p { margin: 0; color: var(--muted); font-size: clamp(1rem, 2.4vh, 1.3rem); }
+
+/* ---- small message at the bottom of the screen ---- */
+#toast { position: fixed; left: 50%; bottom: 4vh; z-index: 40; transform: translateX(-50%); max-width: min(560px, 92vw); padding: 10px 16px; border-radius: 10px; background: rgba(18,7,8,.95); border: 1px solid var(--line); color: var(--text); font-size: .95rem; text-align: center; opacity: 0; transition: opacity .3s ease; pointer-events: none; }
+#toast.on { display: block; opacity: 1; }
 </style>
 </head>
 <body class="tab-audio">
-<svg class="corner l" viewBox="0 0 230 190" aria-hidden="true"><g fill="none" stroke="#3d5a3a" stroke-width="2.2" stroke-linecap="round"><path d="M30 190C34 150 40 120 58 88"/><path d="M80 190C80 160 96 130 118 112"/><path d="M130 190C128 170 138 150 156 140"/></g><g fill="#3d5a3a"><path d="M36 160C20 156 12 146 10 136C26 138 36 146 36 160Z"/><path d="M84 168C98 160 104 150 104 140C90 144 84 154 84 168Z"/></g><g transform="translate(58 82) scale(0.5)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(120 104) scale(0.42)"><g fill="#a80d26"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(158 134) scale(0.3)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g></svg><svg class="corner r" viewBox="0 0 230 190" aria-hidden="true"><g fill="none" stroke="#3d5a3a" stroke-width="2.2" stroke-linecap="round"><path d="M30 190C34 150 40 120 58 88"/><path d="M80 190C80 160 96 130 118 112"/><path d="M130 190C128 170 138 150 156 140"/></g><g fill="#3d5a3a"><path d="M36 160C20 156 12 146 10 136C26 138 36 146 36 160Z"/><path d="M84 168C98 160 104 150 104 140C90 144 84 154 84 168Z"/></g><g transform="translate(58 82) scale(0.5)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(120 104) scale(0.42)"><g fill="#a80d26"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g><g transform="translate(158 134) scale(0.3)"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><circle r="9" fill="#14110f"/></g></svg>
-<div id="drift" aria-hidden="true"></div>
 <main>
   <svg class="poppy-icon" viewBox="-50 -50 100 100" aria-hidden="true"><g fill="#c8102e"><ellipse cx="0" cy="-22" rx="19" ry="23"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(72)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(144)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(216)"/><ellipse cx="0" cy="-22" rx="19" ry="23" transform="rotate(288)"/></g><g fill="#e0334d" opacity=".55"><ellipse cx="-4" cy="-26" rx="8" ry="12"/><ellipse cx="-4" cy="-26" rx="8" ry="12" transform="rotate(144)"/><ellipse cx="-4" cy="-26" rx="8" ry="12" transform="rotate(288)"/></g><circle r="10" fill="#14110f"/><path d="M0 -10V-17M7 -7L12 -12M10 3L16 5M0 10V17M-10 3L-16 5M-7 -7L-12 -12" fill="none" stroke="#14110f" stroke-width="2"/></svg>
   <h1>Remembrance Day</h1>
@@ -254,8 +296,11 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
     <button id="tab-audio" class="active" role="tab" aria-selected="true">&#9834; Audio</button>
     <button id="tab-slides" role="tab" aria-selected="false">&#9636; Slideshow</button>
     <button id="tab-video" role="tab" aria-selected="false">&#9654; Video</button>
-    <button id="audBtn" class="audbtn" title="Open the audience screen (drag it onto the projector)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span class="lbl">Audience screen</span></button>
-    <button id="fsBtn" class="fsbtn" title="Fullscreen" aria-label="Fullscreen" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <div class="toolbar">
+      <button id="presentBtn" title="Present on this screen: hides the controls and shows the picture slideshow"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span class="lbl">Present</span></button>
+      <button id="audBtn" title="Open the audience screen (a second window for the projector)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg><span class="lbl">Audience</span></button>
+      <button id="fsBtn" class="fsbtn" title="Fullscreen" aria-label="Fullscreen" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    </div>
   </nav>
   <div id="panel-audio" class="panel">
   <section class="card" id="setup">
@@ -318,7 +363,7 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
 
   <div id="panel-video" class="panel media" hidden>
     <div class="vlist" id="videoList" hidden></div>
-    <div class="stage"><div class="audhint" id="hint-video"></div><div class="frame" id="videoFrame">
+    <div class="stage"><div class="frame" id="videoFrame">
       <div class="empty" id="videoEmpty">
         <h3>Add your video</h3>
         <p class="fine">Pick a video file from this computer (works with no internet):</p>
@@ -328,10 +373,15 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
         <div class="status" id="videoStatus"></div>
       </div>
     </div></div>
+    <div class="remote" id="videoRemote">
+      <h3>The video is on the audience screen</h3>
+      <div class="row"><button class="primary" id="vrPlay">▶ Play</button><button id="vrPause">⏸ Pause</button></div>
+      <p class="fine">If a button doesn't respond, click the video on the audience screen instead.</p>
+    </div>
   </div>
 
   <div id="panel-slides" class="panel media" hidden>
-    <div class="stage"><div class="audhint" id="hint-slides"></div><div class="frame" id="slidesFrame">
+    <div class="stage"><div class="frame" id="slidesFrame">
       <div class="empty" id="slidesEmpty">
         <h3>Add your Google Slides</h3>
         <p class="fine">In Google Slides choose <b>File &rarr; Share &rarr; Publish to web</b> (or set sharing to &ldquo;Anyone with the link&rdquo;), then paste the link or the embed code here. The slideshow needs an internet connection.</p>
@@ -339,8 +389,42 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
         <div class="status" id="slidesStatus"></div>
       </div>
     </div></div>
+    <div class="remote" id="slidesRemote">
+      <h3>The slideshow is on the audience screen</h3>
+      <p class="fine">Click the slides on that screen, then use the arrow keys (or the arrows on the slide) to move through them.</p>
+    </div>
   </div>
 </main>
+
+
+<div id="gallery" aria-hidden="true"></div>
+<div id="petals" aria-hidden="true"></div>
+<div id="banner" aria-hidden="true"></div>
+<div id="barZone" aria-hidden="true"></div>
+<div id="presentBar" role="toolbar" aria-label="Presenter controls" data-tab="audio">
+  <div class="pb-group pb-audio">
+    <button id="pbPrev" title="Previous (left arrow)" aria-label="Previous">⏮</button>
+    <button id="pbPlay" class="primary" title="Play / pause (space)" aria-label="Play or pause">▶</button>
+    <button id="pbNext" title="Next (right arrow)" aria-label="Next">⏭</button>
+  </div>
+  <div class="pb-group pb-video">
+    <button id="pbVPrev" title="Previous video" aria-label="Previous video">◀</button>
+    <button id="pbVNext" title="Next video" aria-label="Next video">▶</button>
+  </div>
+  <div class="pb-info"><span id="pbTitle">—</span><small id="pbTime"></small></div>
+  <div class="pb-tabs">
+    <button data-tab="audio" title="Audio (1)">Audio</button>
+    <button data-tab="slides" title="Slideshow (2)">Slides</button>
+    <button data-tab="video" title="Video (3)">Video</button>
+  </div>
+  <button id="pbExit" title="Exit (Esc)" aria-label="Exit present mode">✕</button>
+</div>
+<div id="audStart" role="button" tabindex="0">
+  <div class="emb-slot"></div>
+  <h2>Audience screen</h2>
+  <p>Click anywhere on this screen once to start. It will go full screen.</p>
+</div>
+<div id="toast" role="status"></div>
 
 <audio id="audio" preload="auto"></audio>
 
@@ -349,9 +433,10 @@ html[data-theme="maple"] .card { background: rgba(26,13,15,.74); backdrop-filter
 <script>
 /* Settings (tracks, slideshow, video) are read from config.js */
 const CFG = window.REMEMBRANCE_CONFIG || { tracks: [], slidesUrl: "", videoSrc: "" };
-const THEME = "maple";   /* this page uses the maple look only */
-document.documentElement.setAttribute("data-theme", THEME);
-const TRACKS = CFG.tracks.map(t => ({ title: t.title, src: t.src }));
+const IS_AUD = document.documentElement.getAttribute("data-view") === "audience";
+const chan = ("BroadcastChannel" in window) ? new BroadcastChannel("remembrance-day") : null;
+function send(m) { if (chan) { try { chan.postMessage(m); } catch (e) {} } }
+const TRACKS = (CFG.tracks || []).map(t => ({ title: t.title, src: t.src, gallery: t.gallery, interval: t.interval }));
 
 const $ = id => document.getElementById(id);
 const audio = $("audio");
@@ -359,6 +444,7 @@ let current = 0;
 let audioCtx = null;
 let toneHeard = false;
 let filesOk = false;
+let audienceOn = false, presenting = false, presentFs = false, videoIndex = 0, stageTrack = 0, bannerFor = -1;let syncT = null, toastT = null, bannerT = null, barT = null;
 
 function mark(id, state) { $(id).className = state; }
 function fmt(t) {
@@ -432,54 +518,41 @@ $("noHearBtn").addEventListener("click", () => {
 
 /* ---------- Check 4: do the audio files load? ---------- */
 function probe(src) {
-  /* resolves "ok", "fail" (real load error, e.g. 404) or "unknown" (no answer in time;
-     some browsers, notably iPhones/iPads, don't report anything until you press play) */
   return new Promise(resolve => {
     const a = new Audio();
-    const done = r => { a.removeAttribute("src"); resolve(r); };
+    const done = ok => { a.removeAttribute("src"); resolve(ok); };
     a.preload = "metadata";
-    a.addEventListener("loadedmetadata", () => done("ok"), { once: true });
-    a.addEventListener("error", () => done("fail"), { once: true });
-    setTimeout(() => done("unknown"), 8000);
+    a.addEventListener("loadedmetadata", () => done(true), { once: true });
+    a.addEventListener("error", () => done(false), { once: true });
+    setTimeout(() => done(false), 6000);
     a.src = src;
   });
 }
 
-/* If "audio/name.mp3" is missing, also try "name.mp3" next to index.html. */
-async function resolveTrack(t) {
-  let r = await probe(t.src);
-  const alt = t.src.split("/").pop();
-  if (r === "fail" && alt !== t.src) {
-    const r2 = await probe(alt);
-    if (r2 !== "fail") { t.src = alt; r = r2; }
-  }
-  t.ok = r !== "fail";
-}
-
-let filesDone = false;
 async function checkFiles() {
   if (!TRACKS.length) {
     mark("c-files", "fail");
     setStatus($("setupStatus"), "No audio tracks found. Check that config.js is in the same folder as index.html.", "bad");
     return;
   }
-  await Promise.all(TRACKS.map(resolveTrack));
-  filesOk = TRACKS.every(t => t.ok);
-  filesDone = true;
+  const results = await Promise.all(TRACKS.map(t => probe(t.src)));
+  results.forEach((ok, i) => TRACKS[i].ok = ok);
+  filesOk = results.every(Boolean);
   mark("c-files", filesOk ? "pass" : "fail");
   if (!filesOk) {
-    const missing = TRACKS.filter(t => !t.ok).map(t => t.src).join(", ");
-    setStatus($("setupStatus"), "Couldn't find: " + missing + ". Check the file names and the audio folder (see README).", "warn");
+    const missing = TRACKS.filter(t => !t.ok).map(t => t.title).join(", ");
+    const msg = location.protocol === "file:" ? "" : "";
+    setStatus($("setupStatus"), "Couldn't load: " + missing + ". Try reloading the page." + msg, "warn");
   }
   tryFinishSetup();
 }
-checkFiles();
+if (!IS_AUD) checkFiles();
 
 
 /* ---------- Reveal the player once everything passes ---------- */
 let playerShown = false;
 function tryFinishSetup() {
-  if (playerShown || !toneHeard || !filesDone) return;
+  if (playerShown || !toneHeard || !filesOk) return;
   playerShown = true;
   $("setup").classList.add("done");
   setStatus($("setupStatus"), "✓ Audio check passed", "ok");
@@ -487,8 +560,6 @@ function tryFinishSetup() {
   $("listCard").style.display = "block";
   buildList();
   loadTrack(0, false);
-  if (!filesOk) setStatus($("playStatus"), "Some audio files weren't found: " + TRACKS.filter(t => !t.ok).map(t => t.src).join(", "), "warn");
-  TRACKS.forEach((t, i) => { if (!t.ok) { const g = $("tag" + i); if (g) { g.textContent = "missing"; g.className = "tag bad"; } } });
 }
 
 /* ---------- Player ---------- */
@@ -514,7 +585,9 @@ function loadTrack(i, autoplay) {
   document.querySelectorAll("#trackList li").forEach((li, idx) => li.classList.toggle("active", idx === current));
   $("prevBtn").disabled = false;
   $("nextBtn").textContent = current === TRACKS.length - 1 ? "Restart ↺" : "Next ⏭";
+  stageTrack = current; bannerFor = -1; onTrackLoaded();
   if (autoplay) play();
+  syncSoon();
 }
 
 function play() {
@@ -555,18 +628,31 @@ $("seek").addEventListener("input", e => {
 $("vol").addEventListener("input", e => { audio.volume = parseFloat(e.target.value); });
 audio.volume = 0.8;
 
-/* Keyboard: space = play/pause, → = next, ← = previous */
+/* Keyboard: space = play/pause, → = next, ← = previous; 1 / 2 / 3 = Audio / Slideshow / Video */
+function handleKey(code) {
+  if (code === "Digit1") { showTab("audio"); return true; }
+  if (code === "Digit2") { showTab("slides"); return true; }
+  if (code === "Digit3") { showTab("video"); return true; }
+  if (currentTab() === "audio" && playerShown) {
+    if (code === "Space") { $("playBtn").click(); return true; }
+    if (code === "ArrowRight") { $("nextBtn").click(); return true; }
+    if (code === "ArrowLeft") { $("prevBtn").click(); return true; }
+  }
+  return false;
+}
 document.addEventListener("keydown", e => {
-  if (!playerShown || document.body.className !== "tab-audio" || e.target.tagName === "INPUT" && e.target.type !== "range" && e.target.type !== "checkbox") return;
-  if (e.code === "Space") { e.preventDefault(); $("playBtn").click(); }
-  else if (e.code === "ArrowRight") $("nextBtn").click();
-  else if (e.code === "ArrowLeft") $("prevBtn").click();
+  if (IS_AUD) return;   /* the audience window has its own handler */
+  const t = e.target;
+  if (t.tagName === "INPUT" && t.type !== "range" && t.type !== "checkbox") return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (handleKey(e.code)) e.preventDefault();
 });
 
 const SLIDES_URL = CFG.slidesUrl || "";
 const VIDEOS = (Array.isArray(CFG.videos) && CFG.videos.length ? CFG.videos : (CFG.videoSrc ? [{ title: "Video", src: CFG.videoSrc }] : []))
   .map((v, i) => ({ title: v.title || ("Video " + (i + 1)), src: v.src }));
 const VIDEO_SRC = "";
+const SLIDES_AUTO = Math.max(0, Number(CFG.slidesAutoplaySeconds) || 0);
 
 /* ---------- tab switching ---------- */
 function showTab(name) {
@@ -577,7 +663,7 @@ function showTab(name) {
     $("tab-" + n).setAttribute("aria-selected", n === name ? "true" : "false");
   });
   document.body.className = "tab-" + name;
-  if (window.sendState) { sendState(); updateHints(); }
+  refreshStage(); updateBar(); syncSoon();
 }
 ["audio", "slides", "video"].forEach(n => $("tab-" + n).addEventListener("click", () => showTab(n)));
 
@@ -592,7 +678,7 @@ function slidesEmbed(raw) {
   raw = (raw || "").trim();
   const sm = raw.match(/src=["']([^"']+)["']/);
   if (sm) raw = sm[1].replace(/&amp;/g, "&");
-  const q = "?start=false&loop=false&delayms=3000";
+  const q = "?start=" + (SLIDES_AUTO > 0) + "&loop=false&delayms=" + (SLIDES_AUTO > 0 ? SLIDES_AUTO * 1000 : 3000);
   let m = raw.match(/\/presentation\/d\/e\/([\w-]+)/);
   if (m) return "https://docs.google.com/presentation/d/e/" + m[1] + "/embed" + q;
   m = raw.match(/\/presentation\/d\/([\w-]+)/);
@@ -601,7 +687,7 @@ function slidesEmbed(raw) {
 }
 function loadSlides(raw, save) {
   const url = slidesEmbed(raw);
-  if (!url) { setStatus($("slidesStatus"), "That doesn't look like a Google Slides link. Copy it from the Share or Publish to web window.", "bad"); return false; }
+  if (!url) { setStatus(slidesEmptyEl.querySelector("#slidesStatus"), "That doesn't look like a Google Slides link. Copy it from the Share or Publish to web window.", "bad"); return false; }
   const f = document.createElement("iframe");
   f.id = "slidesIframe"; f.src = url; f.allowFullscreen = true; f.setAttribute("allow", "fullscreen"); f.title = "Slideshow";
   $("slidesFrame").replaceChildren(f);
@@ -624,7 +710,7 @@ function videoSource(raw) {
     let start = 0;
     const tm = raw.match(/[?&#](?:t|start)=(?:(\d+)h)?(?:(\d+)m)?(\d+)?s?/);
     if (tm) start = (+tm[1] || 0) * 3600 + (+tm[2] || 0) * 60 + (+tm[3] || 0);
-    return { type: "iframe", src: "https://www.youtube-nocookie.com/embed/" + m[1] + "?rel=0" + (start ? "&start=" + start : ""), open: "https://www.youtube.com/watch?v=" + m[1] + (start ? "&t=" + start + "s" : "") };
+    return { type: "iframe", src: "https://www.youtube-nocookie.com/embed/" + m[1] + "?rel=0" + (start ? "&start=" + start : "") + (IS_AUD && /^https?:$/.test(location.protocol) ? "&enablejsapi=1&origin=" + encodeURIComponent(location.origin) : ""), open: "https://www.youtube.com/watch?v=" + m[1] + (start ? "&t=" + start + "s" : "") };
   }
   m = raw.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
   if (m) return { type: "iframe", src: "https://drive.google.com/file/d/" + m[1] + "/preview", open: "https://drive.google.com/file/d/" + m[1] + "/view" };
@@ -641,7 +727,7 @@ function showVideo(s) {
   } else {
     el = document.createElement("video");
     el.id = "videoEl"; el.src = s.src; el.controls = true; el.playsInline = true;
-    el.addEventListener("play", () => { if (!audio.paused) audio.pause(); });
+    el.addEventListener("play", () => { if (!audio.paused) audio.pause(); send({ type: "video-started" }); });
     el.addEventListener("error", () => alert("Couldn't play that video. Check the file or link and try again."));
   }
   $("videoFrame").replaceChildren(el);
@@ -671,30 +757,39 @@ audio.addEventListener("play", () => { const v = $("videoEl"); if (v && !v.pause
 if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube links show Error 153 when this page is opened as a file. Open it from its website address, or choose a video file above.", "warn");
 
 /* use hardcoded values, or whatever was entered last time */
-(function () {
-  const s = SLIDES_URL || remember("remembrance.slides");
-  if (s) { $("slidesUrl").value = s; loadSlides(s, false); }
-  if (VIDEOS.length) {
-    const list = $("videoList");
-    const pick = i => {
-      loadVideoUrl(VIDEOS[i].src, false);
-      window.videoIdx = i; if (window.sendState) sendState();
-      [...list.children].forEach((b, j) => b.classList.toggle("active", j === i));
-    };
-    VIDEOS.forEach((v, i) => {
-      const b = document.createElement("button");
-      b.textContent = v.title;
-      b.addEventListener("click", () => pick(i));
-      list.appendChild(b);
-    });
-    list.hidden = VIDEOS.length < 2;
-    pick(0);
-  } else {
+function initSlides() {
+  const sl = SLIDES_URL || remember("remembrance.slides");
+  if (sl) { slidesEmptyEl.querySelector("#slidesUrl").value = sl; loadSlides(sl, false); }
+  else $("slidesFrame").replaceChildren(slidesEmptyEl);
+}
+function initVideo() {
+  if (VIDEOS.length) pickVideo(videoIndex);
+  else {
     const v = remember("remembrance.video");
-    if (v) { $("videoUrl").value = v; loadVideoUrl(v, false); }
+    if (v) { videoEmptyEl.querySelector("#videoUrl").value = v; loadVideoUrl(v, false); }
+    else $("videoFrame").replaceChildren(videoEmptyEl);
   }
+}
+function pickVideo(i) {
+  if (!VIDEOS.length) return;
+  videoIndex = ((i % VIDEOS.length) + VIDEOS.length) % VIDEOS.length;
+  [...$("videoList").children].forEach((b, j) => b.classList.toggle("active", j === videoIndex));
+  if (!audienceOn) loadVideoUrl(VIDEOS[videoIndex].src, false);
+  updateBar(); syncSoon();
+}
+(function () {
+  const list = $("videoList");
+  VIDEOS.forEach((v, i) => {
+    const b = document.createElement("button");
+    b.textContent = v.title;
+    b.addEventListener("click", () => pickVideo(i));
+    list.appendChild(b);
+  });
+  list.hidden = VIDEOS.length < 2;
 })();
-if (!navigator.onLine) setStatus($("slidesStatus"), "You appear to be offline. Google Slides needs an internet connection.", "warn");
+initSlides();
+initVideo();
+if (!navigator.onLine) setStatus(slidesEmptyEl.querySelector("#slidesStatus"), "You appear to be offline. Google Slides needs an internet connection.", "warn");
 
 /* filled portion of the seek and volume bars */
 function setPct(el) { el.style.setProperty("--pct", ((el.value - el.min) / (el.max - el.min) * 100) + "%"); }
@@ -714,62 +809,285 @@ $("skipBtn").addEventListener("click", () => {
   tryFinishSetup();
 });
 
-/* ---------- presenter + audience screen ---------- */
-var videoIdx = 0, audienceOn = false, showHere = false, chan = null;
-const LEAF = "M100.0 0.0 L112.0 30.0 L124.0 24.0 L121.0 54.0 L148.0 38.0 L142.0 68.0 L172.0 70.0 L154.0 92.0 L166.0 110.0 L130.0 102.0 L134.0 128.0 L111.0 118.0 L104.0 156.0 L103.0 198.0 L97.0 198.0 L96.0 156.0 L89.0 118.0 L66.0 128.0 L70.0 102.0 L34.0 110.0 L46.0 92.0 L28.0 70.0 L58.0 68.0 L52.0 38.0 L79.0 54.0 L76.0 24.0 L88.0 30.0 L100.0 0.0 Z";
-function sendState() {
-  if (!chan) return;
-  chan.postMessage({ type: "state", state: {
-    tab: document.body.className.replace("tab-", "") || "audio",
-    playing: !audio.paused,
-    track: TRACKS[current] ? TRACKS[current].title : "",
-    video: videoIdx
-  }});
-}
-function updateHints() {
-  const tab = document.body.className.replace("tab-", "");
-  [["slides", "the slideshow"], ["video", "the video"]].forEach(([n, what]) => {
-    const h = $("hint-" + n);
-    const on = audienceOn && !showHere && tab === n;
-    h.classList.toggle("on", on);
-    if (on && !h.firstChild) {
-      h.innerHTML = '<h3>Showing on the audience screen</h3><p>Click inside the audience window to ' + (n === "slides" ? "move through the slides" : "play the video") + '. Switching tabs here changes what the audience sees.</p><button id="showHere-' + n + '">Show it here instead</button>';
-      $("showHere-" + n).addEventListener("click", () => { showHere = true; updateHints(); });
-    }
-  });
-  const b = $("audBtn");
-  b.classList.toggle("on", audienceOn);
-  b.querySelector(".lbl").textContent = audienceOn ? "Audience connected" : "Audience screen";
-}
-try {
-  chan = new BroadcastChannel("remembrance-day");
-  chan.onmessage = e => {
-    const t = e.data && e.data.type;
-    if (t === "hello") { audienceOn = true; showHere = false; sendState(); updateHints(); }
-    if (t === "bye")   { audienceOn = false; updateHints(); }
-  };
-} catch (e) { $("audBtn").hidden = true; }
-["play", "pause", "loadstart", "ended"].forEach(ev => audio.addEventListener(ev, sendState));
-let audWin = null;
-$("audBtn").addEventListener("click", () => {
-  if (audWin && !audWin.closed) { audWin.focus(); return; }
-  audWin = window.open("audience.html", "remembranceAudience", "popup,width=1280,height=720");
-  if (!audWin) alert("The audience window was blocked. Allow pop-ups for this site, then try again.");
-});
-addEventListener("pagehide", () => { try { chan.postMessage({ type: "gone" }); } catch (e) {} });
+/* ================================================================
+   PICTURE SLIDESHOW, PRESENT MODE, AUDIENCE SCREEN, SOFT EFFECTS
+   ================================================================ */
+const FX = Object.assign({ petals: true, slowZoom: true, crossfade: 1.6 }, CFG.effects || {});
+if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { FX.petals = false; FX.slowZoom = false; }
+const SHOW_TITLE = CFG.showTrackTitle !== false;
+const G_INTERVAL = Math.max(3, Number(CFG.galleryInterval) || 10);
+const GALLERY = (Array.isArray(CFG.gallery) && CFG.gallery.length) ? CFG.gallery : [{ text: "Lest we forget" }, { text: "Remembering all who served" }];
+const EMB = document.querySelector("main > .poppy-icon").outerHTML.replace('class="poppy-icon"', 'class="emb"');
 
-/* soft drifting leaves (turn off with effects: false in config.js) */
-if (CFG.effects === false) $("drift").remove();
-else for (let i = 0; i < 8; i++) {
-  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  s.setAttribute("viewBox", "0 0 200 200");
-  s.innerHTML = '<path d="' + LEAF + '"/>';
-  const size = 14 + Math.random() * 22;
-  s.style.cssText = "left:" + (Math.random() * 100) + "%;width:" + size + "px;height:" + size + "px;" +
-    "--dx:" + ((Math.random() - .5) * 22) + "vw;--rot:" + ((Math.random() - .5) * 700) + "deg;--o:" + (.08 + Math.random() * .14) + ";" +
-    "animation-duration:" + (26 + Math.random() * 22) + "s;animation-delay:-" + (Math.random() * 44) + "s";
-  $("drift").appendChild(s);
+function currentTab() { return document.body.className.replace("tab-", ""); }
+function stageOn() { return document.documentElement.getAttribute("data-stage") === "on"; }
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 4500); }
+
+/* ---------- the picture slideshow ---------- */
+const Gallery = (function () {
+  const root = $("gallery");
+  const fadeMs = Math.round(Math.max(.2, Number(FX.crossfade) || 1.6) * 1000);
+  root.style.setProperty("--fade", fadeMs + "ms");
+  let list = null, ival = G_INTERVAL, idx = -1, timer = null, cur = null, token = 0, running = false, flip = false, fails = 0;
+
+  const isImg = it => !!(it && it.src);
+  function mk(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
+
+  function build(it) {
+    const d = mk("div", "g-slide" + (flip ? " alt" : "") + (FX.slowZoom ? "" : " nokb"));
+    flip = !flip;
+    d.style.setProperty("--hold", ((ival * 1000 + fadeMs) / 1000) + "s");
+    if (isImg(it)) {
+      d._img = true;
+      const bg = mk("div", "bgblur"); bg.style.backgroundImage = 'url("' + String(it.src).replace(/"/g, "%22") + '")';
+      const im = mk("img"); im.alt = it.alt || it.caption || ""; im.decoding = "async"; im.src = it.src;
+      d.append(bg, im); d._im = im;
+      if (it.caption) { const c = mk("div", "g-cap"); c.textContent = it.caption; d.append(c); }
+    } else {
+      const t = mk("div", "g-text");
+      const emb = mk("div", "g-emb"); emb.innerHTML = EMB;
+      const line = mk("div", "g-line"); line.textContent = it.text || "";
+      t.append(emb, line);
+      if (it.note) { const n = mk("div", "g-note"); n.textContent = it.note; t.append(n); }
+      d.append(t);
+    }
+    return d;
+  }
+  function ready(im) {
+    return new Promise(res => {
+      const ok = () => res(im.complete && im.naturalWidth > 0);
+      if (im.complete) return ok();
+      im.onload = () => res(true); im.onerror = () => res(false);
+      setTimeout(ok, 8000);
+    });
+  }
+  function place(d) {
+    const old = cur; cur = d; root.appendChild(d);
+    if (!old) { void d.offsetWidth; d.classList.add("on"); return; }
+    if (old._img && d._img) {           /* picture to picture: dissolve */
+      void d.offsetWidth; d.classList.add("on");
+      setTimeout(() => old.remove(), fadeMs + 150);
+      return;
+    }
+    const half = Math.round(fadeMs / 2); /* otherwise fade out, then fade in */
+    old.style.transitionDuration = d.style.transitionDuration = half + "ms";
+    old.classList.remove("on");
+    setTimeout(() => { old.remove(); if (d.isConnected) { void d.offsetWidth; d.classList.add("on"); } }, half + 40);
+  }
+  function schedule() {
+    clearTimeout(timer);
+    if (running && list && list.length > 1) timer = setTimeout(() => show(idx + 1), ival * 1000);
+  }
+  async function show(i, fallback) {
+    if (!list || !list.length) return;
+    const my = ++token;
+    idx = ((i % list.length) + list.length) % list.length;
+    const it = fallback || list[idx];
+    const d = build(it);
+    if (d._img) {
+      const ok = await ready(d._im);
+      if (my !== token) return;
+      if (!ok) {                          /* a picture failed to load: skip it */
+        fails++;
+        if (fails >= list.length) { fails = 0; return show(idx, { text: "Lest we forget" }); }
+        return show(idx + 1);
+      }
+      fails = 0;
+    }
+    place(d);
+    schedule();
+    const n = list[(idx + 1) % list.length];
+    if (isImg(n)) { const p = new Image(); p.src = n.src; }
+  }
+  function setItems(newList, seconds) {
+    const iv = Math.max(3, Number(seconds) || G_INTERVAL);
+    if (list === newList && ival === iv) return;
+    list = newList; ival = iv; idx = -1; fails = 0; ++token; cur = null;
+    clearTimeout(timer); root.replaceChildren();
+    if (running) show(0);
+  }
+  function start() { if (running) return; running = true; if (!list) setItems(GALLERY, G_INTERVAL); if (!cur) show(0); else schedule(); }
+  function stop() { running = false; clearTimeout(timer); }
+  return { setItems, start, stop };
+})();
+
+function applyGalleryForTrack() {
+  const t = TRACKS[stageTrack] || {};
+  Gallery.setItems((Array.isArray(t.gallery) && t.gallery.length) ? t.gallery : GALLERY, Number(t.interval) || G_INTERVAL);
 }
+function refreshStage() {
+  if (stageOn() && currentTab() === "audio") { applyGalleryForTrack(); Gallery.start(); } else Gallery.stop();
+}
+function onTrackLoaded() { if (stageOn()) applyGalleryForTrack(); updateBar(); }
+
+/* track name shown for a few seconds when a track starts */
+function showBanner(text) {
+  if (!SHOW_TITLE || !text) return;
+  const b = $("banner"); b.textContent = text; b.classList.add("on");
+  clearTimeout(bannerT); bannerT = setTimeout(() => b.classList.remove("on"), 8000);
+}
+
+/* ---------- soft effect: drifting petals ---------- */
+(function () {
+  if (!FX.petals) return;
+  const host = $("petals"), n = IS_AUD ? 14 : 9, r = (a, b) => a + Math.random() * (b - a);
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement("i"); p.className = "petal";
+    const s = r(11, 21);
+    p.style.cssText = "--l:" + r(0, 100).toFixed(1) + "%;--s:" + s.toFixed(1) + "px;--d:" + r(17, 31).toFixed(1) + "s;--delay:-" + r(0, 30).toFixed(1) + "s;--x1:" + r(-14, 14).toFixed(1) + "vw;--x2:" + r(-22, 22).toFixed(1) + "vw;--o:" + r(.28, .55).toFixed(2);
+    host.appendChild(p);
+  }
+})();
+
+/* ---------- Present mode (one screen): hide the controls, show the slideshow ---------- */
+function showBar() {
+  if (!presenting) return;
+  document.documentElement.classList.add("bar-on");
+  clearTimeout(barT); barT = setTimeout(() => document.documentElement.classList.remove("bar-on"), 3500);
+}
+function updateBar() {
+  if (!presenting) return;
+  const tab = currentTab(), bar = $("presentBar");
+  bar.dataset.tab = tab;
+  if (VIDEOS.length > 1) bar.setAttribute("data-multi", ""); else bar.removeAttribute("data-multi");
+  $("pbTitle").textContent = tab === "audio" ? ((TRACKS[current] || {}).title || "") : tab === "video" ? ((VIDEOS[videoIndex] || {}).title || "Video") : "Slideshow";
+  $("pbPlay").textContent = audio.paused ? "▶" : "⏸";
+  bar.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  updateBarTime();
+}
+function updateBarTime() {
+  if (!presenting) return;
+  const left = isFinite(audio.duration) ? Math.max(0, audio.duration - audio.currentTime) : 0;
+  $("pbTime").textContent = currentTab() === "audio" && left ? "−" + fmt(left) + " left" : "";
+}
+async function enterPresent() {
+  if (audienceOn) { toast("Close the audience window first, or use it instead."); return; }
+  if (!playerShown) { toast("Finish the audio check first (or press Skip)."); return; }
+  presenting = true; presentFs = false;
+  document.documentElement.setAttribute("data-stage", "on");
+  stageTrack = current;
+  refreshStage(); updateBar(); showBar();
+  try { await document.documentElement.requestFullscreen(); presentFs = true; } catch (e) { presentFs = false; }
+}
+function exitPresent() {
+  if (!presenting) return;
+  presenting = false; presentFs = false;
+  document.documentElement.setAttribute("data-stage", "off");
+  document.documentElement.classList.remove("bar-on");
+  Gallery.stop();
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  refreshStage();
+}
+document.addEventListener("fullscreenchange", () => { if (presenting && presentFs && !document.fullscreenElement) exitPresent(); });
+if (!IS_AUD) {
+  $("presentBtn").addEventListener("click", () => (presenting ? exitPresent() : enterPresent()));
+  $("pbExit").addEventListener("click", exitPresent);
+  $("pbPrev").addEventListener("click", () => $("prevBtn").click());
+  $("pbNext").addEventListener("click", () => $("nextBtn").click());
+  $("pbPlay").addEventListener("click", () => $("playBtn").click());
+  $("pbVPrev").addEventListener("click", () => pickVideo(videoIndex - 1));
+  $("pbVNext").addEventListener("click", () => pickVideo(videoIndex + 1));
+  $("presentBar").querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => { showTab(b.dataset.tab); showBar(); }));
+  document.addEventListener("mousemove", e => { if (presenting && (currentTab() === "audio" || e.clientY < 60)) showBar(); });
+  $("presentBar").addEventListener("mouseenter", () => { clearTimeout(barT); document.documentElement.classList.add("bar-on"); });
+  $("presentBar").addEventListener("mouseleave", showBar);
+  document.addEventListener("keydown", e => { if (presenting) { showBar(); if (e.key === "Escape" && !document.fullscreenElement) exitPresent(); } });
+  audio.addEventListener("play", () => { if (presenting && SHOW_TITLE && bannerFor !== current) { bannerFor = current; showBanner((TRACKS[current] || {}).title); } });
+  ["play", "pause", "loadedmetadata", "emptied"].forEach(ev => audio.addEventListener(ev, updateBar));
+  audio.addEventListener("timeupdate", updateBarTime);
+}
+
+/* ---------- Audience screen (second window) ---------- */
+function getState() {
+  const t = TRACKS[current] || {};
+  return { tab: currentTab(), track: current, trackTitle: t.title || "", playing: !audio.paused && !audio.ended, video: videoIndex };
+}
+function syncSoon() {
+  if (IS_AUD || !chan || syncT) return;
+  syncT = setTimeout(() => { syncT = null; send({ type: "state", state: getState() }); }, 40);
+}
+["play", "pause", "ended", "loadedmetadata"].forEach(ev => audio.addEventListener(ev, syncSoon));
+
+function openAudience() {
+  if (!chan) { toast("This browser can't link two windows. Use Present instead."); return; }
+  const u = new URL(location.href); u.search = "?view=audience"; u.hash = "";
+  const w = window.open(u.toString(), "remembrance-audience", "popup=yes,width=1280,height=720");
+  if (!w) toast("The audience window was blocked. Allow pop-ups for this site, then press the button again.");
+  else { try { w.focus(); } catch (e) {} }
+}
+function unloadMedia() {
+  const v = $("videoEl"); if (v) v.pause();
+  $("slidesFrame").replaceChildren(); $("videoFrame").replaceChildren();
+}
+function setAudience(on) {
+  if (on === audienceOn) return;
+  audienceOn = on;
+  document.documentElement.toggleAttribute("data-remote", on);
+  $("audBtn").classList.toggle("live", on);
+  $("audBtn").title = on ? "The audience screen is connected" : "Open the audience screen (a second window for the projector)";
+  $("presentBtn").disabled = on;
+  if (on) { if (presenting) exitPresent(); unloadMedia(); syncSoon(); }
+  else { initSlides(); initVideo(); }
+}
+
+if (!IS_AUD) {
+  let audSeen = 0;
+  if (!chan) $("audBtn").hidden = true;
+  $("audBtn").addEventListener("click", openAudience);
+  if (chan) chan.onmessage = ev => {
+    const m = ev.data || {};
+    if (m.type === "hello") { audSeen = Date.now(); setAudience(true); syncSoon(); }
+    else if (m.type === "ping") { audSeen = Date.now(); setAudience(true); }
+    else if (m.type === "bye") setAudience(false);
+    else if (m.type === "key") handleKey(m.code);
+    else if (m.type === "video-started") { if (!audio.paused) audio.pause(); }
+  };
+  setInterval(() => { if (audienceOn && Date.now() - audSeen > 6500) setAudience(false); }, 1500);
+  audio.addEventListener("play", () => { if (audienceOn) send({ type: "video-cmd", cmd: "pause" }); });
+  $("vrPlay").addEventListener("click", () => { audio.pause(); send({ type: "video-cmd", cmd: "play" }); });
+  $("vrPause").addEventListener("click", () => send({ type: "video-cmd", cmd: "pause" }));
+}
+
+if (IS_AUD) {
+  document.title = (CFG.title || "Remembrance Day") + " – audience screen";
+  $("audStart").querySelector(".emb-slot").innerHTML = EMB;
+  let lastTrack = -1;
+  function videoCmd(cmd) {
+    const v = $("videoEl");
+    if (v) { if (cmd === "play") v.play().catch(() => {}); else v.pause(); return; }
+    const f = $("videoFrame").querySelector("iframe");
+    if (!f || !f.contentWindow || !/youtube/.test(f.src)) return;
+    f.contentWindow.postMessage(JSON.stringify({ event: "command", func: cmd === "play" ? "playVideo" : "pauseVideo", args: [] }), "*");
+  }
+  function applyAudienceState(s) {
+    if (!s) return;
+    if (s.tab && ("tab-" + s.tab) !== document.body.className) showTab(s.tab);
+    stageTrack = s.track || 0;
+    if (stageTrack !== lastTrack) { lastTrack = stageTrack; if (currentTab() === "audio") applyGalleryForTrack(); }
+    if (s.playing && bannerFor !== s.track) { bannerFor = s.track; showBanner(s.trackTitle); }
+    if (typeof s.video === "number" && s.video !== videoIndex) pickVideo(s.video);
+  }
+  if (chan) chan.onmessage = ev => {
+    const m = ev.data || {};
+    if (m.type === "state") applyAudienceState(m.state);
+    else if (m.type === "video-cmd") videoCmd(m.cmd);
+  };
+  $("audStart").addEventListener("click", async () => {
+    $("audStart").classList.add("gone");
+    try { await document.documentElement.requestFullscreen(); } catch (e) {}
+    send({ type: "hello" });
+  });
+  send({ type: "hello" });
+  setInterval(() => send({ type: "ping" }), 2000);
+  addEventListener("pagehide", () => send({ type: "bye" }));
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.code === "KeyF") { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); else document.documentElement.requestFullscreen().catch(() => {}); return; }
+    if (["Space", "ArrowLeft", "ArrowRight", "Digit1", "Digit2", "Digit3"].includes(e.code)) { e.preventDefault(); send({ type: "key", code: e.code }); }
+  });
+}
+
+refreshStage();
 </script>
 </body>
 </html>

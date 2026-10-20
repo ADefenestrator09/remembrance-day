@@ -1,1 +1,0 @@
-Put your pictures for the audience screen in this folder, then list them in config.js (images: [...]).

@@ -2,26 +2,62 @@ REMEMBRANCE DAY PAGE
 ====================
 
 WHAT'S IN THE FOLDER
-  index.html   The presenter page (the one you run). Normally no edits.
-  audience.html The audience screen (opens from a button on index.html).
-  images/      The pictures shown on the audience screen. Add your own.
-  config.js    ALL the settings (look, text, tracks, slideshow, video).
+  index.html   The page itself. You normally never need to edit this.
+  config.js    ALL the settings (text, tracks, pictures, slideshow, video).
   audio/       The mp3 files.
+  images/      Your pictures for the audience slideshow (see below).
   video/       Optional. Create this folder yourself if you want to play a
                video file instead of a YouTube link.
+  favicon.svg  The poppy icon on the browser tab.
   README.txt   This guide.
 
 
 PUTTING IT ON GITHUB PAGES
   1. Unzip this folder on your computer.
   2. In your GitHub repository choose Add file > Upload files and drag in
-     index.html, audience.html, config.js, and the audio and images folders (plus a video folder if you use one). Commit the changes.
+     index.html, config.js, favicon.svg and the audio and images folders
+     (plus a video folder if you use one). Commit the changes.
   3. Settings > Pages > Deploy from a branch > main > /(root) > Save.
   4. Open https://adefenestrator09.github.io/remembrance-day/ after a minute or two.
 
   Open the website address, not the index.html file on your computer.
   YouTube refuses to play inside a page that was opened as a local file
   (it shows "Error 153").
+
+
+PRESENTING: THE PRESENTER AND THE AUDIENCE
+  The page you control is the PRESENTER screen. What the room sees is the
+  AUDIENCE screen: a slideshow of your pictures while the audio plays,
+  instead of the player and the file names. There are two ways to do it.
+  Both are in the top-right corner of the tab row.
+
+  A) Audience button: two screens (laptop + projector set to "extend")
+     1. Open the site and run the audio check (or press Skip).
+     2. Press Audience. A second window opens. Drag it onto the projector
+        and click once anywhere inside it: it goes full screen.
+        (Allow pop-ups for the site if the browser blocks the window.)
+     3. Keep working in the presenter window. The audience window follows
+        you: the Audio tab shows the picture slideshow, the Slideshow tab
+        shows your Google Slides, the Video tab shows the video.
+     4. On the Slideshow tab, click the slides on the audience screen and
+        use the arrow keys to move through them. On the Video tab, use the
+        Play and Pause buttons in the presenter window.
+     5. The Audience button shows a green dot while the two windows are
+        linked. Closing the audience window puts everything back on the
+        presenter screen.
+     Both windows must be in the same browser on the same computer.
+
+  B) Present button: one screen (or a projector that mirrors the laptop)
+     Press Present. This window fills the screen with the slideshow and
+     hides the controls. Move the mouse to bring up a small control bar
+     (previous, play, next, switch tab, exit). Esc or the X leaves it.
+
+  Keyboard shortcuts (on either screen)
+     Space       play / pause the audio
+     Right/Left  next / previous track
+     1, 2, 3     Audio / Slideshow / Video tab
+     F           full screen (on the audience screen)
+     Esc         leave Present mode
 
 
 CHANGING A SETTING
@@ -40,40 +76,6 @@ CUSTOMIZATION SETTINGS (all in config.js)
   subtitle       The small line under the heading. Use "" for none.
                  Example:  subtitle: "We will remember them",
 
-<<<<<<< HEAD
-  theme          The look of the page. One of:
-                   "classic"  dark, poppies in the bottom corners
-                   "field"    dark, a quiet grassy field with a few poppies
-                   "paper"    warm parchment with an inked border
-                   "vigil"    night sky with stars and candlelight
-                   "maple"    deep red with a faint maple leaf
-                 To try one without changing anything, add ?theme=NAME to
-                 the end of the web address, for example:
-                   https://adefenestrator09.github.io/remembrance-day/?theme=paper
-=======
-  theme          Always "maple" now (deep red with a faint maple leaf).
-
-  effects        true  = a few maple leaves drift slowly down both screens.
-                 false = no moving leaves. (Also off automatically on devices
-                 set to "reduce motion".)
-
-  images         The pictures for the audience screen, in order:
-                   images: [
-                     "images/poppies.jpg",
-                     "images/cenotaph.jpg"
-                   ],
-                 Upload the pictures into the images folder first. Any size
-                 works (portrait or landscape; the space around a picture is
-                 filled with a soft blurred copy of it). jpg, png and webp are
-                 fine; 1920 pixels wide or smaller keeps it quick.
-                 Leave  images: [],  for a plain poppy and title screen.
-
-  imageSeconds   How long each picture stays up, in seconds (3 or more).
-
-  audienceCaption  true = the audience screen shows the name of the track
-                 that is playing, small, at the bottom. false = nothing.
->>>>>>> 9ff7d9f (Adding audience screen)
-
   tracks         The audio, in playing order. Each line is:
                    { title: "Name shown on screen", src: "audio/file.mp3" },
                  - Reorder: move the lines up or down.
@@ -84,6 +86,13 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  - Add a track: copy a line and change it. The last line
                    in the list has no comma after it.
                  - Remove a track: delete its line.
+                 - Different pictures for one track: add  gallery: [ ... ]
+                   (and optionally  interval: 15 ) to that track's line.
+                   Example, for the two minutes of silence:
+                   { title: "Two Minutes of Silence",
+                     src: "audio/silence-2-minutes.mp3",
+                     gallery: [ { src: "images/s1.jpg" }, { src: "images/s2.jpg" } ],
+                     interval: 15 },
 
   autoContinue   true  = each track starts the next one by itself.
                  false = wait for someone to press Next.
@@ -91,10 +100,43 @@ CUSTOMIZATION SETTINGS (all in config.js)
 
   volume         Starting volume from 0 (silent) to 1 (full). Example: 0.8
 
+  gallery        The pictures and words shown on the audience screen while
+                 the audio plays. Each entry is one of:
+                   { src: "images/photo1.jpg", caption: "Optional caption" }
+                   { text: "Words to show", note: "Optional smaller line" }
+                 They play in order and then start again. To add pictures,
+                 upload them into the images folder (Add file > Upload
+                 files) and add a line for each one. Names must match
+                 exactly. About 1920 pixels wide and under 1 MB each is
+                 plenty. Pictures that are tall or wide are shown whole,
+                 on a soft blurred backdrop, and are never cropped. A
+                 picture that can't be found is skipped.
+                 Only add pictures you are allowed to share, because the
+                 repository is public.
+                 The two minutes of silence is long, so add plenty of
+                 entries (at 10 seconds each, 12 of them fill it).
+
+  galleryInterval  Seconds each picture or line stays on screen (3 or more).
+
+  showTrackTitle   true  = the name of each track (for example "The Last
+                           Post") appears at the top of the audience screen
+                           for a few seconds when it starts.
+                   false = never show it.
+
+  effects        Soft effects. Set any to false to turn it off:
+                   petals     poppy petals drifting slowly down the screen
+                   slowZoom   pictures drift and zoom very slightly
+                   crossfade  seconds a fade between pictures takes
+                 Computers set to "reduce motion" never get petals or zoom.
+
   slidesUrl      Your Google Slides link. The normal link from the address
                  bar works. The slides must be shared as "Anyone with the
                  link" or published to the web (File > Share > Publish to
                  web). Use "" to leave the slideshow tab empty.
+
+  slidesAutoplaySeconds   0 = you move through the slides yourself.
+                 A number such as 15 = the slides move on by themselves
+                 every 15 seconds.
 
   videos         The list of videos on the Video tab. Each line is:
                    { title: "Name on the button", src: "link or file" },
@@ -115,38 +157,19 @@ CUSTOMIZATION SETTINGS (all in config.js)
                    ]
                  mp4 files (H.264) play in every common browser.
 
-PRESENTER AND AUDIENCE SCREEN
-  1. On the computer that is connected to the projector, open the page
-     (index.html) and press "Audience screen" at the top left. A second
-     window opens.
-  2. Drag that window onto the projector, click in it, and press F (or
-     double-click) for full screen.
-  3. Run the event from the first window as usual. The audience screen
-     shows your pictures during the audio (it never shows the audio
-     controls), with the track name at the bottom while something plays.
-  4. Press the Slideshow or Video tab in the first window and the audience
-     screen switches to it. Click inside the audience window to move
-     through the slides or press play on the video. The first window shows
-     "Showing on the audience screen" so nothing plays twice.
-     ("Show it here instead" brings it back to the first window.)
-  5. The button shows a green dot and "Audience connected" while linked.
-
-  Notes:
-  - The sound plays from the first window (the presenter window), so choose
-    the projector or speakers as that computer's sound output.
-  - Both windows must be in the same browser on the same computer. They
-    cannot link across two different computers.
-  - If the window doesn't open, allow pop-ups for the site.
-  - Closing the audience window and pressing the button again reconnects it.
 
 BEFORE THE EVENT
   - Open the live site once on the exact computer and speakers or projector
     you will use, press Play test tone, and check all three tabs.
+  - If you will use the Audience button, try it with the projector plugged
+    in, and check that the audience window can go full screen on it.
   - The slideshow and YouTube video need an internet connection. The Audio
-    tab works fully offline once the page has loaded.
+    tab, including the picture slideshow, works offline once the page has
+    loaded.
+  - Keep the computer awake while the page is open (check the power and
+    sleep settings), especially for the two minutes of silence.
   - Use the fullscreen icon (top right of the tab row) on the Slideshow or
-    Video tab to fill the screen when not using the audience screen.
-  - Try the audience screen with your pictures once beforehand.
+    Video tab to fill the screen when you are not using the audience screen.
 
 
 IF SOMETHING GOES WRONG
@@ -155,14 +178,18 @@ IF SOMETHING GOES WRONG
                             ends with a comma except the last one.
   A track won't play        The file name in config.js must match the file
                             in the audio folder exactly, including capitals.
+  A picture doesn't show    The name in config.js must match the file in the
+                            images folder exactly, including capitals and
+                            the .jpg or .png ending. (Missing pictures are
+                            skipped, so check the rest of the list.)
   Video shows Error 153     You opened the file from your computer. Use the
                             website address instead.
   Slides or video blocked   Some school networks or preview windows block
                             embedded content. Open the site in a normal
                             Chrome or Edge tab.
-  Pictures don't show       The file names in config.js must match the files
-                            in the images folder exactly (capitals count). A
-                            picture that can't load is skipped.
-  Audience screen blank     Press the Audience screen button again. Both
-                            windows must be in the same browser.
+  The audience window       Allow pop-ups for the site, then press the
+  doesn't open              Audience button again.
+  The audience screen       Make sure both windows are in the same browser
+  shows nothing new         on the same computer, then close the audience
+                            window and press Audience again.
   Changes don't appear      Wait a couple of minutes, then press Ctrl+F5.

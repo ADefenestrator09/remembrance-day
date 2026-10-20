@@ -8,36 +8,17 @@ window.REMEMBRANCE_CONFIG = {
   title: "Remembrance Day",
   subtitle: "Lest we forget",
 
-  /* The page uses the deep-red maple look. (Nothing to set here.) */
-  theme: "maple",
-
-  /* Soft effects: a few maple leaves drift slowly down the screen.
-     true = on, false = off. (Also off automatically for anyone whose
-     device is set to "reduce motion".) */
-  effects: true,
-
-  /* PICTURES for the audience screen. While the Audio tab is showing,
-     the audience screen plays these as a slow slideshow instead of
-     showing the audio controls. Upload the pictures into the images
-     folder and list them here, in order. Leave [] for a simple
-     title screen instead. */
-  images: [
-    // "images/photo1.jpg",
-    // "images/photo2.jpg",
-    // "images/photo3.jpg"
-  ],
-
-  /* Seconds each picture stays on screen (3 or more). */
-  imageSeconds: 10,
-
-  /* Show the name of the current track (e.g. "The Last Post") at the
-     bottom of the audience screen while it plays. true / false. */
-  audienceCaption: true,
-
   /* Audio tracks, in playing order.
      "src" is the file's location inside the audio folder.
      To change a track: upload a new mp3 to the audio folder and
-     update the file name here. To add one, copy a line. */
+     update the file name here. To add one, copy a line.
+
+     OPTIONAL, per track: show different pictures while that track plays.
+     Add  gallery: [ ... ]  (same format as the main gallery below) and,
+     if you like,  interval: 15  (seconds per picture). For example:
+       { title: "Two Minutes of Silence", src: "audio/silence-2-minutes.mp3",
+         gallery: [ { src: "images/silence1.jpg" }, { src: "images/silence2.jpg" } ],
+         interval: 15 },                                                       */
   tracks: [
     { title: "O Canada",               src: "audio/o-canada.mp3" },
     { title: "The Last Post",          src: "audio/last-post.mp3" },
@@ -52,10 +33,44 @@ window.REMEMBRANCE_CONFIG = {
   /* Starting volume, from 0 (silent) to 1 (full). */
   volume: 0.8,
 
+  /* ---------- PICTURE SLIDESHOW (shown on the audience screen) ----------
+     While audio plays, the audience sees these pictures and words,
+     fading from one to the next on their own. Each entry is either
+       { src: "images/photo1.jpg", caption: "Optional caption" }   a picture
+       { text: "Words to show", note: "Optional smaller line" }    words
+     Upload your pictures into the images folder (see README.txt).
+     Entries play in order and then start again from the top.
+     Tip: add several pictures, since the silence lasts two minutes. */
+  gallery: [
+    { text: "Lest we forget" },
+    { text: "Remembering all who served", note: "November 11" },
+    { text: "Thank you to our veterans and to those who serve today" }
+    /* , { src: "images/photo1.jpg", caption: "Optional caption" } */
+  ],
+
+  /* Seconds each picture or line stays on screen (3 or more). */
+  galleryInterval: 10,
+
+  /* Show the name of each track (for example "The Last Post") at the top
+     of the audience screen for a few seconds when it starts. */
+  showTrackTitle: true,
+
+  /* Soft effects. Set any to false to turn it off.
+       petals     poppy petals drifting slowly down the screen (Audio tab)
+       slowZoom   pictures drift and zoom very slightly
+       crossfade  seconds a fade between pictures takes
+     (Computers set to "reduce motion" always get no petals or zoom.) */
+  effects: { petals: true, slowZoom: true, crossfade: 1.6 },
+
+  /* ---------- GOOGLE SLIDES ---------- */
   /* Google Slides link (the normal address-bar link works, as does a
      Publish to web link). Slides must be shared as "Anyone with the
      link" or published to the web. Leave "" to paste one on the page. */
   slidesUrl: "https://docs.google.com/presentation/d/14cuLkEGzFLnWPOxOr7ncvXK_RBAiV2kzn7F86Dw5Ig8/edit?slide=id.p#slide=id.p",
+
+  /* 0 = move through the slides yourself.
+     A number, e.g. 15 = the slides move on by themselves every 15 seconds. */
+  slidesAutoplaySeconds: 0,
 
   /* Videos for the Video tab. One line per video. "src" can be:
        - a YouTube link (add &t=10s to start at 10 seconds)
