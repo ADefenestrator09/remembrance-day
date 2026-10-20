@@ -6,25 +6,13 @@ WHAT'S IN THE FOLDER
   config.js    ALL the settings (text, tracks, pictures, slideshow, video).
   audio/       The mp3 files.
   images/      Your pictures for the audience slideshow (see below).
-  slides/      Optional. Your slides exported as pictures (see slideImages).
+  slides/      Optional. Your slides as a PDF or as pictures (see slidesPdf).
+  lib/         The PDF reader that turns a slides PDF into slides. Upload it
+               if you use slidesPdf. You never need to edit it.
   video/       Optional. Create this folder yourself if you want to play a
                video file instead of a YouTube link.
   favicon.svg  The poppy icon on the browser tab.
   README.txt   This guide.
-
-
-PUTTING IT ON GITHUB PAGES
-  1. Unzip this folder on your computer.
-  2. In your GitHub repository choose Add file > Upload files and drag in
-     index.html, config.js, favicon.svg and the audio and images folders
-     (plus a video folder if you use one). Commit the changes.
-  3. Settings > Pages > Deploy from a branch > main > /(root) > Save.
-  4. Open https://adefenestrator09.github.io/remembrance-day/ after a minute or two.
-
-  Open the website address, not the index.html file on your computer.
-  YouTube refuses to play inside a page that was opened as a local file
-  (it shows "Error 153").
-
 
 PRESENTING: THE PRESENTER AND THE AUDIENCE
   The page you control is the PRESENTER screen. What the room sees is the
@@ -106,6 +94,9 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  false = wait for someone to press Next.
                  (The tick box on the page can still be changed on the day.)
 
+  pauseAudioOnTabChange   true (default) = the audio stops when you switch
+                 to the Slideshow or Video tab. false = it keeps playing.
+
   volume         Starting volume from 0 (silent) to 1 (full). Example: 0.8
 
   gallery        The pictures and words shown on the audience screen while
@@ -157,6 +148,30 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  bar works. The slides must be shared as "Anyone with the
                  link" or published to the web (File > Share > Publish to
                  web). Use "" to leave the slideshow tab empty.
+
+  slidesPdf      OPTIONAL. The easiest way to control slides from the
+                 presenter window and get smooth changes between slides.
+                 1. In Google Slides choose File > Download > PDF document.
+                 2. Upload the PDF into the slides folder (and make sure the
+                    lib folder is uploaded too).
+                 3. In config.js:   slidesPdf: "slides/slides.pdf",
+                 Each page becomes one slide. Move through them with the
+                 Next / Previous buttons, arrow keys or Space in the
+                 presenter window, and the audience screen follows. Several
+                 PDFs can be listed:  slidesPdf: ["slides/a.pdf", "slides/b.pdf"],
+                 Leave it as "" to use the picture list or Google link.
+                 Note: a PDF holds each slide as a still page, so Google's own
+                 animations (build-ins, embedded video) do not carry over.
+                 The changes between slides come from slideTransition.
+                 Open the website address; a PDF will not load from a file
+                 on your computer.
+
+  slideTransition   How one slide changes to the next (PDF or pictures):
+                   "fade"   soft crossfade (default)
+                   "slide"  glides sideways
+                   "zoom"   gentle zoom in
+                   "none"   instant
+  slideTransitionSeconds   How long the change takes. Default 0.6.
 
   slideImages    OPTIONAL. Show your slides as pictures so you can move
                  them from the presenter window.

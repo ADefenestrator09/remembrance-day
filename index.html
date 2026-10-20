@@ -202,8 +202,13 @@ html[data-stage="on"] .remote { display: none !important; }
 /* ---- slides shown as pictures (slideImages in config.js) ---- */
 .deck { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; }
 .deck-layers, .deck-slide { position: absolute; inset: 0; }
-.deck-slide { opacity: 0; transition: opacity .45s ease; display: flex; align-items: center; justify-content: center; }
+.deck-slide { opacity: 0; transition: opacity var(--trd, .6s) ease, transform var(--trd, .6s) cubic-bezier(.22,.7,.25,1); display: flex; align-items: center; justify-content: center; }
 .deck-slide.on { opacity: 1; }
+.deck[data-tr="slide"] .deck-slide { transform: translateX(var(--ex, 0%)); }
+.deck[data-tr="zoom"] .deck-slide { transform: scale(1.07); }
+.deck[data-tr="slide"] .deck-slide.on, .deck[data-tr="zoom"] .deck-slide.on { transform: none; }
+.deck[data-tr="none"] .deck-slide { transition: none; }
+.deck-msg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .deck-slide img { width: 100%; height: 100%; object-fit: contain; }
 .deck-miss { color: var(--muted); padding: 24px; text-align: center; font-size: 1.1rem; }
 .deck-count { position: absolute; right: 12px; bottom: 10px; font-size: .85rem; color: #fff; background: rgba(0,0,0,.55); padding: 3px 10px; border-radius: 999px; opacity: .85; pointer-events: none; }
@@ -713,6 +718,7 @@ function showTab(name) {
     $("tab-" + n).setAttribute("aria-selected", n === name ? "true" : "false");
   });
   document.body.className = "tab-" + name;
+  if (name !== "audio" && !IS_AUD && CFG.pauseAudioOnTabChange !== false && !audio.paused) audio.pause();
   refreshStage(); updateBar(); syncSoon();
 }
 ["audio", "slides", "video"].forEach(n => $("tab-" + n).addEventListener("click", () => showTab(n)));
@@ -806,41 +812,71 @@ audio.addEventListener("play", () => { const v = $("videoEl"); if (v && !v.pause
 
 if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube links show Error 153 when this page is opened as a file. Open it from its website address, or choose a video file above.", "warn");
 
-/* ---------- slides as pictures (optional): slideImages in config.js ---------- */
-const DECK = (function () {
+/* ---------- slides as pictures or a PDF (optional): slideImages / slidesPdf in config.js ---------- */
+let DECK = (function () {
   let a = CFG.slideImages;
   if (a && !Array.isArray(a) && a.pattern && Number(a.count) > 0) a = Array.from({ length: Math.min(300, Number(a.count)) }, (_, i) => String(a.pattern).replace("{n}", i + 1));
   return (Array.isArray(a) ? a : []).map(x => typeof x === "string" ? { src: x } : x).filter(x => x && x.src);
 })();
+const PDFS = (function () { const p = CFG.slidesPdf; return (Array.isArray(p) ? p : (p ? [p] : [])).filter(x => typeof x === "string" && x.trim()); })();
+const TRANS = ["fade", "slide", "zoom", "none"].includes(CFG.slideTransition) ? CFG.slideTransition : "fade";
+const TRANS_S = TRANS === "none" ? 0 : Math.min(2.5, Math.max(.15, Number(CFG.slideTransitionSeconds) || .6));
 let slideIndex = 0;
-const Deck = !DECK.length ? null : (function () {
+const Deck = (!DECK.length && !PDFS.length) ? null : (function () {
   document.documentElement.setAttribute("data-deck", "");
-  const el = document.createElement("div"); el.className = "deck";
+  const el = document.createElement("div"); el.className = "deck"; el.dataset.tr = TRANS; el.style.setProperty("--trd", TRANS_S + "s");
   el.innerHTML = '<div class="deck-layers"></div><div class="deck-count"></div>' +
     '<button type="button" class="deck-nav prev" aria-label="Previous slide">&#8249;</button><button type="button" class="deck-nav next" aria-label="Next slide">&#8250;</button>';
   const layers = el.querySelector(".deck-layers"), count = el.querySelector(".deck-count"), prevB = el.querySelector(".prev"), nextB = el.querySelector(".next");
-  let cur = null, token = 0;
-  function render() {
-    const my = ++token, it = DECK[slideIndex], n = slideIndex + 1, label = n + " / " + DECK.length;
+  let cur = null, token = 0, shown = -1, loadingEl = null, pendingSlide = null;
+
+  /* a slide may be a picture file, or a page of a PDF that is turned into a picture when it is first needed */
+  function srcOf(it) {
+    if (it.src) return Promise.resolve(it.src);
+    if (!it._p) it._p = renderPdfPage(it.doc, it.page).then(u => (it.src = u));
+    return it._p;
+  }
+  async function renderPdfPage(doc, n) {
+    const pg = await doc.getPage(n), v1 = pg.getViewport({ scale: 1 });
+    const vp = pg.getViewport({ scale: Math.min(3, 1920 / v1.width) });
+    const c = document.createElement("canvas"); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    await pg.render({ canvasContext: c.getContext("2d"), canvas: c, viewport: vp, background: "rgb(255,255,255)" }).promise;
+    const blob = await new Promise(r => c.toBlob(r, "image/jpeg", .93));
+    pg.cleanup();
+    return URL.createObjectURL(blob);
+  }
+  function labels() {
+    const n = slideIndex + 1, label = DECK.length ? n + " / " + DECK.length : "";
     count.textContent = label; $("srCount").textContent = label;
-    prevB.disabled = $("srPrev").disabled = slideIndex === 0;
-    nextB.disabled = $("srNext").disabled = slideIndex === DECK.length - 1;
-    $("srThumb").src = it.src;
+    prevB.disabled = $("srPrev").disabled = slideIndex <= 0;
+    nextB.disabled = $("srNext").disabled = slideIndex >= DECK.length - 1;
+  }
+  function message(text) { if (loadingEl) loadingEl.remove(); loadingEl = document.createElement("div"); loadingEl.className = "deck-miss deck-msg"; loadingEl.textContent = text; layers.append(loadingEl); }
+  function render() {
+    if (!DECK.length) return;
+    const my = ++token, it = DECK[slideIndex], n = slideIndex + 1;
+    labels();
+    const dir = slideIndex >= shown ? 1 : -1; shown = slideIndex;
     const d = document.createElement("div"); d.className = "deck-slide";
     const im = new Image(); im.alt = it.alt || ("Slide " + n); im.decoding = "async";
     const show = ok => {
       if (my !== token) return;
+      if (loadingEl) { loadingEl.remove(); loadingEl = null; }
       if (!ok) { d.replaceChildren(); const m = document.createElement("div"); m.className = "deck-miss"; m.textContent = "Slide " + n + " could not be loaded. Check its file name in config.js."; d.append(m); }
       else d.append(im);
-      const old = cur; cur = d; layers.append(d); void d.offsetWidth; d.classList.add("on");
-      if (old) setTimeout(() => old.remove(), 600);
+      const old = cur; cur = d;
+      d.style.setProperty("--ex", (dir * 7) + "%"); layers.append(d); void d.offsetWidth; d.classList.add("on");
+      if (old) {
+        if (TRANS === "slide" || TRANS === "zoom") { old.style.setProperty("--ex", (-dir * 7) + "%"); old.classList.remove("on"); }
+        setTimeout(() => old.remove(), TRANS_S * 1000 + 200);
+      }
     };
-    im.onload = () => show(true); im.onerror = () => show(false);
-    im.src = it.src;
-    [slideIndex - 1, slideIndex + 1].forEach(k => { if (DECK[k]) new Image().src = DECK[k].src; });
+    srcOf(it).then(u => { if (my !== token) return; $("srThumb").src = u; im.onload = () => show(true); im.onerror = () => show(false); im.src = u; }, () => show(false));
+    [slideIndex - 1, slideIndex + 1].forEach(k => { if (DECK[k]) srcOf(DECK[k]).then(u => { new Image().src = u; }, () => {}); });
     updateBar();
   }
   function go(i, quiet) {
+    if (!DECK.length) { pendingSlide = i; return; }
     i = Math.max(0, Math.min(DECK.length - 1, i));
     if (i === slideIndex && cur) return;
     slideIndex = i; render();
@@ -850,7 +886,28 @@ const Deck = !DECK.length ? null : (function () {
   prevB.addEventListener("click", prev); nextB.addEventListener("click", next);
   $("srPrev").addEventListener("click", prev); $("srNext").addEventListener("click", next);
   if (SLIDES_AUTO > 0 && !IS_AUD) setInterval(() => { if (currentTab() === "slides" && slideIndex < DECK.length - 1) next(); }, SLIDES_AUTO * 1000);
-  render();
+
+  /* PDF slides: load the PDF reader (the lib folder), then add one slide per page */
+  async function loadPdfs() {
+    message("Loading slides…");
+    let lib;
+    try {
+      lib = await import("./lib/pdf.min.js");
+      lib.GlobalWorkerOptions.workerSrc = new URL("lib/pdf.worker.min.js", document.baseURI).href;
+    } catch (e) { message("The PDF reader could not be loaded. Check that the lib folder was uploaded."); return; }
+    const bad = [];
+    for (const url of PDFS) {
+      try { const doc = await lib.getDocument({ url }).promise; for (let p = 1; p <= doc.numPages; p++) DECK.push({ doc, page: p, alt: "Slide " + (DECK.length + 1) }); }
+      catch (e) { bad.push(url); }
+    }
+    if (!DECK.length) { message("The slides PDF could not be loaded (" + (bad[0] || "") + "). Check its file name in config.js, and open the website address, not the file."); return; }
+    if (pendingSlide !== null && !cur) slideIndex = Math.min(pendingSlide, DECK.length - 1);
+    if (slideIndex >= DECK.length) slideIndex = 0;
+    if (cur) labels(); else render();
+    if (bad.length) toast("Could not load: " + bad.join(", "));
+  }
+  if (DECK.length) render();
+  if (PDFS.length) loadPdfs();
   return { el, go, next, prev };
 })();
 

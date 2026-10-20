@@ -36,6 +36,10 @@ window.REMEMBRANCE_CONFIG = {
      false = wait for someone to press Next. */
   autoContinue: false,
 
+  /* true  = the audio stops when you switch to the Slideshow or Video tab.
+     false = it keeps playing. */
+  pauseAudioOnTabChange: true,
+
   /* Starting volume, from 0 (silent) to 1 (full). */
   volume: 0.8,
 
@@ -97,6 +101,22 @@ window.REMEMBRANCE_CONFIG = {
        slideImages: { pattern: "slides/slide{n}.jpg", count: 12 },
      Leave it as [] to use the Google Slides link above. */
   slideImages: [],
+
+  /* OPTIONAL: use a PDF of your slides instead. In Google Slides choose
+     File > Download > PDF document (.pdf), upload it to the slides folder,
+     and put its name here. Each page becomes one slide, and the presenter
+     window controls them just like slide pictures. Needs the lib folder
+     (the PDF reader) to be uploaded too. If you have several PDFs, list them:
+       slidesPdf: "slides/slides.pdf",
+       slidesPdf: ["slides/part1.pdf", "slides/part2.pdf"],
+     Leave it as "" to use the picture list or Google link. */
+  slidesPdf: "slides/Remembrance day.pdf",
+
+  /* How one slide changes to the next (for slide pictures and PDFs):
+       "fade"   soft crossfade        "slide"  glides sideways
+       "zoom"   gentle zoom in        "none"   instant */
+  slideTransition: "fade",
+  slideTransitionSeconds: 0.6,
 
   /* 0 = move through the slides yourself.
      A number, e.g. 15 = the slides move on by themselves every 15 seconds. */
