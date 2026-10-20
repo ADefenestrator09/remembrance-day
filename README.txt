@@ -91,6 +91,9 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  - Add a track: copy a line and change it. The last line
                    in the list has no comma after it.
                  - Remove a track: delete its line.
+                 - Different banner words for one track: add
+                   banner: "Words to show" to its line (banner: "" hides
+                   it for that track). The default is the track's title.
                  - Different pictures for one track: add  gallery: [ ... ]
                    (and optionally  interval: 15 ) to that track's line.
                    Example, for the two minutes of silence:
@@ -122,6 +125,11 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  entries (at 10 seconds each, 12 of them fill it).
 
   galleryInterval  Seconds each picture or line stays on screen (3 or more).
+
+  bannerSeconds    How long that name stays on screen (default 8).
+
+  textScale        Size of the words and captions on the audience screen:
+                   1 = normal, 1.3 = bigger, 0.8 = smaller (0.5 to 2).
 
   showTrackTitle   true  = the name of each track (for example "The Last
                            Post") appears at the top of the audience screen

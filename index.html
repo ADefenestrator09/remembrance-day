@@ -247,11 +247,11 @@ html[data-stage="on"] body.tab-audio #gallery { display: block; }
 .g-slide.nokb img, .g-slide.nokb.on img { animation: none; }
 @keyframes kenA { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.1) translate(-1.2%, -.9%); } }
 @keyframes kenB { from { transform: scale(1.1) translate(1.2%, .9%); } to { transform: scale(1) translate(0, 0); } }
-.g-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 7vh 6vw 4.5vh; text-align: center; font-size: clamp(1.1rem, 3.4vh, 2.2rem); letter-spacing: .03em; color: var(--text); text-shadow: 0 2px 14px rgba(0,0,0,.9); background: linear-gradient(to top, rgba(0,0,0,.62), transparent); }
+.g-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 7vh 6vw 4.5vh; text-align: center; font-size: calc(clamp(1.1rem, 3.4vh, 2.2rem) * var(--ts, 1)); letter-spacing: .03em; color: var(--text); text-shadow: 0 2px 14px rgba(0,0,0,.9); background: linear-gradient(to top, rgba(0,0,0,.62), transparent); }
 .g-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3.2vh; padding: 8vh 10vw; text-align: center; }
 .g-text .emb { width: clamp(46px, 9vh, 92px); height: auto; margin: 0; filter: drop-shadow(0 0 16px rgba(209,17,47,.55)); }
-.g-text .g-line { font-size: clamp(2rem, 7.4vh, 5.2rem); letter-spacing: .03em; line-height: 1.22; color: var(--text); text-shadow: 0 2px 22px rgba(0,0,0,.55); }
-.g-text .g-note { font-size: clamp(1.1rem, 3.2vh, 2rem); color: var(--muted); font-style: italic; letter-spacing: .04em; }
+.g-text .g-line { font-size: calc(clamp(2rem, 7.4vh, 5.2rem) * var(--ts, 1)); letter-spacing: .03em; line-height: 1.22; color: var(--text); text-shadow: 0 2px 22px rgba(0,0,0,.55); }
+.g-text .g-note { font-size: calc(clamp(1.1rem, 3.2vh, 2rem) * var(--ts, 1)); color: var(--muted); font-style: italic; letter-spacing: .04em; }
 .g-slide.on .g-text > * { animation: rise 1.8s ease-out both; }
 .g-slide.on .g-text > :nth-child(2) { animation-delay: .25s; }
 .g-slide.on .g-text > :nth-child(3) { animation-delay: .5s; }
@@ -482,7 +482,7 @@ const CFG = window.REMEMBRANCE_CONFIG || { tracks: [], slidesUrl: "", videoSrc: 
 const IS_AUD = document.documentElement.getAttribute("data-view") === "audience";
 const chan = ("BroadcastChannel" in window) ? new BroadcastChannel("remembrance-day") : null;
 function send(m) { if (chan) { try { chan.postMessage(m); } catch (e) {} } }
-const TRACKS = (CFG.tracks || []).map(t => ({ title: t.title, src: t.src, gallery: t.gallery, interval: t.interval }));
+const TRACKS = (CFG.tracks || []).map(t => ({ title: t.title, src: t.src, gallery: t.gallery, interval: t.interval, banner: t.banner }));
 
 const $ = id => document.getElementById(id);
 const audio = $("audio");
@@ -928,6 +928,7 @@ const Gallery = (function () {
   const root = $("gallery");
   const fadeMs = Math.round(Math.max(.2, Number(FX.crossfade) || 1.6) * 1000);
   root.style.setProperty("--fade", fadeMs + "ms");
+  root.style.setProperty("--ts", Math.min(2, Math.max(.5, Number(CFG.textScale) || 1)));
   let list = null, ival = G_INTERVAL, idx = -1, timer = null, cur = null, token = 0, running = false, flip = false, fails = 0;
 
   const isImg = it => !!(it && it.src);
@@ -1021,10 +1022,11 @@ function refreshStage() {
 function onTrackLoaded() { if (stageOn()) applyGalleryForTrack(); updateBar(); }
 
 /* track name shown for a few seconds when a track starts */
+function bannerText(i) { const t = TRACKS[i] || {}; return (typeof t.banner === "string") ? t.banner : (t.title || ""); }
 function showBanner(text) {
   if (!SHOW_TITLE || !text) return;
   const b = $("banner"); b.textContent = text; b.classList.add("on");
-  clearTimeout(bannerT); bannerT = setTimeout(() => b.classList.remove("on"), 8000);
+  clearTimeout(bannerT); bannerT = setTimeout(() => b.classList.remove("on"), Math.max(2, Number(CFG.bannerSeconds) || 8) * 1000);
 }
 
 /* ---------- soft effects (shown only on the audience screen and in Present mode, on the Audio tab) ---------- */
@@ -1101,7 +1103,7 @@ if (!IS_AUD) {
   $("presentBar").addEventListener("mouseenter", () => { clearTimeout(barT); document.documentElement.classList.add("bar-on"); });
   $("presentBar").addEventListener("mouseleave", showBar);
   document.addEventListener("keydown", e => { if (presenting) { showBar(); if (e.key === "Escape" && !document.fullscreenElement) exitPresent(); } });
-  audio.addEventListener("play", () => { if (presenting && SHOW_TITLE && bannerFor !== current) { bannerFor = current; showBanner((TRACKS[current] || {}).title); } });
+  audio.addEventListener("play", () => { if (presenting && SHOW_TITLE && bannerFor !== current) { bannerFor = current; showBanner(bannerText(current)); } });
   ["play", "pause", "loadedmetadata", "emptied"].forEach(ev => audio.addEventListener(ev, updateBar));
   audio.addEventListener("timeupdate", updateBarTime);
 }
@@ -1109,7 +1111,7 @@ if (!IS_AUD) {
 /* ---------- Audience screen (second window) ---------- */
 function getState() {
   const t = TRACKS[current] || {};
-  return { tab: currentTab(), slide: slideIndex, track: current, trackTitle: t.title || "", playing: !audio.paused && !audio.ended, video: videoIndex };
+  return { tab: currentTab(), slide: slideIndex, track: current, trackTitle: bannerText(current), playing: !audio.paused && !audio.ended, video: videoIndex };
 }
 function syncSoon() {
   if (IS_AUD || !chan || syncT) return;

@@ -18,7 +18,13 @@ window.REMEMBRANCE_CONFIG = {
      if you like,  interval: 15  (seconds per picture). For example:
        { title: "Two Minutes of Silence", src: "audio/silence-2-minutes.mp3",
          gallery: [ { src: "images/silence1.jpg" }, { src: "images/silence2.jpg" } ],
-         interval: 15 },                                                       */
+         interval: 15 },
+
+     OPTIONAL, per track: the name shown at the top of the audience screen
+     when the track starts. By default it is the track's title. Set your own
+     with  banner: "Words to show"  or hide it for one track with  banner: "".
+       { title: "The Last Post", src: "audio/last-post.mp3",
+         banner: "The Last Post – in memory of the fallen" },                */
   tracks: [
     { title: "O Canada",               src: "audio/o-canada.mp3" },
     { title: "The Last Post",          src: "audio/last-post.mp3" },
@@ -54,6 +60,13 @@ window.REMEMBRANCE_CONFIG = {
   /* Show the name of each track (for example "The Last Post") at the top
      of the audience screen for a few seconds when it starts. */
   showTrackTitle: true,
+
+  /* How many seconds that name stays on screen (default 8). */
+  bannerSeconds: 8,
+
+  /* Size of the words and captions on the audience screen: 1 = normal,
+     1.3 = bigger, 0.8 = smaller (from 0.5 to 2). */
+  textScale: 1,
 
   /* Soft effects. They appear only on the AUDIENCE screen (and in Present
      mode), and only on the Audio tab. Set any to false to turn it off.
