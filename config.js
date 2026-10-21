@@ -54,8 +54,6 @@ window.REMEMBRANCE_CONFIG = {
      line. After you save a change, refresh the audience window to see it.
      Tip: add several pictures, since the silence lasts two minutes. */
   gallery: [
-    { text: "Lest we forget" },
-    { text: "Thank you to our veterans", note: "And those who serve today" },
     { text: "Lest we forget", note: "November 11" },
     { text: "We will remember them" },
     { text: "Remembering all who served", note: "Canada remembers" },
