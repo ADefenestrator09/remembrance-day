@@ -6,13 +6,27 @@ WHAT'S IN THE FOLDER
   config.js    ALL the settings (text, tracks, pictures, slideshow, video).
   audio/       The mp3 files.
   images/      Your pictures for the audience slideshow (see below).
-  slides/      Optional. Your slides as a PDF or as pictures (see slidesPdf).
+  slides/      Your slides PDF (see slidesPdf).
   lib/         The PDF reader that turns a slides PDF into slides. Upload it
                if you use slidesPdf. You never need to edit it.
   video/       Optional. Create this folder yourself if you want to play a
                video file instead of a YouTube link.
   favicon.svg  The poppy icon on the browser tab.
   README.txt   This guide.
+
+
+PUTTING IT ON GITHUB PAGES
+  1. Unzip this folder on your computer.
+  2. In your GitHub repository choose Add file > Upload files and drag in
+     index.html, config.js, favicon.svg and the audio and images folders
+     (plus a video folder if you use one). Commit the changes.
+  3. Settings > Pages > Deploy from a branch > main > /(root) > Save.
+  4. Open https://adefenestrator09.github.io/remembrance-day/ after a minute or two.
+
+  Open the website address, not the index.html file on your computer.
+  YouTube refuses to play inside a page that was opened as a local file
+  (it shows "Error 153").
+
 
 PRESENTING: THE PRESENTER AND THE AUDIENCE
   The page you control is the PRESENTER screen. What the room sees is the
@@ -28,12 +42,10 @@ PRESENTING: THE PRESENTER AND THE AUDIENCE
      3. Keep working in the presenter window. The audience window follows
         you: the Audio tab shows the picture slideshow, the Slideshow tab
         shows your slides, the Video tab shows the video.
-     4. On the Slideshow tab: if you use slide pictures (slideImages), use
-        the Next / Previous buttons, the arrow keys or Space in the
-        presenter window and the audience screen follows. With only a
-        Google Slides link, click the slides on the audience screen and use
-        the arrow keys there. On the Video tab, use the Play and Pause
-        buttons in the presenter window.
+     4. On the Slideshow tab, use the Next / Previous buttons, the arrow
+        keys or Space in the presenter window and the audience screen
+        follows. On the Video tab, use the Play and Pause buttons in the
+        presenter window.
      5. The Audience button shows a green dot while the two windows are
         linked. Closing the audience window puts everything back on the
         presenter screen.
@@ -46,7 +58,7 @@ PRESENTING: THE PRESENTER AND THE AUDIENCE
 
   Keyboard shortcuts (on either screen)
      Space       play / pause the audio (next slide on the Slideshow tab
-                 when slide pictures are used)
+                 when a slides PDF is used)
      Right/Left  next / previous track (slides on the Slideshow tab)
      1, 2, 3     Audio / Slideshow / Video tab
      F           full screen (on the audience screen)
@@ -144,13 +156,8 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  effects seem to be missing).
                  true = those computers get a still picture show instead.
 
-  slidesUrl      Your Google Slides link. The normal link from the address
-                 bar works. The slides must be shared as "Anyone with the
-                 link" or published to the web (File > Share > Publish to
-                 web). Use "" to leave the slideshow tab empty.
-
-  slidesPdf      OPTIONAL. The easiest way to control slides from the
-                 presenter window and get smooth changes between slides.
+  slidesPdf      Your slides, as a PDF. They are moved from the presenter
+                 window and change with a smooth transition.
                  1. In Google Slides choose File > Download > PDF document.
                  2. Upload the PDF into the slides folder (and make sure the
                     lib folder is uploaded too).
@@ -159,38 +166,19 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  Next / Previous buttons, arrow keys or Space in the
                  presenter window, and the audience screen follows. Several
                  PDFs can be listed:  slidesPdf: ["slides/a.pdf", "slides/b.pdf"],
-                 Leave it as "" to use the picture list or Google link.
+                 Leave it as "" and the Slideshow tab shows a "no slides" note.
                  Note: a PDF holds each slide as a still page, so Google's own
                  animations (build-ins, embedded video) do not carry over.
                  The changes between slides come from slideTransition.
                  Open the website address; a PDF will not load from a file
                  on your computer.
 
-  slideTransition   How one slide changes to the next (PDF or pictures):
+  slideTransition   How one slide changes to the next (PDF slides):
                    "fade"   soft crossfade (default)
                    "slide"  glides sideways
                    "zoom"   gentle zoom in
                    "none"   instant
   slideTransitionSeconds   How long the change takes. Default 0.6.
-
-  slideImages    OPTIONAL. Show your slides as pictures so you can move
-                 them from the presenter window.
-                 1. In Google Slides choose File > Download > PNG or JPEG
-                    image (current slide), or use File > Download > PDF and
-                    convert the pages to pictures, so each slide is one
-                    picture.
-                 2. Upload them into the slides folder.
-                 3. List them in order:
-                      slideImages: ["slides/slide1.jpg", "slides/slide2.jpg"],
-                    or, if they are named slide1, slide2, ... :
-                      slideImages: { pattern: "slides/slide{n}.jpg", count: 12 },
-                 Leave it as [] to use the Google Slides link instead.
-                 Pictures don't keep animations or embedded video, and you
-                 need to export again if you change the deck.
-
-  slidesAutoplaySeconds   0 = you move through the slides yourself.
-                 A number such as 15 = the slides move on by themselves
-                 every 15 seconds.
 
   videos         The list of videos on the Video tab. Each line is:
                    { title: "Name on the button", src: "link or file" },
@@ -201,8 +189,7 @@ CUSTOMIZATION SETTINGS (all in config.js)
                  Add more lines to add more videos. With two or more, a row
                  of buttons appears above the video so you can switch
                  between them (the first one loads automatically). With one
-                 video there are no buttons. Use  videos: [],  to leave the
-                 tab empty so a video can be chosen on the page.
+                 video there are no buttons.
                  Example with three videos:
                    videos: [
                      { title: "Introduction", src: "https://youtu.be/XXXXXXXXXXX" },
@@ -217,9 +204,9 @@ BEFORE THE EVENT
     you will use, press Play test tone, and check all three tabs.
   - If you will use the Audience button, try it with the projector plugged
     in, and check that the audience window can go full screen on it.
-  - The slideshow and YouTube video need an internet connection. The Audio
-    tab, including the picture slideshow, works offline once the page has
-    loaded.
+  - YouTube videos need an internet connection. The Audio tab, including
+    the picture slideshow, and your slides PDF work offline once the page
+    has loaded.
   - Clicking a track in the list only selects it; press Play (or Space) to
     start it.
   - Keep the computer awake while the page is open (check the power and
@@ -240,7 +227,7 @@ IF SOMETHING GOES WRONG
                             skipped, so check the rest of the list.)
   Video shows Error 153     You opened the file from your computer. Use the
                             website address instead.
-  Slides or video blocked   Some school networks or preview windows block
+  Video blocked             Some school networks or preview windows block
                             embedded content. Open the site in a normal
                             Chrome or Edge tab.
   The audience window       Allow pop-ups for the site, then press the

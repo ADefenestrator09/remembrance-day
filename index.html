@@ -199,7 +199,7 @@ html[data-remote] #panel-slides .stage, html[data-remote] #panel-video .stage { 
 html[data-remote] .remote { display: flex; }
 html[data-stage="on"] .remote { display: none !important; }
 
-/* ---- slides shown as pictures (slideImages in config.js) ---- */
+/* ---- slides from a PDF (slidesPdf in config.js) ---- */
 .deck { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; }
 .deck-layers, .deck-slide { position: absolute; inset: 0; }
 .deck-slide { opacity: 0; transition: opacity var(--trd, .6s) ease, transform var(--trd, .6s) cubic-bezier(.22,.7,.25,1); display: flex; align-items: center; justify-content: center; }
@@ -220,7 +220,6 @@ html[data-stage="on"] .remote { display: none !important; }
 html[data-stage="on"] .deck-nav, html[data-stage="on"] .deck-count { display: none; }
 .deckctl { display: none; flex-direction: column; align-items: center; gap: 10px; min-height: 0; flex: 1 1 auto; width: 100%; }
 html[data-deck] #slidesRemote .deckctl { display: flex; }
-html[data-deck] #slidesRemote .nodeck { display: none; }
 #srThumb { flex: 1 1 0; min-height: 0; max-width: min(100%, 640px); aspect-ratio: 16 / 9; object-fit: contain; background: #000; border: 1px solid var(--line); border-radius: 8px; }
 #srCount { min-width: 6ch; text-align: center; color: var(--muted); }
 #slidesRemote.remote { gap: 10px; }
@@ -407,12 +406,8 @@ html[data-view="audience"] #audStart:not(.gone) { display: flex; }
     <div class="vlist" id="videoList" hidden></div>
     <div class="stage"><div class="frame" id="videoFrame">
       <div class="empty" id="videoEmpty">
-        <h3>Add your video</h3>
-        <p class="fine">Pick a video file from this computer (works with no internet):</p>
-        <input type="file" id="videoFile" accept="video/*">
-        <p class="fine">or paste a YouTube, Google Drive or direct video link:</p>
-        <div class="linerow"><input class="txt" id="videoUrl" type="text" placeholder="https://www.youtube.com/watch?v=..."><button class="primary" id="videoLoad">Load</button></div>
-        <div class="status" id="videoStatus"></div>
+        <h3>No video set</h3>
+        <p class="fine">Add your videos to the <b>videos</b> list in config.js.</p>
       </div>
     </div></div>
     <div class="remote" id="videoRemote">
@@ -425,15 +420,12 @@ html[data-view="audience"] #audStart:not(.gone) { display: flex; }
   <div id="panel-slides" class="panel media" hidden>
     <div class="stage"><div class="frame" id="slidesFrame">
       <div class="empty" id="slidesEmpty">
-        <h3>Add your Google Slides</h3>
-        <p class="fine">In Google Slides choose <b>File &rarr; Share &rarr; Publish to web</b> (or set sharing to &ldquo;Anyone with the link&rdquo;), then paste the link or the embed code here. The slideshow needs an internet connection.</p>
-        <div class="linerow"><input class="txt" id="slidesUrl" type="text" placeholder="https://docs.google.com/presentation/d/..."><button class="primary" id="slidesLoad">Load</button></div>
-        <div class="status" id="slidesStatus"></div>
+        <h3>No slides set</h3>
+        <p class="fine">Download your slides from Google Slides as a PDF, upload it to the slides folder, and set <b>slidesPdf</b> in config.js.</p>
       </div>
     </div></div>
     <div class="remote" id="slidesRemote">
       <h3>The slideshow is on the audience screen</h3>
-      <p class="fine nodeck">Click the slides on that screen, then use the arrow keys (or the arrows on the slide) to move through them.</p>
       <div class="deckctl">
         <img id="srThumb" alt="The slide on the audience screen">
         <div class="row"><button id="srPrev">◀ Previous</button><span id="srCount"></span><button class="primary" id="srNext">Next ▶</button></div>
@@ -483,7 +475,7 @@ html[data-view="audience"] #audStart:not(.gone) { display: flex; }
 </script>
 <script>
 /* Settings (tracks, slideshow, video) are read from config.js */
-const CFG = window.REMEMBRANCE_CONFIG || { tracks: [], slidesUrl: "", videoSrc: "" };
+const CFG = window.REMEMBRANCE_CONFIG || { tracks: [], videoSrc: "" };
 const IS_AUD = document.documentElement.getAttribute("data-view") === "audience";
 const chan = ("BroadcastChannel" in window) ? new BroadcastChannel("remembrance-day") : null;
 function send(m) { if (chan) { try { chan.postMessage(m); } catch (e) {} } }
@@ -703,11 +695,9 @@ document.addEventListener("keydown", e => {
   if (handleKey(e.code)) e.preventDefault();
 });
 
-const SLIDES_URL = CFG.slidesUrl || "";
 const VIDEOS = (Array.isArray(CFG.videos) && CFG.videos.length ? CFG.videos : (CFG.videoSrc ? [{ title: "Video", src: CFG.videoSrc }] : []))
   .map((v, i) => ({ title: v.title || ("Video " + (i + 1)), src: v.src }));
 const VIDEO_SRC = "";
-const SLIDES_AUTO = Math.max(0, Number(CFG.slidesAutoplaySeconds) || 0);
 
 /* ---------- tab switching ---------- */
 function showTab(name) {
@@ -723,35 +713,10 @@ function showTab(name) {
 }
 ["audio", "slides", "video"].forEach(n => $("tab-" + n).addEventListener("click", () => showTab(n)));
 
-function remember(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
 function goFullscreen(el) { const f = el.requestFullscreen || el.webkitRequestFullscreen; if (f) f.call(el); }
 $("fsBtn").addEventListener("click", () => goFullscreen($(document.body.className === "tab-video" ? "videoFrame" : "slidesFrame")));
 
 const slidesEmptyEl = $("slidesEmpty"), videoEmptyEl = $("videoEmpty");
-
-/* ---------- slideshow ---------- */
-function slidesEmbed(raw) {
-  raw = (raw || "").trim();
-  const sm = raw.match(/src=["']([^"']+)["']/);
-  if (sm) raw = sm[1].replace(/&amp;/g, "&");
-  const q = "?start=" + (SLIDES_AUTO > 0) + "&loop=false&delayms=" + (SLIDES_AUTO > 0 ? SLIDES_AUTO * 1000 : 3000);
-  let m = raw.match(/\/presentation\/d\/e\/([\w-]+)/);
-  if (m) return "https://docs.google.com/presentation/d/e/" + m[1] + "/embed" + q;
-  m = raw.match(/\/presentation\/d\/([\w-]+)/);
-  if (m) return "https://docs.google.com/presentation/d/" + m[1] + "/embed" + q;
-  return null;
-}
-function loadSlides(raw, save) {
-  const url = slidesEmbed(raw);
-  if (!url) { setStatus(slidesEmptyEl.querySelector("#slidesStatus"), "That doesn't look like a Google Slides link. Copy it from the Share or Publish to web window.", "bad"); return false; }
-  const f = document.createElement("iframe");
-  f.id = "slidesIframe"; f.src = url; f.allowFullscreen = true; f.setAttribute("allow", "fullscreen"); f.title = "Slideshow";
-  $("slidesFrame").replaceChildren(f);
-  if (save) remember("remembrance.slides", raw);
-  return true;
-}
-$("slidesLoad").addEventListener("click", () => loadSlides($("slidesUrl").value, true));
-$("slidesUrl").addEventListener("keydown", e => { if (e.key === "Enter") $("slidesLoad").click(); });
 
 /* ---------- video ---------- */
 function ytStart(raw) {
@@ -788,41 +753,30 @@ function showVideo(s) {
   }
   $("videoFrame").replaceChildren(el);
 }
-function loadVideoUrl(raw, save) {
+function loadVideoUrl(raw) {
   const s = videoSource(raw);
   if (!s) {
     const old = $("videoEl"); if (old) old.pause();
     $("videoFrame").replaceChildren(videoEmptyEl);
-    setStatus(videoEmptyEl.querySelector("#videoStatus"), "That doesn't look like a YouTube, Google Drive or video link.", "bad");
+    toast("That doesn't look like a YouTube, Google Drive or video link. Check it in config.js.");
     return false;
   }
   showVideo(s);
-  if (save) remember("remembrance.video", raw);
   return true;
 }
-$("videoLoad").addEventListener("click", () => loadVideoUrl($("videoUrl").value, true));
-$("videoUrl").addEventListener("keydown", e => { if (e.key === "Enter") $("videoLoad").click(); });
-$("videoFile").addEventListener("change", e => {
-  const f = e.target.files[0];
-  if (f) showVideo({ type: "video", src: URL.createObjectURL(f) });
-});
 
 /* starting an audio track pauses any playing video file */
 audio.addEventListener("play", () => { const v = $("videoEl"); if (v && !v.paused) v.pause(); });
 
-if (location.protocol === "file:") setStatus($("videoStatus"), "Tip: YouTube links show Error 153 when this page is opened as a file. Open it from its website address, or choose a video file above.", "warn");
+if (location.protocol === "file:") toast("YouTube videos show Error 153 when this page is opened as a file. Open it from its website address.");
 
-/* ---------- slides as pictures or a PDF (optional): slideImages / slidesPdf in config.js ---------- */
-let DECK = (function () {
-  let a = CFG.slideImages;
-  if (a && !Array.isArray(a) && a.pattern && Number(a.count) > 0) a = Array.from({ length: Math.min(300, Number(a.count)) }, (_, i) => String(a.pattern).replace("{n}", i + 1));
-  return (Array.isArray(a) ? a : []).map(x => typeof x === "string" ? { src: x } : x).filter(x => x && x.src);
-})();
+/* ---------- slides from a PDF (optional): slidesPdf in config.js ---------- */
+const DECK = [];   /* one entry per PDF page, filled in once the PDF is loaded */
 const PDFS = (function () { const p = CFG.slidesPdf; return (Array.isArray(p) ? p : (p ? [p] : [])).filter(x => typeof x === "string" && x.trim()); })();
 const TRANS = ["fade", "slide", "zoom", "none"].includes(CFG.slideTransition) ? CFG.slideTransition : "fade";
 const TRANS_S = TRANS === "none" ? 0 : Math.min(2.5, Math.max(.15, Number(CFG.slideTransitionSeconds) || .6));
 let slideIndex = 0;
-const Deck = (!DECK.length && !PDFS.length) ? null : (function () {
+const Deck = !PDFS.length ? null : (function () {
   document.documentElement.setAttribute("data-deck", "");
   const el = document.createElement("div"); el.className = "deck"; el.dataset.tr = TRANS; el.style.setProperty("--trd", TRANS_S + "s");
   el.innerHTML = '<div class="deck-layers"></div><div class="deck-count"></div>' +
@@ -830,7 +784,7 @@ const Deck = (!DECK.length && !PDFS.length) ? null : (function () {
   const layers = el.querySelector(".deck-layers"), count = el.querySelector(".deck-count"), prevB = el.querySelector(".prev"), nextB = el.querySelector(".next");
   let cur = null, token = 0, shown = -1, loadingEl = null, pendingSlide = null;
 
-  /* a slide may be a picture file, or a page of a PDF that is turned into a picture when it is first needed */
+  /* each slide is a page of the PDF, drawn as a picture the first time it is needed */
   function srcOf(it) {
     if (it.src) return Promise.resolve(it.src);
     if (!it._p) it._p = renderPdfPage(it.doc, it.page).then(u => (it.src = u));
@@ -862,7 +816,7 @@ const Deck = (!DECK.length && !PDFS.length) ? null : (function () {
     const show = ok => {
       if (my !== token) return;
       if (loadingEl) { loadingEl.remove(); loadingEl = null; }
-      if (!ok) { d.replaceChildren(); const m = document.createElement("div"); m.className = "deck-miss"; m.textContent = "Slide " + n + " could not be loaded. Check its file name in config.js."; d.append(m); }
+      if (!ok) { d.replaceChildren(); const m = document.createElement("div"); m.className = "deck-miss"; m.textContent = "Slide " + n + " could not be drawn."; d.append(m); }
       else d.append(im);
       const old = cur; cur = d;
       d.style.setProperty("--ex", (dir * 7) + "%"); layers.append(d); void d.offsetWidth; d.classList.add("on");
@@ -885,7 +839,6 @@ const Deck = (!DECK.length && !PDFS.length) ? null : (function () {
   const next = () => go(slideIndex + 1), prev = () => go(slideIndex - 1);
   prevB.addEventListener("click", prev); nextB.addEventListener("click", next);
   $("srPrev").addEventListener("click", prev); $("srNext").addEventListener("click", next);
-  if (SLIDES_AUTO > 0 && !IS_AUD) setInterval(() => { if (currentTab() === "slides" && slideIndex < DECK.length - 1) next(); }, SLIDES_AUTO * 1000);
 
   /* PDF slides: load the PDF reader (the lib folder), then add one slide per page */
   async function loadPdfs() {
@@ -906,31 +859,21 @@ const Deck = (!DECK.length && !PDFS.length) ? null : (function () {
     if (cur) labels(); else render();
     if (bad.length) toast("Could not load: " + bad.join(", "));
   }
-  if (DECK.length) render();
-  if (PDFS.length) loadPdfs();
+  loadPdfs();
   return { el, go, next, prev };
 })();
 
-/* use hardcoded values, or whatever was entered last time */
 function initSlides() {
-  if (Deck) { $("slidesFrame").replaceChildren(Deck.el); return; }
-  const sl = SLIDES_URL || remember("remembrance.slides");
-  if (sl) { slidesEmptyEl.querySelector("#slidesUrl").value = sl; loadSlides(sl, false); }
-  else $("slidesFrame").replaceChildren(slidesEmptyEl);
+  if (Deck) $("slidesFrame").replaceChildren(Deck.el); else $("slidesFrame").replaceChildren(slidesEmptyEl);
 }
 function initVideo() {
-  if (VIDEOS.length) pickVideo(videoIndex);
-  else {
-    const v = remember("remembrance.video");
-    if (v) { videoEmptyEl.querySelector("#videoUrl").value = v; loadVideoUrl(v, false); }
-    else $("videoFrame").replaceChildren(videoEmptyEl);
-  }
+  if (VIDEOS.length) pickVideo(videoIndex); else $("videoFrame").replaceChildren(videoEmptyEl);
 }
 function pickVideo(i) {
   if (!VIDEOS.length) return;
   videoIndex = ((i % VIDEOS.length) + VIDEOS.length) % VIDEOS.length;
   [...$("videoList").children].forEach((b, j) => b.classList.toggle("active", j === videoIndex));
-  if (!audienceOn) loadVideoUrl(VIDEOS[videoIndex].src, false);
+  if (!audienceOn) loadVideoUrl(VIDEOS[videoIndex].src);
   updateBar(); syncSoon();
 }
 (function () {
@@ -945,7 +888,6 @@ function pickVideo(i) {
 })();
 initSlides();
 initVideo();
-if (!navigator.onLine) setStatus(slidesEmptyEl.querySelector("#slidesStatus"), "You appear to be offline. Google Slides needs an internet connection.", "warn");
 
 /* filled portion of the seek and volume bars */
 function setPct(el) { el.style.setProperty("--pct", ((el.value - el.min) / (el.max - el.min) * 100) + "%"); }

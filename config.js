@@ -85,42 +85,22 @@ window.REMEMBRANCE_CONFIG = {
   effects: { petals: true, embers: true, glow: true, slowZoom: true, crossfade: 1.6, intensity: 0.4 },
   respectReducedMotion: false,
 
-  /* ---------- GOOGLE SLIDES ---------- */
-  /* Google Slides link (the normal address-bar link works, as does a
-     Publish to web link). Slides must be shared as "Anyone with the
-     link" or published to the web. Leave "" to paste one on the page. */
-  slidesUrl: "https://docs.google.com/presentation/d/14cuLkEGzFLnWPOxOr7ncvXK_RBAiV2kzn7F86Dw5Ig8/edit?slide=id.p#slide=id.p",
-
-  /* OPTIONAL: show your slides as pictures instead of the Google embed.
-     Then the presenter window gets Next / Previous buttons (and the arrow
-     keys and space bar) that move the audience screen too.
-     Export your slides as pictures, upload them to the slides folder, and
-     list them here in order. Either list each one:
-       slideImages: ["slides/slide1.jpg", "slides/slide2.jpg", "slides/slide3.jpg"],
-     or, if they are numbered slide1, slide2, ... give a pattern and a count:
-       slideImages: { pattern: "slides/slide{n}.jpg", count: 12 },
-     Leave it as [] to use the Google Slides link above. */
-  slideImages: [],
-
-  /* OPTIONAL: use a PDF of your slides instead. In Google Slides choose
+  /* ---------- SLIDES ---------- */
+  /* Your slides as a PDF. In Google Slides choose
      File > Download > PDF document (.pdf), upload it to the slides folder,
      and put its name here. Each page becomes one slide, and the presenter
-     window controls them just like slide pictures. Needs the lib folder
-     (the PDF reader) to be uploaded too. If you have several PDFs, list them:
+     window controls them. Needs the lib folder (the PDF reader) to be
+     uploaded too. If you have several PDFs, list them:
        slidesPdf: "slides/slides.pdf",
        slidesPdf: ["slides/part1.pdf", "slides/part2.pdf"],
-     Leave it as "" to use the picture list or Google link. */
+     Leave it as "" and the Slideshow tab shows a short "no slides" note. */
   slidesPdf: "slides/Remembrance day.pdf",
 
-  /* How one slide changes to the next (for slide pictures and PDFs):
+  /* How one slide changes to the next (for PDF slides):
        "fade"   soft crossfade        "slide"  glides sideways
        "zoom"   gentle zoom in        "none"   instant */
   slideTransition: "fade",
   slideTransitionSeconds: 0.6,
-
-  /* 0 = move through the slides yourself.
-     A number, e.g. 15 = the slides move on by themselves every 15 seconds. */
-  slidesAutoplaySeconds: 0,
 
   /* Videos for the Video tab. One line per video. "src" can be:
        - a YouTube link (add &t=10s to start at 10 seconds)
@@ -128,7 +108,6 @@ window.REMEMBRANCE_CONFIG = {
        - a video file in the video folder, e.g. "video/talk.mp4"
      With two or more videos, a row of buttons appears above the video so
      you can switch between them. With one video there are no buttons.
-     Leave the list empty ( videos: [] ) to choose a video on the page.
      To add a video, copy a line (every line except the last ends in a comma). */
   videos: [
     { title: "Remembrance Day", src: "https://www.youtube.com/watch?v=lDBvV2HbpgE" },
