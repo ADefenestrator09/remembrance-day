@@ -54,7 +54,7 @@ window.REMEMBRANCE_CONFIG = {
   gallery: [
     { text: "Lest we forget" },
     { text: "Remembering all who served", note: "November 11" },
-    { text: "Thank you to our veterans and to those who serve today" }
+    { text: "Thank you to our veterans", note: "And those who serve today" }
     /* , { src: "images/photo1.jpg", caption: "Optional caption" } */
   ],
 
