@@ -55,8 +55,15 @@ window.REMEMBRANCE_CONFIG = {
      Tip: add several pictures, since the silence lasts two minutes. */
   gallery: [
     { text: "Lest we forget" },
-    { text: "Remembering all who served", note: "November 11" },
-    { text: "Thank you to our veterans", note: "And those who serve today" }
+    { text: "Thank you to our veterans", note: "And those who serve today" },
+    { text: "Lest we forget", note: "November 11" },
+    { text: "We will remember them" },
+    { text: "Remembering all who served", note: "Canada remembers" },
+    { text: "Thank you, veterans", note: "Thank you for your service" },
+    { text: "Honouring those who served", note: "Their sacrifice, our freedom" },
+    { text: "In Flanders fields the poppies blow" },
+    { text: "At the going down of the sun", note: "We will remember them" },
+    { text: "Peace through remembrance", note: "11 a.m., November 11" }
     /* , { src: "images/photo1.jpg", caption: "Optional caption" } */
   ],
 
