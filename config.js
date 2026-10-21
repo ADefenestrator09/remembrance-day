@@ -50,6 +50,8 @@ window.REMEMBRANCE_CONFIG = {
        { text: "Words to show", note: "Optional smaller line" }    words
      Upload your pictures into the images folder (see README.txt).
      Entries play in order and then start again from the top.
+     Keep words short (about 35 characters or fewer) so each stays on one
+     line. After you save a change, refresh the audience window to see it.
      Tip: add several pictures, since the silence lasts two minutes. */
   gallery: [
     { text: "Lest we forget" },
@@ -94,7 +96,7 @@ window.REMEMBRANCE_CONFIG = {
        slidesPdf: "slides/slides.pdf",
        slidesPdf: ["slides/part1.pdf", "slides/part2.pdf"],
      Leave it as "" and the Slideshow tab shows a short "no slides" note. */
-  slidesPdf: "slides/Remembrance day.pdf",
+  slidesPdf: "slides/Remembrance_day.pdf",
 
   /* How one slide changes to the next (for PDF slides):
        "fade"   soft crossfade        "slide"  glides sideways

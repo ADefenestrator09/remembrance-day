@@ -471,8 +471,7 @@ html[data-view="audience"] #audStart:not(.gone) { display: flex; }
 
 <audio id="audio" preload="auto"></audio>
 
-<script src="config.js">
-</script>
+<script>document.write('<script src="config.js?v=' + Date.now() + '"><\/script>');</script>
 <script>
 /* Settings (tracks, slideshow, video) are read from config.js */
 const CFG = window.REMEMBRANCE_CONFIG || { tracks: [], videoSrc: "" };
