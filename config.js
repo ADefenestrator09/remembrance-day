@@ -54,13 +54,6 @@ window.REMEMBRANCE_CONFIG = {
      line. After you save a change, refresh the audience window to see it.
      Tip: add several pictures, since the silence lasts two minutes. */
   gallery: [
-    { text: "Lest we forget" },
-    { text: "Remembering all who served", note: "November 11" },
-    { text: "Thank you to our veterans and to those who serve today" }
-    /* , { src: "images/photo1.jpg", caption: "Optional caption" } */
-
-    /* ---- ONE-LINE EXAMPLES: copy any of these above this comment (put a
-       comma after the entry before it) and they will show up. ----
     { text: "Lest we forget", note: "November 11" },
     { text: "We will remember them" },
     { text: "Remembering all who served", note: "Canada remembers" },
@@ -68,8 +61,7 @@ window.REMEMBRANCE_CONFIG = {
     { text: "Honouring those who served", note: "Their sacrifice, our freedom" },
     { text: "In Flanders fields the poppies blow" },
     { text: "At the going down of the sun", note: "We will remember them" },
-    { text: "Peace through remembrance", note: "11 a.m., November 11" },
-    */
+    { text: "Peace through remembrance", note: "11 a.m., November 11" }
   ],
 
   /* Seconds each picture or line stays on screen (3 or more). */
