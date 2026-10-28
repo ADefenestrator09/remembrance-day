@@ -266,7 +266,10 @@ html[data-stage="on"] body.tab-audio #banner { display: block; }
 
 /* ---- soft effect: drifting poppy petals ---- */
 #petals { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-html[data-stage="on"] body.tab-audio #petals { display: block; z-index: 6; }
+html[data-stage="on"] body.tab-audio #petals, html[data-stage="on"] body.tab-slides #petals { display: block; z-index: 6; }
+/* over the slides: only the drifting petals and embers (no tint or darkened edges, so the slides stay clear) */
+html[data-stage="on"] body.tab-slides #petals.fx-glow::before, html[data-stage="on"] body.tab-slides #petals.fx-glow::after { display: none; }
+html[data-slidefx="off"] body.tab-slides #petals { display: none !important; }
 .petal { position: absolute; top: 0; left: var(--l); width: var(--s); height: calc(var(--s) * 1.35); opacity: var(--o); animation: fall var(--d) linear var(--delay) infinite; will-change: transform; filter: drop-shadow(0 0 6px rgba(209,17,47,.45)); }
 .petal b { display: block; width: 100%; height: 100%; border-radius: 80% 8% 80% 8%; background: radial-gradient(circle at 30% 25%, #ff7a92, #c4122e 60%, #7d0b1d 100%); animation: flutter var(--f) ease-in-out var(--delay) infinite; }
 @keyframes fall {
@@ -913,6 +916,7 @@ const FX = Object.assign({ petals: true, embers: true, glow: true, slowZoom: tru
 /* Many school and work computers have "animation effects" switched off, which would hide every soft effect. So by default the effects ignore that setting; set respectReducedMotion: true in config.js to honour it. */
 if (CFG.respectReducedMotion === true && window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { FX.petals = false; FX.embers = false; FX.slowZoom = false; document.documentElement.setAttribute("data-rm", "on"); }
 const SHOW_TITLE = CFG.showTrackTitle !== false;
+if (CFG.slideEffects === false) document.documentElement.setAttribute("data-slidefx", "off");
 const G_INTERVAL = Math.max(3, Number(CFG.galleryInterval) || 10);
 const GALLERY = (Array.isArray(CFG.gallery) && CFG.gallery.length) ? CFG.gallery : [{ text: "Lest we forget" }, { text: "Remembering all who served" }];
 const EMB = document.querySelector("main > .poppy-icon").outerHTML.replace('class="poppy-icon"', 'class="emb"');

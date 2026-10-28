@@ -54,6 +54,13 @@ window.REMEMBRANCE_CONFIG = {
      line. After you save a change, refresh the audience window to see it.
      Tip: add several pictures, since the silence lasts two minutes. */
   gallery: [
+    { text: "Lest we forget" },
+    { text: "Remembering all who served", note: "November 11" },
+    { text: "Thank you to our veterans and to those who serve today" }
+    /* , { src: "images/photo1.jpg", caption: "Optional caption" } */
+
+    /* ---- ONE-LINE EXAMPLES: copy any of these above this comment (put a
+       comma after the entry before it) and they will show up. ----
     { text: "Lest we forget", note: "November 11" },
     { text: "We will remember them" },
     { text: "Remembering all who served", note: "Canada remembers" },
@@ -61,8 +68,8 @@ window.REMEMBRANCE_CONFIG = {
     { text: "Honouring those who served", note: "Their sacrifice, our freedom" },
     { text: "In Flanders fields the poppies blow" },
     { text: "At the going down of the sun", note: "We will remember them" },
-    { text: "Peace through remembrance", note: "11 a.m., November 11" }
-    /* , { src: "images/photo1.jpg", caption: "Optional caption" } */
+    { text: "Peace through remembrance", note: "11 a.m., November 11" },
+    */
   ],
 
   /* Seconds each picture or line stays on screen (3 or more). */
@@ -80,7 +87,9 @@ window.REMEMBRANCE_CONFIG = {
   textScale: 1,
 
   /* Soft effects. They appear only on the AUDIENCE screen (and in Present
-     mode), and only on the Audio tab. Set any to false to turn it off.
+     mode), on the Audio tab and over the Slideshow. Set any to false to
+     turn it off. (Over the slides you get the petals and embers only, so the
+     slides stay clear.)
        petals     poppy petals drifting and fluttering down the screen
        embers     small warm lights, like candle sparks, rising slowly
        glow       a soft vignette and a slowly "breathing" red light
@@ -91,6 +100,10 @@ window.REMEMBRANCE_CONFIG = {
      animations turned off in their settings to get a still picture show.) */
   effects: { petals: true, embers: true, glow: true, slowZoom: true, crossfade: 1.6, intensity: 0.4 },
   respectReducedMotion: false,
+
+  /* true  = the petals and embers also drift over the slides.
+     false = only on the Audio tab. */
+  slideEffects: true,
 
   /* ---------- SLIDES ---------- */
   /* Your slides as a PDF. In Google Slides choose
