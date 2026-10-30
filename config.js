@@ -59,7 +59,7 @@ window.REMEMBRANCE_CONFIG = {
     { text: "Remembering all who served", note: "Canada remembers" },
     { text: "Thank you, veterans", note: "Thank you for your service" },
     { text: "Honouring those who served", note: "Their sacrifice, our freedom" },
-    { text: "In Flanders fields the poppies blow" },
+    { text: "In Flanders Fields the poppies blow" },
     { text: "At the going down of the sun", note: "We will remember them" },
     { text: "Peace through remembrance", note: "11 a.m., November 11" }
   ],
