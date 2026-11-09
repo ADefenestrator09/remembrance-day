@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14110f">
+<title>Remembrance Day – Remote</title>
+<style>
+  :root { --bg:#14110f; --panel:#1e1a17; --text:#efe9e1; --muted:#a39a90; --poppy:#c8102e; --ok:#5fa86a; --warn:#e0a64a; --bad:#e5604f; --line:#3a332d; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; }
+  body { background: radial-gradient(ellipse at 50% 20%, #231d19 0%, var(--bg) 70%) fixed; color: var(--text); font-family: Georgia, "Times New Roman", serif;
+         padding: max(12px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 12px; max-width: 520px; margin: 0 auto; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  h1 { font-size: 1.1rem; font-weight: normal; letter-spacing: .05em; margin: 0; }
+  #pill { font-size: .8rem; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  #pill.ok { color: var(--ok); border-color: var(--ok); } #pill.warn { color: var(--warn); border-color: var(--warn); } #pill.bad { color: var(--bad); border-color: var(--bad); }
+  button { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 12px; touch-action: manipulation; }
+  button:active:not(:disabled) { filter: brightness(1.4); }
+  button:disabled { opacity: .4; }
+  button.primary { background: var(--poppy); border-color: var(--poppy); }
+  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .tabs button.active { background: var(--poppy); border-color: var(--poppy); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-top: 2px solid rgba(200,16,46,.55); border-radius: 14px; padding: 16px; }
+  .now { text-align: center; margin-bottom: 12px; }
+  .now b { display: block; font-weight: normal; font-size: 1.25rem; }
+  .now small { color: var(--muted); }
+  .big { display: grid; grid-template-columns: 1fr 1.6fr 1fr; gap: 10px; }
+  .big button { font-size: 1.3rem; padding: 22px 8px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .two button { font-size: 1.15rem; padding: 22px 8px; }
+  .list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .list button { text-align: left; display: flex; justify-content: space-between; padding: 12px 14px; }
+  .list button.active { border-color: var(--poppy); }
+  .vol { display: flex; align-items: center; gap: 10px; margin-top: 14px; color: var(--muted); }
+  .vol input { flex: 1; accent-color: var(--poppy); height: 32px; }
+  .hint { color: var(--muted); font-size: .85rem; text-align: center; margin: 10px 0 0; line-height: 1.4; }
+  [hidden] { display: none !important; }
+  #err { text-align: center; color: var(--muted); padding: 30px 10px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Remembrance Day · Remote</h1>
+  <span id="pill">Connecting…</span>
+</header>
+
+<div id="err" hidden></div>
+
+<div id="ui" hidden>
+  <nav class="tabs">
+    <button data-tab="audio">♪ Audio</button>
+    <button data-tab="slides">▤ Slides</button>
+    <button data-tab="video">▶ Video</button>
+  </nav>
+
+  <section class="card" id="p-audio" style="margin-top:12px" hidden>
+    <div class="now"><b id="aTitle">—</b><small id="aTime"></small></div>
+    <div class="big">
+      <button id="aPrev">⏮</button>
+      <button id="aPlay" class="primary">▶ Play</button>
+      <button id="aNext">⏭</button>
+    </div>
+    <div class="list" id="aList"></div>
+    <div class="vol">🔈 <input type="range" id="vol" min="0" max="1" step="0.01" value="0.8" aria-label="Volume"> 🔊</div>
+    <p class="hint" id="aHint" hidden>On the laptop, finish the audio check first.</p>
+  </section>
+
+  <section class="card" id="p-slides" style="margin-top:12px" hidden>
+    <div class="now"><b id="sCount">—</b><small>Slide on the audience screen</small></div>
+    <div class="two">
+      <button id="sPrev">◀ Previous</button>
+      <button id="sNext" class="primary">Next ▶</button>
+    </div>
+  </section>
+
+  <section class="card" id="p-video" style="margin-top:12px" hidden>
+    <div class="now"><b id="vTitle">—</b><small>Video on the audience screen</small></div>
+    <div class="two">
+      <button id="vPlay" class="primary">▶ Play</button>
+      <button id="vPause">⏸ Pause</button>
+    </div>
+    <div class="list" id="vList"></div>
+    <p class="hint">The audience window must be open on the laptop for video controls to work.</p>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const hostId = new URLSearchParams(location.search).get("id");
+  let peer = null, conn = null, last = 0, retryT = null, dragging = false, wake = null, S = null;
+
+  function pill(text, cls) { $("pill").textContent = text; $("pill").className = cls || ""; }
+  function showErr(html) { $("err").innerHTML = html; $("err").hidden = false; $("ui").hidden = true; }
+
+  if (!hostId) { pill("No code", "bad"); showErr("This page needs the pairing code.<br>On the laptop, press <b>Remote</b> and scan the QR code with your phone camera."); return; }
+  if (typeof Peer === "undefined") { pill("Offline", "bad"); showErr("Couldn't load the connection library. Check that this phone has internet, then reload."); return; }
+
+  function cmd(t, v) {
+    if (conn && conn.open) { try { conn.send({ t: t, v: v }); } catch (e) {} if (navigator.vibrate) navigator.vibrate(12); }
+  }
+  async function keepAwake() { try { if (navigator.wakeLock && !wake) { wake = await navigator.wakeLock.request("screen"); wake.addEventListener("release", () => { wake = null; }); } } catch (e) { wake = null; } }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { keepAwake(); if (!conn || !conn.open) connect(); } });
+
+  function lost(text, cls) {
+    pill(text || "Reconnecting…", cls || "warn");
+    try { if (conn) conn.close(); } catch (e) {}
+    conn = null;
+    clearTimeout(retryT); retryT = setTimeout(connect, 2500);
+  }
+
+  function connect() {
+    clearTimeout(retryT);
+    if (!peer || peer.destroyed) {
+      peer = new Peer();
+      peer.on("open", dial);
+      peer.on("disconnected", () => { try { peer.reconnect(); } catch (e) {} });
+      peer.on("error", err => {
+        if (err.type === "peer-unavailable") lost("Laptop not ready", "warn");
+        else lost("Reconnecting…", "warn");
+      });
+    } else if (peer.open) dial();
+  }
+
+  function dial() {
+    if (conn && conn.open) return;
+    const c = peer.connect(hostId, { reliable: true });
+    conn = c;
+    const wd = setTimeout(() => { if (conn === c && !c.open) lost("Laptop not ready", "warn"); }, 9000);
+    c.on("open", () => { clearTimeout(wd); last = Date.now(); pill("Connected", "ok"); $("err").hidden = true; $("ui").hidden = false; keepAwake(); });
+    c.on("data", d => { last = Date.now(); render(d); });
+    c.on("close", () => { if (conn === c) lost(); });
+    c.on("error", () => { if (conn === c) lost(); });
+  }
+
+  setInterval(() => { if (conn && conn.open && Date.now() - last > 5000) lost(); }, 1500);
+
+  /* ---------- UI ---------- */
+  function fmt(t) { if (!isFinite(t)) return "0:00"; const m = Math.floor(t / 60), s = Math.floor(t % 60); return m + ":" + String(s).padStart(2, "0"); }
+  function listFill(el, items, active, onPick) {
+    const sig = items.join("|") + "#" + active;
+    if (el.dataset.sig === sig) return; el.dataset.sig = sig;
+    el.replaceChildren();
+    items.forEach((t, i) => {
+      const b = document.createElement("button"); b.className = i === active ? "active" : "";
+      const a = document.createElement("span"); a.textContent = (i + 1) + ". " + t; b.appendChild(a);
+      b.addEventListener("click", () => onPick(i)); el.appendChild(b);
+    });
+  }
+  function render(s) {
+    S = s;
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === s.tab));
+    ["audio", "slides", "video"].forEach(n => { $("p-" + n).hidden = n !== s.tab; });
+    // audio
+    $("aTitle").textContent = (s.tracks[s.track] || "—");
+    $("aTime").textContent = s.dur ? fmt(s.time) + " / " + fmt(s.dur) : "";
+    $("aPlay").textContent = s.playing ? "⏸ Pause" : "▶ Play";
+    $("aHint").hidden = !!s.ready;
+    ["aPrev", "aPlay", "aNext"].forEach(id => { $(id).disabled = !s.ready; });
+    listFill($("aList"), s.tracks, s.track, i => cmd("track", i));
+    if (!dragging) $("vol").value = s.vol;
+    // slides
+    $("sCount").textContent = s.slides ? (s.slide + 1) + " / " + s.slides : "No slides";
+    $("sPrev").disabled = !s.slides || s.slide <= 0;
+    $("sNext").disabled = !s.slides || s.slide >= s.slides - 1;
+    // video
+    $("vTitle").textContent = s.videos[s.video] || "No video set";
+    listFill($("vList"), s.videos, s.video, i => cmd("video", i));
+    $("vList").hidden = s.videos.length < 2;
+  }
+
+  document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => cmd("tab", b.dataset.tab)));
+  $("aPlay").addEventListener("click", () => cmd("playpause"));
+  $("aPrev").addEventListener("click", () => cmd("prev"));
+  $("aNext").addEventListener("click", () => cmd("next"));
+  $("sPrev").addEventListener("click", () => cmd("prev"));
+  $("sNext").addEventListener("click", () => cmd("next"));
+  $("vPlay").addEventListener("click", () => cmd("vplay"));
+  $("vPause").addEventListener("click", () => cmd("vpause"));
+  let volT = null;
+  $("vol").addEventListener("input", e => { dragging = true; clearTimeout(volT); volT = setTimeout(() => { dragging = false; }, 1200); cmd("vol", parseFloat(e.target.value)); });
+
+  connect();
+})();
+</script>
+</body>
+</html>
