@@ -120,7 +120,7 @@ window.REMEMBRANCE_CONFIG = {
      (see REMOTE-SETUP.txt). Leave it as "" to switch remote control off.
      The secret room code is NOT stored here (this file is public): you
      put it in the web address instead, see REMOTE-SETUP.txt. */
-  remote: { url: "" },
+  remote: { url: "https://console.firebase.google.com/project/remembrance-day-4afa4/database/remembrance-day-4afa4-default-rtdb/data/~2F" },
 
   /* Videos for the Video tab. One line per video. "src" can be:
        - a YouTube link (add &t=10s to start at 10 seconds)
