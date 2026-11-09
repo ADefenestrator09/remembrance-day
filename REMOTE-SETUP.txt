@@ -1,0 +1,68 @@
+REMOTE CONTROL FROM YOUR PHONE
+==============================
+
+What it does
+  remote.html is a control page you open on your phone. It sends commands
+  (switch tab, next/previous slide, play/pause/next audio, pick a video)
+  to the laptop that is running index.html. The audience window keeps
+  following the laptop exactly as before. The laptop must stay open on
+  the site and online.
+
+  Laptop (index.html)  <--- free Firebase database --->  Phone (remote.html)
+
+
+ONE-TIME SETUP (about 5 minutes, free, no credit card)
+  1. Go to https://console.firebase.google.com and sign in with a Google
+     account. Click "Create a project", give it any name, and turn Google
+     Analytics off.
+  2. In the left menu choose Build > Realtime Database > Create Database.
+     Pick any location. When asked, choose "Start in locked mode".
+  3. Open the "Rules" tab, replace everything with the text below, and
+     click Publish. (This lets only the secret room name be used.)
+
+       {
+         "rules": {
+           "poppy-af33e5e827df": { ".read": true, ".write": true }
+         }
+       }
+
+  4. Open the "Data" tab. Copy the database address shown at the top
+     (it looks like https://something-default-rtdb.firebaseio.com or
+     ends in .firebasedatabase.app).
+  5. In config.js, paste it between the quotes:
+       remote: { url: "https://something-default-rtdb.firebaseio.com" },
+  6. Upload index.html, config.js and remote.html to GitHub (replace the
+     old ones) and wait a minute or two.
+
+
+THE SECRET ROOM CODE
+  Your code is:   poppy-af33e5e827df
+  (Any letters, numbers and dashes work. If you change it, change it in
+  the Rules in step 3 as well. Use something long and hard to guess.)
+
+  config.js is public on GitHub, so the code is NOT stored there. Instead
+  you put it on the end of the web address, once per device:
+
+     Laptop:  https://YOURUSERNAME.github.io/YOURREPOSITORY/#room=poppy-af33e5e827df
+     Phone:   https://YOURUSERNAME.github.io/YOURREPOSITORY/remote.html#room=poppy-af33e5e827df
+
+  Each device remembers the code after the first visit. Anyone who has the
+  code can control the show, so do not post the addresses publicly.
+
+
+ON THE DAY
+  1. Laptop: open the laptop address, run the audio check (or Skip), and
+     open the Audience window as usual.
+  2. Phone: open the phone address (add it to your home screen if you like).
+     The dot at the top turns green when the laptop is connected.
+  3. Run everything from the phone. Nothing on the laptop needs touching.
+
+  Notes
+  - Audio: tapping a track selects it; press Play. This matches the laptop.
+  - Video Play/Pause works when the Audience window is open and linked.
+  - The laptop must have been clicked on at least once (the audio check does
+    this) or the browser may refuse to start audio by remote.
+  - Test it on the real laptop, the real network and the real phone before
+    the event. Some school networks block Firebase.
+  - If you do not want remote control, leave remote: { url: "" } and
+    nothing changes.

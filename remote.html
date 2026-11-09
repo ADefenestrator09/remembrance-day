@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Remembrance Day – remote</title>
+<link rel="icon" href="favicon.svg">
+<style>
+  :root { --bg:#141010; --card:#241c1c; --line:#3a2e2e; --txt:#f3ece6; --dim:#a89c94; --red:#c8102e; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--txt); font-family: Georgia, "Times New Roman", serif; }
+  body { padding: max(12px, env(safe-area-inset-top)) 14px max(16px, env(safe-area-inset-bottom)); max-width: 560px; margin: 0 auto; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+  h1 { font-size: 1.05rem; margin: 0; font-weight: normal; letter-spacing: .02em; }
+  #conn { font: .85rem system-ui, sans-serif; color: var(--dim); display: flex; align-items: center; gap: 7px; }
+  #dot { width: 10px; height: 10px; border-radius: 50%; background: #777; }
+  #dot.on { background: #3fb950; } #dot.off { background: #d29922; }
+  #msg { font: .85rem system-ui, sans-serif; color: #e3b341; min-height: 1.2em; margin: 4px 0 8px; }
+  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  button, select { font: 600 1rem system-ui, sans-serif; color: var(--txt); background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 10px; min-height: 56px; }
+  button:active { filter: brightness(1.4); }
+  button.active { background: var(--red); border-color: var(--red); }
+  button.big { min-height: 92px; font-size: 1.25rem; }
+  .row { display: grid; gap: 10px; margin-bottom: 10px; }
+  .row.two { grid-template-columns: 1fr 1fr; }
+  .row.three { grid-template-columns: 1fr 1.4fr 1fr; }
+  .label { font: .8rem system-ui, sans-serif; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; margin: 16px 2px 6px; }
+  .now { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; text-align: center; }
+  .now b { display: block; font-size: 1.3rem; font-weight: normal; margin-bottom: 4px; }
+  .now span { font: .9rem system-ui, sans-serif; color: var(--dim); }
+  .list { display: grid; gap: 8px; }
+  .list button { text-align: left; }
+  select { width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="ttl">Remembrance Day – remote</h1>
+  <div id="conn"><span id="dot"></span><span id="connTxt">Connecting…</span></div>
+</header>
+<div id="msg"></div>
+
+<div class="tabs">
+  <button id="t-audio" data-tab="audio">Audio</button>
+  <button id="t-slides" data-tab="slides">Slides</button>
+  <button id="t-video" data-tab="video">Video</button>
+</div>
+
+<section id="p-audio" hidden>
+  <div class="now"><b id="aTitle">–</b><span id="aInfo"></span></div>
+  <div class="row"><button class="big" id="aPlay">▶ Play</button></div>
+  <div class="row two"><button id="aPrev">⏮ Previous</button><button id="aNext">Next ⏭</button></div>
+  <div class="label">Tracks (tap to select, then Play)</div>
+  <div class="list" id="aList"></div>
+</section>
+
+<section id="p-slides" hidden>
+  <div class="now"><b id="sCount">–</b><span>Slide</span></div>
+  <div class="row two"><button class="big" id="sPrev">‹ Back</button><button class="big" id="sNext">Next ›</button></div>
+  <div class="label">Jump to slide</div>
+  <select id="sJump"></select>
+</section>
+
+<section id="p-video" hidden>
+  <div class="now"><b id="vTitle">–</b><span id="vInfo">Play and Pause need the audience window open</span></div>
+  <div class="row two"><button class="big" id="vPlay">▶ Play</button><button class="big" id="vPause">⏸ Pause</button></div>
+  <div class="label">Videos</div>
+  <div class="list" id="vList"></div>
+</section>
+
+<script src="config.js"></script>
+<script>
+const CFG = window.REMEMBRANCE_CONFIG || {};
+const $ = id => document.getElementById(id);
+const REM = CFG.remote || {};
+document.getElementById("ttl").textContent = (CFG.title || "Remembrance Day") + " – remote";
+
+function getRoom() {
+  const m = /room=([\w-]+)/.exec(location.hash);
+  try { if (m) { localStorage.setItem("rd-room", m[1]); return m[1]; } return localStorage.getItem("rd-room") || REM.room || ""; }
+  catch (e) { return m ? m[1] : (REM.room || ""); }
+}
+const room = getRoom();
+const msg = t => { $("msg").textContent = t || ""; };
+
+if (!REM.url) msg("Remote control is not switched on: remote.url in config.js is empty.");
+else if (!room) msg("No room code. Open this page with #room=YOURCODE on the end of the address.");
+
+const base = (REM.url || "").replace(/\/+$/, "") + "/" + room;
+const TRACKS = CFG.tracks || [];
+const VIDEOS = Array.isArray(CFG.videos) ? CFG.videos : [];
+let S = null, lastSeen = 0, shownTab = "audio";
+
+/* ---- send a command ---- */
+function cmd(name, arg) {
+  if (!REM.url || !room) return;
+  if (navigator.vibrate) navigator.vibrate(15);
+  const body = JSON.stringify({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), cmd: name, arg: arg });
+  fetch(base + "/cmd.json", { method: "PUT", body }).then(r => { if (!r.ok) msg("Could not send (database refused the request)."); else msg(""); })
+    .catch(() => msg("Could not send. Check this phone's connection."));
+}
+
+/* ---- build static controls ---- */
+TRACKS.forEach((t, i) => {
+  const b = document.createElement("button"); b.textContent = (i + 1) + ". " + t.title;
+  b.addEventListener("click", () => cmd("audio", i)); $("aList").appendChild(b);
+});
+VIDEOS.forEach((v, i) => {
+  const b = document.createElement("button"); b.textContent = v.title || ("Video " + (i + 1));
+  b.addEventListener("click", () => cmd("video", i)); $("vList").appendChild(b);
+});
+document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => { shownTab = b.dataset.tab; if (S) S.tab = shownTab; render(); cmd("tab", shownTab); }));
+$("aPlay").addEventListener("click", () => cmd("audio", "toggle"));
+$("aPrev").addEventListener("click", () => cmd("audio", "prev"));
+$("aNext").addEventListener("click", () => cmd("audio", "next"));
+$("sPrev").addEventListener("click", () => cmd("slide", "prev"));
+$("sNext").addEventListener("click", () => cmd("slide", "next"));
+$("sJump").addEventListener("change", e => cmd("slide", +e.target.value));
+$("vPlay").addEventListener("click", () => cmd("video", "play"));
+$("vPause").addEventListener("click", () => cmd("video", "pause"));
+
+const fmt = t => { t = Math.max(0, t || 0); return Math.floor(t / 60) + ":" + String(Math.floor(t % 60)).padStart(2, "0"); };
+
+/* ---- draw whatever the laptop reports ---- */
+function render() {
+  const tab = (S && S.tab) ? S.tab : shownTab;
+  shownTab = tab;
+  ["audio", "slides", "video"].forEach(n => { $("p-" + n).hidden = n !== tab; $("t-" + n).classList.toggle("active", n === tab); });
+  if (!S) return;
+  if (S.ready === false) msg("On the laptop: finish the audio check (or press Skip) before audio can be controlled.");
+  else if ($("msg").textContent.startsWith("On the laptop")) msg("");
+  // audio
+  $("aTitle").textContent = (TRACKS[S.track] || {}).title || "–";
+  $("aInfo").textContent = (S.playing ? "Playing · " : "Paused · ") + fmt(S.pos) + (S.dur ? " / " + fmt(S.dur) : "");
+  $("aPlay").textContent = S.playing ? "⏸ Pause" : "▶ Play";
+  [...$("aList").children].forEach((b, i) => b.classList.toggle("active", i === S.track));
+  // slides
+  const n = S.slides || 0;
+  $("sCount").textContent = n ? (S.slide + 1) + " / " + n : "No slides loaded";
+  if ($("sJump").options.length !== n) {
+    $("sJump").innerHTML = "";
+    for (let i = 0; i < n; i++) { const o = document.createElement("option"); o.value = i; o.textContent = "Slide " + (i + 1); $("sJump").appendChild(o); }
+  }
+  $("sJump").value = S.slide;
+  $("sPrev").disabled = !n || S.slide <= 0; $("sNext").disabled = !n || S.slide >= n - 1;
+  // video
+  $("vTitle").textContent = (VIDEOS[S.video] || {}).title || "–";
+  $("vInfo").textContent = S.aud ? "Audience window connected" : "Play and Pause need the audience window open";
+  [...$("vList").children].forEach((b, i) => b.classList.toggle("active", i === S.video));
+}
+
+/* ---- listen for state from the laptop ---- */
+function onState(e) {
+  try { const d = JSON.parse(e.data); if (d && d.data) { S = d.data; lastSeen = Date.now(); render(); } } catch (err) {}
+}
+if (REM.url && room) {
+  const es = new EventSource(base + "/state.json");
+  es.addEventListener("put", onState); es.addEventListener("patch", onState);
+}
+setInterval(() => {
+  const live = S && Date.now() - lastSeen < 7000;
+  $("dot").className = !REM.url || !room ? "" : live ? "on" : "off";
+  $("connTxt").textContent = !REM.url || !room ? "Off" : live ? "Laptop connected" : (S ? "Laptop not responding" : "Waiting for laptop…");
+}, 1000);
+render();
+</script>
+</body>
+</html>
